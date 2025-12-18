@@ -1,9 +1,15 @@
 import { useState } from 'react';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, ShoppingCart, User, LogOut } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import logo from '../assets/logo.jpg';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { getCartCount, setIsCartOpen } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const servicesMenu = [
     { label: 'Formation & Langue', href: '/services/formation' },
@@ -18,9 +24,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-20">
           <div className="flex-shrink-0">
             <a href="/" className="flex items-center">
-              <div className="w-32 h-12 bg-mdla-yellow flex items-center justify-center rounded font-bold text-mdla-black text-2xl">
-                MDLA
-              </div>
+              <img src={logo} alt="MDLA Logo" className="h-16 w-auto object-contain" />
             </a>
           </div>
 
@@ -33,17 +37,22 @@ const Navbar = () => {
             </a>
 
             <div
-              className="relative"
-              onMouseEnter={() => setIsServicesOpen(true)}
-              onMouseLeave={() => setIsServicesOpen(false)}
+              className="relative group"
             >
-              <button className="flex items-center text-mdla-black hover:text-mdla-yellow font-medium transition-colors">
+              <button
+                className="flex items-center text-mdla-black hover:text-mdla-yellow font-medium transition-colors"
+                onMouseEnter={() => setIsServicesOpen(true)}
+              >
                 Services
                 <ChevronDown className={`ml-1 w-4 h-4 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isServicesOpen && (
-                <div className="absolute top-full left-0 mt-2 w-64 bg-white shadow-lg rounded-md overflow-hidden">
+                <div
+                  className="absolute top-full left-0 mt-2 w-64 bg-white shadow-lg rounded-md overflow-hidden z-50"
+                  onMouseEnter={() => setIsServicesOpen(true)}
+                  onMouseLeave={() => setIsServicesOpen(false)}
+                >
                   {servicesMenu.map((service, index) => (
                     <a
                       key={index}
@@ -57,6 +66,9 @@ const Navbar = () => {
               )}
             </div>
 
+            <a href="/formations" className="text-mdla-black hover:text-mdla-yellow font-medium transition-colors">
+              Formations
+            </a>
             <a href="/boutique" className="text-mdla-black hover:text-mdla-yellow font-medium transition-colors">
               Boutique
             </a>
@@ -65,13 +77,62 @@ const Navbar = () => {
             </a>
           </div>
 
-          <div className="hidden md:block">
-            <a
-              href="/connexion"
-              className="bg-mdla-red text-white px-6 py-2 rounded-md font-medium hover:bg-opacity-90 transition-all"
+          {/* Cart Icon & Connexion */}
+          <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="relative text-mdla-black hover:text-mdla-yellow transition-colors"
             >
-              Connexion
-            </a>
+              <ShoppingCart className="w-6 h-6" />
+              {getCartCount() > 0 && (
+                <span className="absolute -top-2 -right-2 bg-mdla-red text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {getCartCount()}
+                </span>
+              )}
+            </button>
+
+            {/* User Menu */}
+            {isAuthenticated ? (
+              <div className="relative">
+                <button
+                  className="flex items-center gap-2 bg-mdla-yellow text-mdla-black px-4 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+                  onMouseEnter={() => setIsUserMenuOpen(true)}
+                >
+                  <User className="w-5 h-5" />
+                  {user?.name?.split(' ')[0] || 'Mon Compte'}
+                  <ChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isUserMenuOpen && (
+                  <div
+                    className="absolute top-full right-0 mt-2 w-48 bg-white shadow-lg rounded-md overflow-hidden z-50"
+                    onMouseEnter={() => setIsUserMenuOpen(true)}
+                    onMouseLeave={() => setIsUserMenuOpen(false)}
+                  >
+                    <a
+                      href="/client-dashboard"
+                      className="block px-4 py-3 text-mdla-black hover:bg-gray-100 transition-colors"
+                    >
+                      Mon Tableau de Bord
+                    </a>
+                    <button
+                      onClick={logout}
+                      className="w-full text-left px-4 py-3 text-mdla-red hover:bg-gray-100 transition-colors flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Déconnexion
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <a
+                href="/connexion"
+                className="bg-mdla-yellow text-mdla-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+              >
+                Connexion
+              </a>
+            )}
           </div>
 
           <div className="md:hidden">
@@ -116,6 +177,12 @@ const Navbar = () => {
               </div>
             </div>
 
+            <a
+              href="/formations"
+              className="block px-4 py-3 text-mdla-black font-medium hover:bg-mdla-black hover:text-mdla-yellow rounded transition-colors"
+            >
+              Formations
+            </a>
             <a
               href="/boutique"
               className="block px-4 py-3 text-mdla-black font-medium hover:bg-mdla-black hover:text-mdla-yellow rounded transition-colors"
