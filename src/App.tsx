@@ -27,10 +27,25 @@ import FormationServicePage from './pages/services/FormationServicePage';
 import ImportExportServicePage from './pages/services/ImportExportServicePage';
 import RepresentationServicePage from './pages/services/RepresentationServicePage';
 import TraductionServicePage from './pages/services/TraductionServicePage';
-import UserDashboard from './pages/dashboards/UserDashboard';
-import ProfDashboard from './pages/dashboards/ProfDashboard';
+import UserOverview from './pages/dashboards/UserOverview';
+import TeacherOverview from './pages/dashboards/TeacherOverview';
+import TeacherCourses from './pages/dashboards/TeacherCourses';
+import TeacherStudents from './pages/dashboards/TeacherStudents';
+import TeacherMessages from './pages/dashboards/TeacherMessages';
+import CourseBuilder from './pages/dashboards/CourseBuilder';
 import TransitDashboard from './pages/dashboards/TransitDashboard';
-import AdminDashboard from './pages/dashboards/AdminDashboard';
+import TransitOverview from './pages/dashboards/TransitOverview';
+import ActiveShipments from './pages/dashboards/ActiveShipments';
+import SourcingRequests from './pages/dashboards/SourcingRequests';
+import CreateFolder from './pages/dashboards/CreateFolder';
+import TransitChat from './pages/dashboards/TransitChat';
+import AdminOverview from './pages/dashboards/AdminOverview';
+import AdminEducation from './pages/dashboards/AdminEducation';
+import AdminLogistics from './pages/dashboards/AdminLogistics';
+import AdminShop from './pages/dashboards/AdminShop';
+import AdminMessages from './pages/dashboards/AdminMessages';
+import AdminUsers from './pages/dashboards/AdminUsers';
+import AdminMarketing from './pages/dashboards/AdminMarketing';
 
 // Dashboard Router Component - renders appropriate dashboard based on role
 const DashboardRouter = () => {
@@ -43,15 +58,15 @@ const DashboardRouter = () => {
   switch (user.role) {
     case 'client':
     case 'student':
-      return <UserDashboard />;
+      return <UserOverview />;
     case 'prof':
-      return <ProfDashboard />;
+      return <TeacherOverview />;
     case 'transit':
-      return <TransitDashboard />;
+      return <TransitOverview />;
     case 'admin':
-      return <AdminDashboard />;
+      return <AdminOverview />;
     default:
-      return <UserDashboard />;
+      return <UserOverview />;
   }
 };
 
@@ -221,20 +236,32 @@ function App() {
                 </ProtectedRoute>
               }>
                 <Route index element={<DashboardRouter />} />
-                {/* Placeholder routes for future implementation */}
+                <Route path="formation" element={<AdminEducation />} />
+                <Route path="logistique" element={<AdminLogistics />} />
+                <Route path="boutique" element={<AdminShop />} />
+                <Route path="communication" element={<AdminMessages />} />
+                <Route path="utilisateurs" element={<AdminUsers />} />
+                <Route path="marketing" element={<AdminMarketing />} />
+
+                {/* Teacher Routes */}
+                <Route path="mes-cours" element={<TeacherCourses />} />
+                <Route path="creer-cours" element={<CourseBuilder />} />
+                <Route path="editer-cours/:courseId" element={<CourseBuilder />} />
+                <Route path="etudiants" element={<TeacherStudents />} />
+                <Route path="messagerie-prof" element={<TeacherMessages />} />
+
+                {/* Transit Routes */}
+                <Route path="transit-dossiers" element={<ActiveShipments />} />
+                <Route path="transit-sourcing" element={<SourcingRequests />} />
+                <Route path="transit-nouveau" element={<CreateFolder />} />
+                <Route path="transit-messagerie" element={<TransitChat />} />
+                <Route path="transit-archives" element={<div className="p-8">Archives (À venir)</div>} />
+
+                {/* Client Routes */}
                 <Route path="formations" element={<div className="p-8"><h1 className="text-2xl font-bold">Mes Formations</h1></div>} />
                 <Route path="commandes" element={<div className="p-8"><h1 className="text-2xl font-bold">Mes Commandes</h1></div>} />
                 <Route path="messagerie" element={<div className="p-8"><h1 className="text-2xl font-bold">Messagerie</h1></div>} />
                 <Route path="profil" element={<div className="p-8"><h1 className="text-2xl font-bold">Mon Profil</h1></div>} />
-                <Route path="creer-cours" element={<div className="p-8"><h1 className="text-2xl font-bold">Créer un Cours</h1></div>} />
-                <Route path="etudiants" element={<div className="p-8"><h1 className="text-2xl font-bold">Mes Étudiants</h1></div>} />
-                <Route path="expeditions" element={<div className="p-8"><h1 className="text-2xl font-bold">Liste Expéditions</h1></div>} />
-                <Route path="tracking" element={<div className="p-8"><h1 className="text-2xl font-bold">Mettre à jour Tracking</h1></div>} />
-                <Route path="finances" element={<div className="p-8"><h1 className="text-2xl font-bold">Finances</h1></div>} />
-                <Route path="utilisateurs" element={<div className="p-8"><h1 className="text-2xl font-bold">Utilisateurs</h1></div>} />
-                <Route path="validation-cours" element={<div className="p-8"><h1 className="text-2xl font-bold">Validation Cours</h1></div>} />
-                <Route path="boutique" element={<div className="p-8"><h1 className="text-2xl font-bold">Gestion Boutique</h1></div>} />
-                <Route path="statistiques" element={<div className="p-8"><h1 className="text-2xl font-bold">Statistiques</h1></div>} />
               </Route>
             </Routes>
           </CartProvider>

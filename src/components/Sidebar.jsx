@@ -1,9 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { 
-    Home, 
-    BookOpen, 
-    ShoppingBag, 
-    MessageSquare, 
+import {
+    Home,
+    BookOpen,
+    ShoppingBag,
+    MessageSquare,
     User,
     PlusCircle,
     Users,
@@ -41,28 +41,13 @@ const Sidebar = () => {
 
             case 'prof':
                 return [
-                    { path: '/dashboard', label: 'Accueil', icon: Home },
-                    { path: '/dashboard/creer-cours', label: 'Créer un Cours', icon: PlusCircle },
+                    { path: '/dashboard', label: 'Vue d\'ensemble', icon: Home },
+                    { path: '/dashboard/mes-cours', label: 'Mes Cours', icon: BookOpen },
                     { path: '/dashboard/etudiants', label: 'Mes Étudiants', icon: Users },
-                    { path: '/dashboard/messagerie', label: 'Messagerie', icon: MessageSquare },
+                    { path: '/dashboard/messagerie-prof', label: 'Messagerie', icon: MessageSquare },
                 ];
 
             case 'transit':
-                return [
-                    { path: '/dashboard', label: 'Accueil', icon: Home },
-                    { path: '/dashboard/expeditions', label: 'Liste Expéditions', icon: Package },
-                    { path: '/dashboard/tracking', label: 'Mettre à jour Tracking', icon: MapPin },
-                ];
-
-            case 'admin':
-                return [
-                    { path: '/dashboard', label: 'Vue d\'ensemble', icon: Home },
-                    { path: '/dashboard/finances', label: 'Finances', icon: DollarSign },
-                    { path: '/dashboard/utilisateurs', label: 'Utilisateurs', icon: Users },
-                    { path: '/dashboard/validation-cours', label: 'Validation Cours', icon: CheckSquare },
-                    { path: '/dashboard/boutique', label: 'Gestion Boutique', icon: Store },
-                    { path: '/dashboard/statistiques', label: 'Statistiques', icon: BarChart3 },
-                ];
 
             default:
                 return [
@@ -107,11 +92,10 @@ const Sidebar = () => {
                                 <Link
                                     to={item.path}
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                                        active
-                                            ? 'bg-mdla-yellow text-mdla-black font-semibold'
-                                            : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                                    }`}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${active
+                                        ? 'bg-mdla-yellow text-mdla-black font-semibold'
+                                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                                        }`}
                                 >
                                     <Icon className="w-5 h-5" />
                                     <span>{item.label}</span>
@@ -160,7 +144,7 @@ const Sidebar = () => {
                         className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
                         onClick={() => setIsMobileMenuOpen(false)}
                     />
-                    
+
                     {/* Sidebar */}
                     <aside className="lg:hidden fixed left-0 top-0 w-64 bg-mdla-black h-screen z-50 flex flex-col">
                         <SidebarContent />
