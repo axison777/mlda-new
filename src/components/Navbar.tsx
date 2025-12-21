@@ -110,7 +110,7 @@ const Navbar = () => {
                     onMouseLeave={() => setIsUserMenuOpen(false)}
                   >
                     <a
-                      href="/client-dashboard"
+                      href="/dashboard"
                       className="block px-4 py-3 text-mdla-black hover:bg-gray-100 transition-colors"
                     >
                       Mon Tableau de Bord

@@ -13,7 +13,6 @@ import {
     Search
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import UserSidebar from '../../components/UserSidebar';
 
 const UserOverview = () => {
     const { user: authUser } = useAuth();

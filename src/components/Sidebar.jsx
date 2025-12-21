@@ -48,6 +48,24 @@ const Sidebar = () => {
                 ];
 
             case 'transit':
+                return [
+                    { path: '/dashboard', label: 'Vue d\'ensemble', icon: Home },
+                    { path: '/dashboard/transit-dossiers', label: 'Dossiers en Cours', icon: Package },
+                    { path: '/dashboard/transit-sourcing', label: 'Demandes de Devis', icon: ShoppingBag },
+                    { path: '/dashboard/transit-nouveau', label: 'Créer un Dossier', icon: PlusCircle },
+                    { path: '/dashboard/transit-messagerie', label: 'Messagerie', icon: MessageSquare },
+                ];
+
+            case 'admin':
+                return [
+                    { path: '/dashboard', label: 'Vue d\'ensemble', icon: Home },
+                    { path: '/dashboard/formation', label: 'Pôle Formation', icon: BookOpen },
+                    { path: '/dashboard/logistique', label: 'Pôle Logistique', icon: Package },
+                    { path: '/dashboard/boutique', label: 'Pôle Boutique', icon: Store },
+                    { path: '/dashboard/communication', label: 'Communication', icon: MessageSquare },
+                    { path: '/dashboard/utilisateurs', label: 'Utilisateurs & Staff', icon: Users },
+                    { path: '/dashboard/marketing', label: 'Marketing & Pubs', icon: BarChart3 },
+                ];
 
             default:
                 return [

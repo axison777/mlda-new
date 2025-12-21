@@ -74,7 +74,7 @@ const PaymentSuccessPage = () => {
                     {/* Actions */}
                     <div className="flex flex-col sm:flex-row gap-4">
                         <Link
-                            to="/client-dashboard"
+                            to="/dashboard"
                             className="flex-1 bg-mdla-yellow text-mdla-black px-6 py-3 rounded-lg font-semibold hover:bg-yellow-400 transition-colors flex items-center justify-center gap-2"
                         >
                             <Package className="w-5 h-5" />

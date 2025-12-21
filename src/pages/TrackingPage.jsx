@@ -71,7 +71,7 @@ const TrackingPage = () => {
                     {/* Back to Dashboard Link */}
                     {isAuthenticated && (
                         <Link
-                            to="/client-dashboard"
+                            to="/dashboard"
                             className="inline-flex items-center gap-2 text-mdla-yellow hover:text-yellow-600 font-semibold mb-6"
                         >
                             <ArrowLeft className="w-5 h-5" />
