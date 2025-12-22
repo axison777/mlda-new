@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     Home,
     BookOpen,
@@ -14,15 +14,24 @@ import {
     CheckSquare,
     Store,
     Menu,
-    X
+    X,
+    LogOut
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 
 const Sidebar = () => {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const location = useLocation();
+    const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const handleLogout = () => {
+        if (window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+            logout();
+            navigate('/');
+        }
+    };
 
     // Navigation items based on role
     const getNavigationItems = () => {
@@ -65,6 +74,7 @@ const Sidebar = () => {
                     { path: '/dashboard/communication', label: 'Communication', icon: MessageSquare },
                     { path: '/dashboard/utilisateurs', label: 'Utilisateurs & Staff', icon: Users },
                     { path: '/dashboard/marketing', label: 'Marketing & Pubs', icon: BarChart3 },
+                    { path: '/dashboard/finances', label: 'Finances', icon: DollarSign },
                 ];
 
             default:
@@ -88,11 +98,11 @@ const Sidebar = () => {
             {/* Logo Section */}
             <div className="p-6 border-b border-gray-800">
                 <Link to="/" className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-mdla-yellow rounded-lg flex items-center justify-center">
-                        <span className="text-mdla-black font-bold text-xl">M</span>
+                    <div className="w-14 h-14 bg-mdla-yellow rounded-lg flex items-center justify-center">
+                        <span className="text-mdla-black font-bold text-2xl">M</span>
                     </div>
                     <div>
-                        <h1 className="text-white font-bold text-lg">MDLA</h1>
+                        <h1 className="text-white font-bold text-xl">MDLA Service</h1>
                         <p className="text-gray-400 text-xs capitalize">{user?.role || 'Dashboard'}</p>
                     </div>
                 </Link>
@@ -124,15 +134,35 @@ const Sidebar = () => {
                 </ul>
             </nav>
 
-            {/* User Info Section */}
+            {/* User Info Section with Dropdown */}
             <div className="p-4 border-t border-gray-800">
-                <div className="flex items-center gap-3 px-4 py-3 bg-gray-800 rounded-lg">
-                    <div className="w-10 h-10 bg-mdla-yellow rounded-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-mdla-black" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-white font-semibold text-sm truncate">{user?.name}</p>
-                        <p className="text-gray-400 text-xs truncate">{user?.email}</p>
+                <div className="relative group">
+                    <button className="w-full flex items-center gap-3 px-4 py-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
+                        <div className="w-10 h-10 bg-mdla-yellow rounded-full flex items-center justify-center">
+                            <User className="w-5 h-5 text-mdla-black" />
+                        </div>
+                        <div className="flex-1 min-w-0 text-left">
+                            <p className="text-white font-semibold text-sm truncate">{user?.name}</p>
+                            <p className="text-gray-400 text-xs truncate">{user?.email}</p>
+                        </div>
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                        <Link
+                            to="/"
+                            className="flex items-center gap-2 px-4 py-3 hover:bg-gray-50 transition-colors text-gray-700 border-b border-gray-100"
+                        >
+                            <Home className="w-4 h-4" />
+                            <span className="text-sm font-medium">Retour au site</span>
+                        </Link>
+                        <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center gap-2 px-4 py-3 hover:bg-red-50 transition-colors text-red-600"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            <span className="text-sm font-medium">Déconnexion</span>
+                        </button>
                     </div>
                 </div>
             </div>

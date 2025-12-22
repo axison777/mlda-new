@@ -1,21 +1,21 @@
-import { BookOpen, Briefcase, Stethoscope } from 'lucide-react';
+import { BookOpen, Briefcase, Settings } from 'lucide-react';
 
 const TargetsSection = () => {
   const targets = [
     {
       icon: BookOpen,
-      title: 'Étudiants',
+      title: 'Élèves et Étudiants',
       description: 'Accompagnement inscriptions universitaires, frais de scolarité réduits.',
       bgColor: 'bg-blue-50',
     },
     {
       icon: Briefcase,
-      title: 'Professionnels & Entrepreneurs',
+      title: 'Entreprises',
       description: 'Partenariats B2B, développement d\'activités en Allemagne.',
       bgColor: 'bg-green-50',
     },
     {
-      icon: Stethoscope,
+      icon: Settings,
       title: 'Candidats Ausbildung',
       description: 'Formation duale rémunérée (Santé, Social, Technique).',
       bgColor: 'bg-red-50',

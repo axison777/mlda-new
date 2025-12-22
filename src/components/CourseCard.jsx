@@ -33,7 +33,7 @@ const CourseCard = ({ course, onAction }) => {
                     />
                 ) : (
                     <div className="w-full h-full bg-gradient-to-br from-mdla-yellow to-yellow-400 flex items-center justify-center">
-                        <span className="text-4xl font-bold text-mdla-black opacity-20">MDLA</span>
+                        <span className="text-4xl font-bold text-mdla-black opacity-20">MDLA Service</span>
                     </div>
                 )}
 

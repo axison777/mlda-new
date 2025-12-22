@@ -6,8 +6,8 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-3 gap-12 mb-12">
           <div>
-            <div className="mb-4 inline-flex items-center justify-center w-32 h-12 bg-mdla-yellow rounded font-bold text-mdla-black text-2xl">
-              MDLA
+            <div className="mb-4 inline-flex items-center justify-center w-auto px-4 h-12 bg-mdla-yellow rounded font-bold text-mdla-black text-2xl whitespace-nowrap">
+              MDLA Service
             </div>
             <p className="text-gray-300 mt-4 leading-relaxed">
               Votre partenaire de confiance pour réussir vos projets professionnels en Allemagne.
@@ -80,7 +80,7 @@ const Footer = () => {
 
         <div className="border-t border-gray-700 pt-8">
           <div className="text-center text-gray-400 text-sm">
-            <p>&copy; 2024 MDLA - La Maison de l'Allemagne. Tous droits réservés.</p>
+            <p>&copy; 2024 MDLA Service - La Maison de l'Allemagne. Tous droits réservés.</p>
           </div>
         </div>
       </div>

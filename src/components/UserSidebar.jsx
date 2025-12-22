@@ -32,8 +32,8 @@ const UserSidebar = ({ mockUserOverride }) => {
         <Link
             to={to}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive(to)
-                    ? 'bg-mdla-yellow text-mdla-black font-bold shadow-sm'
-                    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+                ? 'bg-mdla-yellow text-mdla-black font-bold shadow-sm'
+                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
                 }`}
         >
             <Icon className="w-5 h-5" />
@@ -45,11 +45,11 @@ const UserSidebar = ({ mockUserOverride }) => {
         <aside className="fixed inset-y-0 left-0 bg-white w-64 border-r border-gray-200 z-30 hidden lg:flex flex-col">
             {/* Logo */}
             <div className="p-6 border-b border-gray-100">
-                <Link to="/" className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-mdla-black rounded-lg flex items-center justify-center text-mdla-yellow font-bold text-xl">
+                <Link to="/" className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-mdla-black rounded-lg flex items-center justify-center text-mdla-yellow font-bold text-2xl">
                         M
                     </div>
-                    <span className="text-xl font-bold text-mdla-black tracking-tight">MDLA</span>
+                    <span className="text-xl font-bold text-mdla-black tracking-tight">MDLA Service</span>
                 </Link>
             </div>
 
@@ -89,6 +89,14 @@ const UserSidebar = ({ mockUserOverride }) => {
                         <p className="text-sm font-medium">Découverte</p>
                         <p className="text-xs text-gray-400">Voir nos autres services</p>
                     </div>
+                </Link>
+
+                <Link
+                    to="/"
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                    <Home className="w-5 h-5" />
+                    <span>Retour au site</span>
                 </Link>
 
                 <button

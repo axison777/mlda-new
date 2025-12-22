@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Menu, X, ChevronDown, ShoppingCart, User, LogOut } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import logo from '../assets/logo.jpg';
+import logo from '../assets/logo.png';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -22,9 +22,9 @@ const Navbar = () => {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 -ml-4">
             <a href="/" className="flex items-center">
-              <img src={logo} alt="MDLA Logo" className="h-16 w-auto object-contain" />
+              <img src={logo} alt="MDLA Service Logo" className="h-20 w-auto object-contain" />
             </a>
           </div>
 

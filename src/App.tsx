@@ -46,6 +46,7 @@ import AdminShop from './pages/dashboards/AdminShop';
 import AdminMessages from './pages/dashboards/AdminMessages';
 import AdminUsers from './pages/dashboards/AdminUsers';
 import AdminMarketing from './pages/dashboards/AdminMarketing';
+import AdminFinance from './pages/dashboards/AdminFinance';
 
 // Dashboard Router Component - renders appropriate dashboard based on role
 const DashboardRouter = () => {
@@ -242,6 +243,7 @@ function App() {
                 <Route path="communication" element={<AdminMessages />} />
                 <Route path="utilisateurs" element={<AdminUsers />} />
                 <Route path="marketing" element={<AdminMarketing />} />
+                <Route path="finances" element={<AdminFinance />} />
 
                 {/* Teacher Routes */}
                 <Route path="mes-cours" element={<TeacherCourses />} />

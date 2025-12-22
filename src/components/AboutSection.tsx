@@ -26,8 +26,8 @@ const AboutSection = () => {
           <div>
             <div className="bg-gray-300 rounded-lg overflow-hidden h-96 md:h-full">
               <img
-                src="https://placehold.co/600x500/1A1A1A/FFCC00?text=Equipe+MDLA"
-                alt="Équipe MDLA"
+                src="https://placehold.co/600x500/1A1A1A/FFCC00?text=Equipe+MDLA+Service"
+                alt="Équipe MDLA Service"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -35,7 +35,7 @@ const AboutSection = () => {
 
           <div>
             <h2 className="text-4xl md:text-5xl font-bold text-mdla-black mb-6">
-              La MDLA : Votre passerelle vers le monde germanophone
+              MDLA Service : Votre passerelle vers le monde germanophone
             </h2>
 
             <p className="text-lg text-gray-700 mb-8 leading-relaxed">

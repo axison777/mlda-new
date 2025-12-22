@@ -41,7 +41,7 @@ const OrangeMoneyForm = ({ amount, onSubmit, onCancel }) => {
                         <ol className="text-sm text-orange-800 space-y-1 list-decimal list-inside">
                             <li>Composez #144# sur votre téléphone Orange Money</li>
                             <li>Sélectionnez "Payer un marchand"</li>
-                            <li>Entrez le code marchand: <strong>MDLA2025</strong></li>
+                            <li>Entrez le code marchand: <strong>MDLASERVICE2025</strong></li>
                             <li>Confirmez le montant de <strong>{amount.toLocaleString()} FCFA</strong></li>
                             <li>Entrez votre code PIN</li>
                         </ol>

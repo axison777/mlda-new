@@ -1,10 +1,10 @@
-import { GraduationCap, Briefcase, Users, CheckCircle } from 'lucide-react';
+import { GraduationCap, Briefcase, Users, CheckCircle, ScrollText, Handshake, Globe } from 'lucide-react';
 
 const AboutPage = () => {
     const targets = [
         {
             icon: GraduationCap,
-            title: 'Étudiants',
+            title: 'Élèves et Étudiants',
             description: 'Accompagnement démarches administratives, inscription universitaire, visa. Frais de scolarité bas en Allemagne.',
             features: [
                 'Aide aux démarches administratives',
@@ -15,7 +15,7 @@ const AboutPage = () => {
         },
         {
             icon: Briefcase,
-            title: 'Professionnels',
+            title: 'Entreprises',
             description: 'Développement d\'activités, partenariats solides et navigation dans les démarches administratives.',
             features: [
                 'Développement d\'activités en Allemagne',
@@ -46,7 +46,7 @@ const AboutPage = () => {
                         À Propos de MDLA
                     </h1>
                     <p className="text-xl text-mdla-black/80 max-w-3xl mx-auto">
-                        La Maison de l'Allemagne - Votre passerelle vers l'excellence germanophone
+                        La Maison de l'Allemagne - Votre passerelle vers le monde germanophone
                     </p>
                 </div>
             </section>
@@ -56,7 +56,7 @@ const AboutPage = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="max-w-4xl mx-auto">
                         <h2 className="text-3xl md:text-4xl font-bold text-mdla-black mb-8 text-center">
-                            Pourquoi choisir la MDLA ?
+                            Pourquoi choisir MDLA Service ?
                         </h2>
                         <div className="bg-mdla-yellow/10 border-l-4 border-mdla-yellow p-8 rounded-r-lg">
                             <p className="text-lg text-gray-700 leading-relaxed">
@@ -70,15 +70,15 @@ const AboutPage = () => {
                         <div className="grid md:grid-cols-3 gap-6 mt-12">
                             <div className="text-center p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
                                 <div className="w-16 h-16 bg-mdla-yellow rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <CheckCircle className="w-8 h-8 text-mdla-black" />
+                                    <ScrollText className="w-8 h-8 text-mdla-black" />
                                 </div>
                                 <h3 className="font-bold text-mdla-black mb-2">Expertise</h3>
-                                <p className="text-gray-600 text-sm">Plus de 10 ans d'expérience dans l'accompagnement vers l'Allemagne</p>
+                                <p className="text-gray-600 text-sm">Expérience avérée dans l'accompagnement vers l'Allemagne</p>
                             </div>
 
                             <div className="text-center p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
                                 <div className="w-16 h-16 bg-mdla-yellow rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <CheckCircle className="w-8 h-8 text-mdla-black" />
+                                    <Handshake className="w-8 h-8 text-mdla-black" />
                                 </div>
                                 <h3 className="font-bold text-mdla-black mb-2">Accompagnement</h3>
                                 <p className="text-gray-600 text-sm">Suivi personnalisé de A à Z pour garantir votre réussite</p>
@@ -86,7 +86,7 @@ const AboutPage = () => {
 
                             <div className="text-center p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
                                 <div className="w-16 h-16 bg-mdla-yellow rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <CheckCircle className="w-8 h-8 text-mdla-black" />
+                                    <Globe className="w-8 h-8 text-mdla-black" />
                                 </div>
                                 <h3 className="font-bold text-mdla-black mb-2">Réseau</h3>
                                 <p className="text-gray-600 text-sm">Partenariats solides avec institutions et entreprises allemandes</p>
@@ -128,9 +128,8 @@ const AboutPage = () => {
                                         Chers amis, chers partenaires,
                                     </p>
                                     <p>
-                                        C'est avec une immense fierté que je vous accueille à la <strong className="text-mdla-black">Maison de l'Allemagne (MDLA)</strong>,
-                                        un pont culturel et économique entre l'Afrique et l'Allemagne que nous avons bâti avec passion et détermination
-                                        depuis plus de 15 ans.
+                                        C'est avec une immense fierté que je vous accueille à la <strong className="text-mdla-black">Maison de l'Allemagne (MDLA Service)</strong>,
+                                        un pont culturel et économique entre l'Afrique et l'Allemagne que nous avons bâti avec passion et détermination.
                                     </p>
                                     <p>
                                         Notre mission va bien au-delà de l'enseignement de la langue allemande. Nous sommes des <strong className="text-mdla-black">facilitateurs de rêves</strong>,
@@ -138,7 +137,7 @@ const AboutPage = () => {
                                     </p>
                                     <p>
                                         Que vous soyez étudiant aspirant à une formation de classe mondiale, professionnel cherchant à développer
-                                        votre activité, ou jeune talent en quête d'excellence, sachez que <strong className="text-mdla-black">MDLA est votre partenaire de confiance</strong>.
+                                        votre activité, ou jeune talent en quête d'excellence, sachez que <strong className="text-mdla-black">MDLA Service est votre partenaire de confiance</strong>.
                                     </p>
                                     <p>
                                         Nous croyons fermement que <strong className="text-mdla-yellow">l'éducation et la collaboration internationale</strong> sont les clés
@@ -156,28 +155,13 @@ const AboutPage = () => {
                                 <div className="absolute -right-4 -bottom-4 text-8xl text-mdla-yellow/20 font-serif">"</div>
                             </div>
 
-                            {/* Signature */}
-                            <div className="border-t-2 border-mdla-yellow pt-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="flex-1">
-                                        <p className="text-sm text-gray-600">
-                                            <strong>Diplômé</strong> de l'Université de Munich<br />
-                                            <strong>Expert</strong> en coopération Afrique-Europe<br />
-                                            <strong>Membre</strong> du Conseil Franco-Allemand
-                                        </p>
-                                    </div>
-                                    <div className="w-32 h-20 bg-mdla-yellow/10 rounded-lg flex items-center justify-center">
-                                        <span className="text-4xl font-signature text-mdla-black">AT</span>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Nos Cibles Section */}
-            <section className="py-20 bg-gray-50">
+            <section className="py-20 bg-gray-50" >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl md:text-4xl font-bold text-mdla-black mb-4 text-center">
                         Nos Cibles
@@ -222,10 +206,10 @@ const AboutPage = () => {
                         })}
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* CTA Section */}
-            <section className="py-16 bg-mdla-black">
+            < section className="py-16 bg-mdla-black" >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-3xl font-bold text-white mb-6">
                         Prêt à commencer votre aventure allemande ?
@@ -240,8 +224,8 @@ const AboutPage = () => {
                         Nous Contacter
                     </a>
                 </div>
-            </section>
-        </div>
+            </section >
+        </div >
     );
 };
 
