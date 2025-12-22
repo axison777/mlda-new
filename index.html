@@ -1,14 +1,40 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr"> <!-- IMPORTANT : Mettre 'fr' pour dire à Google que le site est en français -->
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!-- Favicon (Le petit logo dans l'onglet) -->
+    <link rel="icon" type="image/svg+xml" href="/logo-mdla-small.svg" /> 
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MDLA Landing Page &amp; Navigation</title>
-    <meta property="og:image" content="https://bolt.new/static/og_default.png">
+    
+    <!-- 1. TITRE PRINCIPAL (Ce qui s'affiche en bleu sur Google) -->
+    <title>MDLA - Maison de l'Allemagne | Cours, Import Auto & Services</title>
+
+    <!-- 2. META DESCRIPTION (Ce qui s'affiche en gris sous le titre sur Google) -->
+    <!-- Doit faire moins de 160 caractères et résumer votre activité -->
+    <meta name="description" content="MDLA facilite vos échanges avec l'Allemagne. Cours d'allemand intensifs, import de véhicules et pièces auto, représentation commerciale et démarches administratives." />
+
+    <!-- 3. MOTS-CLÉS (Moins important aujourd'hui, mais utile pour certains moteurs) -->
+    <meta name="keywords" content="MDLA, Maison de l'Allemagne, Cours allemand, Import voiture allemagne, Pièces auto, Burkina Faso, Formation, Transit" />
+
+    <!-- 4. OPEN GRAPH (Pour que le lien soit beau quand on le partage sur WhatsApp/Facebook) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.mdla-services.com/" /> <!-- Mettez votre vrai domaine plus tard -->
+    <meta property="og:title" content="MDLA - Votre partenaire vers l'Allemagne" />
+    <meta property="og:description" content="Formation linguistique, Import-Export et Représentation. Découvrez nos services." />
+    <meta property="og:image" content="/mdla-social-share.jpg" /> <!-- Une belle image de couverture 1200x630px -->
+
+    <!-- 5. TWITTER CARDS -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
-</head>
+    <meta name="twitter:title" content="MDLA - Maison de l'Allemagne">
+    <meta name="twitter:description" content="Cours d'allemand et Import-Export Véhicules.">
+    <meta name="twitter:image" content="/mdla-social-share.jpg">
+
+    <!-- Polices (Google Fonts - Exemple pour un style moderne) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
