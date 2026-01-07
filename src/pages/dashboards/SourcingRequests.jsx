@@ -15,6 +15,7 @@ import {
 const SourcingRequests = () => {
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     // Mock Data
     const requests = [
@@ -42,6 +43,13 @@ const SourcingRequests = () => {
                     <h1 className="text-2xl font-bold text-gray-900">Demandes de Devis (Sourcing)</h1>
                     <p className="text-gray-500">Répondez aux demandes de recherche de véhicules et marchandises.</p>
                 </div>
+                <button
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="bg-mdla-black text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-800 transition-colors flex items-center gap-2"
+                >
+                    <Search className="w-4 h-4" />
+                    Créer une demande
+                </button>
             </div>
 
             {/* Request List */}
@@ -170,6 +178,46 @@ const SourcingRequests = () => {
                             <button onClick={handleCloseOffer} className="px-6 py-2 bg-mdla-yellow text-mdla-black font-bold rounded-lg hover:bg-yellow-400 flex items-center gap-2">
                                 <Send className="w-4 h-4" />
                                 Envoyer l'Offre au Client
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Create Request Modal */}
+            {isCreateModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden flex flex-col">
+                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                            <h3 className="text-lg font-bold text-gray-900">Nouvelle Demande de Sourcing</h3>
+                            <button onClick={() => setIsCreateModalOpen(false)} className="text-gray-400 hover:text-gray-500">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nom du Client</label>
+                                <input type="text" className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Nom complet" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Véhicule / Marchandise recherchée</label>
+                                <input type="text" className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Ex: Toyota RAV4 2020" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Budget Max (FCFA)</label>
+                                <input type="text" className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Ex: 15.000.000" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Détails supplémentaires</label>
+                                <textarea className="w-full p-2 border border-gray-300 rounded-lg h-24" placeholder="Couleur, options, etc."></textarea>
+                            </div>
+                        </div>
+                        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                            <button onClick={() => setIsCreateModalOpen(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
+                                Annuler
+                            </button>
+                            <button onClick={() => setIsCreateModalOpen(false)} className="px-6 py-2 bg-mdla-yellow text-mdla-black font-bold rounded-lg hover:bg-yellow-400">
+                                Créer la demande
                             </button>
                         </div>
                     </div>

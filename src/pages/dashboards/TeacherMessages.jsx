@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useChat } from '../../context/ChatContext';
+import { useAuth } from '../../context/AuthContext';
 import {
     Search,
     Send,
@@ -12,45 +14,48 @@ import {
 } from 'lucide-react';
 
 const TeacherMessages = () => {
-    const [selectedChat, setSelectedChat] = useState(1);
+    const { messages, sendMessage, loadMessages, getConversations } = useChat();
+    const { user } = useAuth();
 
-    // Mock Data for Student Chats
-    const chats = [
-        {
-            id: 1,
-            name: 'Moussa Diop',
-            course: 'Allemand A1',
-            lastMessage: 'Je ne comprends pas l\'exercice 3.',
-            time: '10:30',
-            unread: 2,
-            status: 'online'
-        },
-        {
-            id: 2,
-            name: 'Fatou Sow',
-            course: 'Allemand A1',
-            lastMessage: 'Merci professeur !',
-            time: 'Hier',
-            unread: 0,
-            status: 'offline'
-        },
-        {
-            id: 3,
-            name: 'Jean Michel',
-            course: 'Grammaire B1',
-            lastMessage: 'Quand sera le prochain live ?',
-            time: 'Hier',
-            unread: 0,
-            status: 'online'
-        },
-    ];
+    const [chats, setChats] = useState([]);
+    const [selectedChat, setSelectedChat] = useState(null);
+    const [newMessage, setNewMessage] = useState('');
 
-    // Mock Messages for Selected Chat
-    const messages = [
-        { id: 1, sender: 'student', text: 'Bonjour Professeur, j\'ai une question sur la leçon d\'hier.', time: '10:25' },
-        { id: 2, sender: 'teacher', text: 'Bonjour Moussa, je t\'écoute. Quelle est ta question ?', time: '10:28' },
-        { id: 3, sender: 'student', text: 'Je ne comprends pas l\'exercice 3 sur les verbes irréguliers.', time: '10:30' },
-    ];
+    useEffect(() => {
+        const fetchChats = async () => {
+            const convos = await getConversations();
+            const mapped = convos.map(c => ({
+                id: c.contact.id,
+                name: c.contact.name || c.contact.email,
+                course: 'Allemand A1', // Mock course for now, ideally fetched from enrollments
+                lastMessage: c.lastMessage?.content || '',
+                time: c.lastMessage ? new Date(c.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+                unread: c.unreadCount,
+                status: 'offline' // Needs socket status
+            }));
+            setChats(mapped);
+
+            // Auto-select first if available and none selected
+            if (mapped.length > 0 && !selectedChat) {
+                // optional: setSelectedChat(mapped[0].id);
+            }
+        };
+        fetchChats();
+    }, []);
+
+    const handleSelectChat = (chatId) => {
+        setSelectedChat(chatId);
+        loadMessages(chatId);
+    };
+
+    const handleSendMessage = () => {
+        if (!newMessage.trim() || !selectedChat) return;
+        sendMessage(newMessage, selectedChat);
+        setNewMessage('');
+    };
+
+    // Find current selected chat details
+    const activeChatDetails = chats.find(c => c.id === selectedChat);
 
     return (
         <div className="h-[calc(100vh-2rem)] flex flex-col p-6">
@@ -78,7 +83,7 @@ const TeacherMessages = () => {
                         {chats.map((chat) => (
                             <div
                                 key={chat.id}
-                                onClick={() => setSelectedChat(chat.id)}
+                                onClick={() => handleSelectChat(chat.id)}
                                 className={`p-4 flex gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${selectedChat === chat.id ? 'bg-blue-50/50' : ''}`}
                             >
                                 <div className="relative">
@@ -109,81 +114,102 @@ const TeacherMessages = () => {
                                 )}
                             </div>
                         ))}
+                        {chats.length === 0 && (
+                            <div className="p-8 text-center text-gray-400">
+                                Aucun étudiant trouvé
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Chat Area */}
                 <div className="flex-1 flex flex-col">
-                    {/* Chat Header */}
-                    <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                                <User className="w-5 h-5 text-gray-500" />
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-gray-900">Moussa Diop</h3>
-                                <div className="flex items-center gap-2 text-xs">
-                                    <span className="text-green-500 font-medium flex items-center gap-1">
-                                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                                        En ligne
-                                    </span>
-                                    <span className="text-gray-300">|</span>
-                                    <span className="text-gray-500">Allemand A1</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex gap-2">
-                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg">
-                                <Phone className="w-5 h-5" />
-                            </button>
-                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg">
-                                <Video className="w-5 h-5" />
-                            </button>
-                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg">
-                                <MoreVertical className="w-5 h-5" />
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Messages */}
-                    <div className="flex-1 p-4 overflow-y-auto bg-gray-50 space-y-4">
-                        {messages.map((msg) => (
-                            <div
-                                key={msg.id}
-                                className={`flex ${msg.sender === 'teacher' ? 'justify-end' : 'justify-start'}`}
-                            >
-                                <div
-                                    className={`max-w-[70%] p-3 rounded-2xl ${msg.sender === 'teacher'
-                                            ? 'bg-mdla-yellow text-mdla-black rounded-tr-none'
-                                            : 'bg-white text-gray-900 border border-gray-100 rounded-tl-none'
-                                        }`}
-                                >
-                                    <p className="text-sm">{msg.text}</p>
-                                    <div className={`text-[10px] mt-1 flex items-center justify-end gap-1 ${msg.sender === 'teacher' ? 'text-black/60' : 'text-gray-400'}`}>
-                                        {msg.time}
-                                        {msg.sender === 'teacher' && <CheckCheck className="w-3 h-3" />}
+                    {selectedChat ? (
+                        <>
+                            {/* Chat Header */}
+                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                        <User className="w-5 h-5 text-gray-500" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-gray-900">{activeChatDetails?.name}</h3>
+                                        <div className="flex items-center gap-2 text-xs">
+                                            <span className="text-green-500 font-medium flex items-center gap-1">
+                                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                                                En ligne
+                                            </span>
+                                            <span className="text-gray-300">|</span>
+                                            <span className="text-gray-500">{activeChatDetails?.course}</span>
+                                        </div>
                                     </div>
                                 </div>
+                                <div className="flex gap-2">
+                                    <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg">
+                                        <Phone className="w-5 h-5" />
+                                    </button>
+                                    <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg">
+                                        <Video className="w-5 h-5" />
+                                    </button>
+                                    <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg">
+                                        <MoreVertical className="w-5 h-5" />
+                                    </button>
+                                </div>
                             </div>
-                        ))}
-                    </div>
 
-                    {/* Input Area */}
-                    <div className="p-4 bg-white border-t border-gray-100">
-                        <div className="flex items-center gap-2">
-                            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg">
-                                <Paperclip className="w-5 h-5" />
-                            </button>
-                            <input
-                                type="text"
-                                placeholder="Écrivez votre message..."
-                                className="flex-1 p-2 bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-mdla-yellow focus:ring-0 transition-colors"
-                            />
-                            <button className="p-2 bg-mdla-yellow hover:bg-yellow-400 text-mdla-black rounded-lg transition-colors">
-                                <Send className="w-5 h-5" />
-                            </button>
+                            {/* Messages */}
+                            <div className="flex-1 p-4 overflow-y-auto bg-gray-50 space-y-4">
+                                {messages.map((msg, index) => (
+                                    <div
+                                        key={msg.id || index}
+                                        className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}
+                                    >
+                                        <div
+                                            className={`max-w-[70%] p-3 rounded-2xl ${msg.senderId === user?.id
+                                                ? 'bg-mdla-yellow text-mdla-black rounded-tr-none'
+                                                : 'bg-white text-gray-900 border border-gray-100 rounded-tl-none'
+                                                }`}
+                                        >
+                                            <p className="text-sm">{msg.content}</p>
+                                            <div className={`text-[10px] mt-1 flex items-center justify-end gap-1 ${msg.senderId === user?.id ? 'text-black/60' : 'text-gray-400'}`}>
+                                                {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                {msg.senderId === user?.id && <CheckCheck className="w-3 h-3" />}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Input Area */}
+                            <div className="p-4 bg-white border-t border-gray-100">
+                                <div className="flex items-center gap-2">
+                                    <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg">
+                                        <Paperclip className="w-5 h-5" />
+                                    </button>
+                                    <input
+                                        type="text"
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleSendMessage();
+                                        }}
+                                        placeholder="Écrivez votre message..."
+                                        className="flex-1 p-2 bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-mdla-yellow focus:ring-0 transition-colors"
+                                    />
+                                    <button
+                                        onClick={handleSendMessage}
+                                        className="p-2 bg-mdla-yellow hover:bg-yellow-400 text-mdla-black rounded-lg transition-colors"
+                                    >
+                                        <Send className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
+                            <p>Sélectionnez un étudiant pour commencer</p>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

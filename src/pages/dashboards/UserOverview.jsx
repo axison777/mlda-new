@@ -82,10 +82,10 @@ const UserOverview = () => {
                     <div className="bg-mdla-yellow h-2 rounded-full" style={{ width: `${course.progress}%` }}></div>
                 </div>
 
-                <button className="bg-mdla-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors flex items-center gap-2 w-full md:w-auto justify-center">
+                <Link to="/dashboard/mes-cours" className="bg-mdla-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors flex items-center gap-2 w-full md:w-auto justify-center">
                     <Play className="w-4 h-4" />
                     Reprendre la leçon
-                </button>
+                </Link>
             </div>
         </div>
     );
@@ -118,9 +118,9 @@ const UserOverview = () => {
             </div>
 
             <div className="mt-auto">
-                <button className="w-full border border-gray-200 text-gray-700 px-4 py-3 rounded-xl font-bold hover:bg-gray-50 transition-colors">
+                <Link to={`/suivi/${order.tracking}`} className="w-full border border-gray-200 text-gray-700 px-4 py-3 rounded-xl font-bold hover:bg-gray-50 transition-colors flex justify-center items-center">
                     Voir détails complets
-                </button>
+                </Link>
             </div>
         </div>
     );
@@ -313,9 +313,9 @@ const UserOverview = () => {
                                     <Package className="w-12 h-12 mx-auto mb-3 opacity-20" />
                                     <p>Pas d'anciennes commandes.</p>
                                 </div>
-                                <button className="w-full mt-4 border border-gray-200 text-gray-700 px-4 py-2 rounded-xl font-bold hover:bg-gray-50 transition-colors">
+                                <Link to="/dashboard/commandes" className="w-full mt-4 border border-gray-200 text-gray-700 px-4 py-2 rounded-xl font-bold hover:bg-gray-50 transition-colors flex justify-center items-center">
                                     Voir tout l'historique
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -327,17 +327,20 @@ const UserOverview = () => {
     return (
         <div className="min-h-screen bg-gray-50 p-8">
             {/* Dev Tools for Testing */}
-            <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-xl backdrop-blur-sm z-50 text-xs">
-                <p className="font-bold mb-2 uppercase tracking-wider text-gray-400">Dev Mode: Toggle Roles</p>
-                <div className="flex gap-2">
-                    <button onClick={() => toggleRole('student')} className={`px-3 py-1 rounded ${isStudent ? 'bg-blue-600' : 'bg-gray-700'}`}>
-                        Student {isStudent ? 'ON' : 'OFF'}
-                    </button>
-                    <button onClick={() => toggleRole('client')} className={`px-3 py-1 rounded ${isClient ? 'bg-yellow-600' : 'bg-gray-700'}`}>
-                        Client {isClient ? 'ON' : 'OFF'}
-                    </button>
+            {/* Dev Tools for Testing - Hidden in production */}
+            {import.meta.env.DEV && (
+                <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-xl backdrop-blur-sm z-50 text-xs">
+                    <p className="font-bold mb-2 uppercase tracking-wider text-gray-400">Dev Mode: Toggle Roles</p>
+                    <div className="flex gap-2">
+                        <button onClick={() => toggleRole('student')} className={`px-3 py-1 rounded ${isStudent ? 'bg-blue-600' : 'bg-gray-700'}`}>
+                            Student {isStudent ? 'ON' : 'OFF'}
+                        </button>
+                        <button onClick={() => toggleRole('client')} className={`px-3 py-1 rounded ${isClient ? 'bg-yellow-600' : 'bg-gray-700'}`}>
+                            Client {isClient ? 'ON' : 'OFF'}
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {renderContent()}
         </div>

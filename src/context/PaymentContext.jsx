@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import { paymentService } from '../services/paymentService';
+import api from '../utils/api';
 
 const PaymentContext = createContext();
 
@@ -19,62 +19,57 @@ export const PaymentProvider = ({ children }) => {
         setIsProcessing(true);
 
         try {
-            let result;
+            const { data } = await api.post('/payments/process', paymentData);
 
-            switch (paymentData.method) {
-                case 'orange_money':
-                    result = await paymentService.processOrangeMoney(paymentData);
-                    break;
-                case 'visa':
-                    result = await paymentService.processCardPayment(paymentData);
-                    break;
-                case 'paypal':
-                    result = await paymentService.processPayPal(paymentData);
-                    break;
-                default:
-                    throw new Error('Méthode de paiement non supportée');
-            }
-
-            if (result.success) {
-                // Enregistrer la transaction
-                const transaction = {
-                    id: result.transactionId,
-                    ...paymentData,
-                    ...result,
-                    createdAt: new Date().toISOString(),
-                    status: 'completed'
-                };
-
-                setTransactions(prev => [transaction, ...prev]);
-
-                // Sauvegarder dans localStorage
-                const savedTransactions = JSON.parse(localStorage.getItem('mdla-transactions') || '[]');
-                localStorage.setItem('mdla-transactions', JSON.stringify([transaction, ...savedTransactions]));
+            if (data.success) {
+                // Add transaction to local state
+                setTransactions(prev => [data.payment, ...prev]);
             }
 
             setIsProcessing(false);
-            return result;
+            return data;
 
         } catch (error) {
             setIsProcessing(false);
             return {
                 success: false,
-                error: error.message,
-                message: 'Erreur lors du traitement du paiement'
+                error: error.response?.data?.error || error.message,
+                message: error.response?.data?.message || 'Erreur lors du traitement du paiement'
             };
         }
     };
 
-    const getTransactionHistory = (userId) => {
-        const savedTransactions = JSON.parse(localStorage.getItem('mdla-transactions') || '[]');
-        if (userId) {
-            return savedTransactions.filter(t => t.userId === userId);
+    const getTransactionHistory = async () => {
+        try {
+            const { data } = await api.get('/payments/transactions');
+            setTransactions(data);
+            return data;
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+            return [];
         }
-        return savedTransactions;
     };
 
-    const calculateTotal = (amount, method) => {
-        return paymentService.calculateFees(amount, method);
+    const calculateTotal = async (amount, method) => {
+        try {
+            const { data } = await api.post('/payments/calculate-fees', { amount, method });
+            return data;
+        } catch (error) {
+            console.error('Error calculating fees:', error);
+            // Fallback to local calculation
+            const feeRates = {
+                orange_money: 0.015,
+                visa: 0.025,
+                paypal: 0.029,
+                bank_transfer: 0.01
+            };
+            const fee = amount * (feeRates[method] || 0);
+            return {
+                subtotal: amount,
+                fees: Math.round(fee),
+                total: amount + Math.round(fee)
+            };
+        }
     };
 
     const value = {

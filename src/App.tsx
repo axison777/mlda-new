@@ -3,6 +3,7 @@ import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { OrdersProvider } from './context/OrdersContext';
 import { PaymentProvider } from './context/PaymentContext';
+import { ChatProvider } from './context/ChatContext';
 import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -39,6 +40,7 @@ import ActiveShipments from './pages/dashboards/ActiveShipments';
 import SourcingRequests from './pages/dashboards/SourcingRequests';
 import CreateFolder from './pages/dashboards/CreateFolder';
 import TransitChat from './pages/dashboards/TransitChat';
+import CourseViewer from './pages/dashboards/CourseViewer';
 import AdminOverview from './pages/dashboards/AdminOverview';
 import AdminEducation from './pages/dashboards/AdminEducation';
 import AdminLogistics from './pages/dashboards/AdminLogistics';
@@ -77,195 +79,198 @@ function App() {
       <OrdersProvider>
         <PaymentProvider>
           <CartProvider>
-            <Routes>
-              {/* Public Routes with Navbar and Footer */}
-              <Route path="/" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <HomePage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/a-propos" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <AboutPage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/services" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <ServicesPage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/services/formation" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <FormationServicePage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/services/import-export" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <ImportExportServicePage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/services/representation" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <RepresentationServicePage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/services/traduction" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <TraductionServicePage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/contact" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <ContactPage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/formations" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <CoursesPage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/boutique" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <ShopPage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/panier" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <CartPage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/devis" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <QuotePage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/suivi" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <TrackingPage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/suivi/:trackingNumber" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
-                  <TrackingPage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/connexion" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <LoginPage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/inscription" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <SignupPage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/checkout" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <CartSidebar />
+            <ChatProvider>
+              <Routes>
+                {/* Public Routes with Navbar and Footer */}
+                <Route path="/" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <HomePage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/a-propos" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <AboutPage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/services" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <ServicesPage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/services/formation" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <FormationServicePage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/services/import-export" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <ImportExportServicePage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/services/representation" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <RepresentationServicePage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/services/traduction" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <TraductionServicePage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/contact" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <ContactPage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/formations" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <CoursesPage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/boutique" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <ShopPage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/panier" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <CartPage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/devis" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <QuotePage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/suivi" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <TrackingPage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/suivi/:trackingNumber" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <TrackingPage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/connexion" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <LoginPage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/inscription" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <SignupPage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/checkout" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <CartSidebar />
+                    <ProtectedRoute>
+                      <CheckoutPage />
+                    </ProtectedRoute>
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/payment/success/:transactionId" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <PaymentSuccessPage />
+                    <Footer />
+                  </div>
+                } />
+                <Route path="/payment/failed" element={
+                  <div className="min-h-screen bg-white">
+                    <Navbar />
+                    <PaymentFailedPage />
+                    <Footer />
+                  </div>
+                } />
+
+                {/* Dashboard Routes - No Navbar/Footer, uses DashboardLayout with Sidebar */}
+                <Route path="/dashboard" element={
                   <ProtectedRoute>
-                    <CheckoutPage />
+                    <DashboardLayout />
                   </ProtectedRoute>
-                  <Footer />
-                </div>
-              } />
-              <Route path="/payment/success/:transactionId" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <PaymentSuccessPage />
-                  <Footer />
-                </div>
-              } />
-              <Route path="/payment/failed" element={
-                <div className="min-h-screen bg-white">
-                  <Navbar />
-                  <PaymentFailedPage />
-                  <Footer />
-                </div>
-              } />
+                }>
+                  <Route index element={<DashboardRouter />} />
+                  <Route path="formation" element={<AdminEducation />} />
+                  <Route path="logistique" element={<AdminLogistics />} />
+                  <Route path="boutique" element={<AdminShop />} />
+                  <Route path="communication" element={<AdminMessages />} />
+                  <Route path="utilisateurs" element={<AdminUsers />} />
+                  <Route path="marketing" element={<AdminMarketing />} />
+                  <Route path="finances" element={<AdminFinance />} />
 
-              {/* Dashboard Routes - No Navbar/Footer, uses DashboardLayout with Sidebar */}
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }>
-                <Route index element={<DashboardRouter />} />
-                <Route path="formation" element={<AdminEducation />} />
-                <Route path="logistique" element={<AdminLogistics />} />
-                <Route path="boutique" element={<AdminShop />} />
-                <Route path="communication" element={<AdminMessages />} />
-                <Route path="utilisateurs" element={<AdminUsers />} />
-                <Route path="marketing" element={<AdminMarketing />} />
-                <Route path="finances" element={<AdminFinance />} />
+                  {/* Teacher Routes */}
+                  <Route path="mes-cours" element={<TeacherCourses />} />
+                  <Route path="mes-cours/:courseId/view" element={<CourseViewer />} />
+                  <Route path="creer-cours" element={<CourseBuilder />} />
+                  <Route path="editer-cours/:courseId" element={<CourseBuilder />} />
+                  <Route path="etudiants" element={<TeacherStudents />} />
+                  <Route path="messagerie-prof" element={<TeacherMessages />} />
 
-                {/* Teacher Routes */}
-                <Route path="mes-cours" element={<TeacherCourses />} />
-                <Route path="creer-cours" element={<CourseBuilder />} />
-                <Route path="editer-cours/:courseId" element={<CourseBuilder />} />
-                <Route path="etudiants" element={<TeacherStudents />} />
-                <Route path="messagerie-prof" element={<TeacherMessages />} />
+                  {/* Transit Routes */}
+                  <Route path="transit-dossiers" element={<ActiveShipments />} />
+                  <Route path="transit-sourcing" element={<SourcingRequests />} />
+                  <Route path="transit-nouveau" element={<CreateFolder />} />
+                  <Route path="transit-messagerie" element={<TransitChat />} />
+                  <Route path="transit-archives" element={<div className="p-8">Archives (À venir)</div>} />
 
-                {/* Transit Routes */}
-                <Route path="transit-dossiers" element={<ActiveShipments />} />
-                <Route path="transit-sourcing" element={<SourcingRequests />} />
-                <Route path="transit-nouveau" element={<CreateFolder />} />
-                <Route path="transit-messagerie" element={<TransitChat />} />
-                <Route path="transit-archives" element={<div className="p-8">Archives (À venir)</div>} />
-
-                {/* Client Routes */}
-                <Route path="formations" element={<div className="p-8"><h1 className="text-2xl font-bold">Mes Formations</h1></div>} />
-                <Route path="commandes" element={<div className="p-8"><h1 className="text-2xl font-bold">Mes Commandes</h1></div>} />
-                <Route path="messagerie" element={<div className="p-8"><h1 className="text-2xl font-bold">Messagerie</h1></div>} />
-                <Route path="profil" element={<div className="p-8"><h1 className="text-2xl font-bold">Mon Profil</h1></div>} />
-              </Route>
-            </Routes>
+                  {/* Client Routes */}
+                  <Route path="formations" element={<div className="p-8"><h1 className="text-2xl font-bold">Mes Formations</h1></div>} />
+                  <Route path="commandes" element={<div className="p-8"><h1 className="text-2xl font-bold">Mes Commandes</h1></div>} />
+                  <Route path="messagerie" element={<div className="p-8"><h1 className="text-2xl font-bold">Messagerie</h1></div>} />
+                  <Route path="profil" element={<div className="p-8"><h1 className="text-2xl font-bold">Mon Profil</h1></div>} />
+                </Route>
+              </Routes>
+            </ChatProvider>
           </CartProvider>
         </PaymentProvider>
       </OrdersProvider>

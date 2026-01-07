@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useChat } from '../../context/ChatContext';
+import { useAuth } from '../../context/AuthContext';
 import {
     Search,
     MessageSquare,
@@ -17,77 +19,56 @@ import {
 } from 'lucide-react';
 
 const TransitChat = () => {
+    const { messages, sendMessage, loadMessages, activeChat, getConversations } = useChat();
+    const { user } = useAuth();
+
+    const [conversations, setConversations] = useState([]);
     const [selectedChat, setSelectedChat] = useState(null);
-    const [showContext, setShowContext] = useState(true); // Desktop default
-    const [mobileView, setMobileView] = useState('list'); // list, chat, context
+    const [showContext, setShowContext] = useState(true);
+    const [mobileView, setMobileView] = useState('list');
+    const [newMessage, setNewMessage] = useState('');
 
-    // Mock Data
-    const conversations = [
-        {
-            id: 1,
-            client: 'Jean Dupont',
-            avatar: 'JD',
-            lastMessage: 'Est-ce que le navire est arrivé ?',
-            time: '10:30',
-            unread: 2,
-            online: true,
-            folder: {
-                id: 'TRK-9821',
-                item: 'Toyota RAV4 2020',
-                status: 'Douane',
-                location: 'Port d\'Abidjan',
-                balance: '1.500.000 FCFA',
-                image: 'https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?auto=format&fit=crop&q=80&w=300&h=200'
-            }
-        },
-        {
-            id: 2,
-            client: 'Sarah Konan',
-            avatar: 'SK',
-            lastMessage: 'Merci pour la mise à jour.',
-            time: 'Hier',
-            unread: 0,
-            online: false,
-            folder: {
-                id: 'TRK-1129',
-                item: 'Effets Personnels',
-                status: 'En Mer',
-                location: 'Atlantique',
-                balance: '0 FCFA',
-                image: 'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?auto=format&fit=crop&q=80&w=300&h=200'
-            }
-        },
-        {
-            id: 3,
-            client: 'BTP Construction',
-            avatar: 'BC',
-            lastMessage: 'Envoyez-moi la facture SVP.',
-            time: 'Hier',
-            unread: 0,
-            online: true,
-            folder: {
-                id: 'TRK-3321',
-                item: 'Grue Mobile',
-                status: 'Livraison',
-                location: 'Route du Nord',
-                balance: '500.000 FCFA',
-                image: 'https://images.unsplash.com/photo-1541625602330-2277a4c46182?auto=format&fit=crop&q=80&w=300&h=200'
-            }
-        },
-    ];
+    useEffect(() => {
+        const fetchConvos = async () => {
+            const convos = await getConversations();
+            // Transform to match UI expectation somewhat or adapt UI
+            // For now, let's map it
+            const mapped = convos.map(c => ({
+                id: c.contact.id,
+                client: c.contact.name || c.contact.email,
+                avatar: (c.contact.name || c.contact.email).substring(0, 2).toUpperCase(),
+                lastMessage: c.lastMessage?.content || '',
+                time: c.lastMessage ? new Date(c.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+                unread: c.unreadCount,
+                online: false, // Need socket for real-time online status
+                // Mock folder data for now as backend doesn't link it yet
+                folder: {
+                    id: 'TRK-9821',
+                    item: 'Dossier Import',
+                    status: 'En cours',
+                    location: 'Port',
+                    balance: '0 FCFA',
+                    image: 'https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb'
+                }
+            }));
+            setConversations(mapped);
+        };
+        fetchConvos();
 
-    const messages = [
-        { id: 1, sender: 'client', text: 'Bonjour, je voulais savoir où en est mon véhicule ?', time: '10:00' },
-        { id: 2, sender: 'me', text: 'Bonjour M. Dupont. Votre Toyota RAV4 est actuellement au port d\'Abidjan, en cours de dédouanement.', time: '10:05' },
-        { id: 3, sender: 'system', text: 'Le statut du dossier a changé en : Douane', time: '10:05' },
-        { id: 4, sender: 'client', text: 'D\'accord, ça prendra combien de temps encore ?', time: '10:15' },
-        { id: 5, sender: 'me', text: 'Environ 3 à 4 jours ouvrables si tout va bien. Je vous tiens informé dès que c\'est sorti.', time: '10:20' },
-        { id: 6, sender: 'client', text: 'Est-ce que le navire est arrivé ?', time: '10:30' },
-    ];
+        // Refresh every 30s? Or rely on socket events updating global state?
+        // Ideally socket events should update a "last message" store.
+    }, []);
 
     const handleSelectChat = (chat) => {
         setSelectedChat(chat);
         setMobileView('chat');
+        loadMessages(chat.id); // Load history
+    };
+
+    const handleSendMessage = () => {
+        if (!newMessage.trim() || !selectedChat) return;
+        sendMessage(newMessage, selectedChat.id);
+        setNewMessage('');
     };
 
     return (
@@ -140,6 +121,11 @@ const TransitChat = () => {
                             </div>
                         </div>
                     ))}
+                    {conversations.length === 0 && (
+                        <div className="p-8 text-center text-gray-400">
+                            Aucune conversation
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -184,26 +170,17 @@ const TransitChat = () => {
 
                         {/* Messages Area */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {messages.map((msg) => {
-                                if (msg.sender === 'system') {
-                                    return (
-                                        <div key={msg.id} className="flex justify-center my-4">
-                                            <span className="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full font-medium">
-                                                {msg.text}
-                                            </span>
-                                        </div>
-                                    );
-                                }
-                                const isMe = msg.sender === 'me';
+                            {messages.map((msg, index) => {
+                                const isMe = msg.senderId === user?.id;
                                 return (
-                                    <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                                    <div key={msg.id || index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                                         <div className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${isMe
-                                                ? 'bg-mdla-yellow text-mdla-black rounded-tr-none'
-                                                : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'
+                                            ? 'bg-mdla-yellow text-mdla-black rounded-tr-none'
+                                            : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'
                                             }`}>
-                                            <p className="text-sm">{msg.text}</p>
+                                            <p className="text-sm">{msg.content}</p>
                                             <p className={`text-[10px] mt-1 text-right ${isMe ? 'text-yellow-800/60' : 'text-gray-400'}`}>
-                                                {msg.time}
+                                                {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
                                     </div>
@@ -220,10 +197,22 @@ const TransitChat = () => {
                                 <textarea
                                     placeholder="Écrivez votre message..."
                                     rows="1"
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    // Submit on Enter (shift+enter for newline)
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleSendMessage();
+                                        }
+                                    }}
                                     className="flex-1 bg-transparent border-none focus:ring-0 resize-none py-2 max-h-32 text-sm"
                                     style={{ minHeight: '40px' }}
                                 ></textarea>
-                                <button className="p-2 bg-mdla-black text-white rounded-lg hover:bg-gray-800 transition-colors shadow-sm">
+                                <button
+                                    onClick={handleSendMessage}
+                                    className="p-2 bg-mdla-black text-white rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
+                                >
                                     <Send className="w-5 h-5" />
                                 </button>
                             </div>

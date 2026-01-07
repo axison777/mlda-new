@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
     const navigate = useNavigate();
-    const { login, demoAccounts } = useAuth();
+    const { login } = useAuth();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -179,23 +179,62 @@ const LoginPage = () => {
                             Comptes de démonstration
                         </p>
                         <div className="space-y-2">
-                            {demoAccounts.map((account) => (
-                                <button
-                                    key={account.id}
-                                    onClick={() => handleDemoLogin(account.email, account.role === 'admin' ? 'admin123' : 'demo123')}
-                                    className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-semibold text-gray-900">{account.name}</p>
-                                            <p className="text-xs text-gray-600">{account.email}</p>
-                                        </div>
-                                        <span className="text-xs bg-mdla-yellow text-mdla-black px-2 py-1 rounded font-semibold">
-                                            {account.role === 'admin' ? 'Admin' : account.role === 'student' ? 'Étudiant' : 'Client'}
-                                        </span>
+                            <button
+                                onClick={() => handleDemoLogin('client@mdla.bf', 'demo123')}
+                                className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-900">Jean Dupont</p>
+                                        <p className="text-xs text-gray-600">client@mdla.bf</p>
                                     </div>
-                                </button>
-                            ))}
+                                    <span className="text-xs bg-mdla-yellow text-mdla-black px-2 py-1 rounded font-semibold">
+                                        Client
+                                    </span>
+                                </div>
+                            </button>
+                            <button
+                                onClick={() => handleDemoLogin('admin@mdla.bf', 'admin123')}
+                                className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-900">Admin MDLA</p>
+                                        <p className="text-xs text-gray-600">admin@mdla.bf</p>
+                                    </div>
+                                    <span className="text-xs bg-mdla-yellow text-mdla-black px-2 py-1 rounded font-semibold">
+                                        Admin
+                                    </span>
+                                </div>
+                            </button>
+                            <button
+                                onClick={() => handleDemoLogin('prof@mdla.bf', 'demo123')}
+                                className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-900">Prof. Schmidt</p>
+                                        <p className="text-xs text-gray-600">prof@mdla.bf</p>
+                                    </div>
+                                    <span className="text-xs bg-mdla-yellow text-mdla-black px-2 py-1 rounded font-semibold">
+                                        Professeur
+                                    </span>
+                                </div>
+                            </button>
+                            <button
+                                onClick={() => handleDemoLogin('transit@mdla.bf', 'demo123')}
+                                className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-900">Amadou Traoré</p>
+                                        <p className="text-xs text-gray-600">transit@mdla.bf</p>
+                                    </div>
+                                    <span className="text-xs bg-mdla-yellow text-mdla-black px-2 py-1 rounded font-semibold">
+                                        Transit
+                                    </span>
+                                </div>
+                            </button>
                         </div>
                     </div>
                 </div>

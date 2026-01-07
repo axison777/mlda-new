@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CourseCard from '../components/CourseCard';
 
 const CoursesPage = () => {
@@ -108,9 +109,12 @@ const CoursesPage = () => {
         ? courses
         : courses.filter(course => course.category === activeFilter);
 
+    const navigate = useNavigate();
+
     const handleCourseAction = (courseId) => {
+        // Navigate to course detail page (to be implemented)
         console.log('View course:', courseId);
-        // TODO: Navigate to course detail page
+        navigate(`/formations/${courseId}`);
     };
 
     return (
@@ -141,8 +145,8 @@ const CoursesPage = () => {
                                 key={filter}
                                 onClick={() => setActiveFilter(filter)}
                                 className={`px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 ${activeFilter === filter
-                                        ? 'bg-mdla-yellow text-mdla-black shadow-lg'
-                                        : 'bg-white text-gray-700 hover:bg-gray-100 border-2 border-gray-200'
+                                    ? 'bg-mdla-yellow text-mdla-black shadow-lg'
+                                    : 'bg-white text-gray-700 hover:bg-gray-100 border-2 border-gray-200'
                                     }`}
                             >
                                 {filter}

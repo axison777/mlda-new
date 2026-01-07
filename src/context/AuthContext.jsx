@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import api from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -10,50 +11,6 @@ export const useAuth = () => {
     return context;
 };
 
-// Demo accounts for testing
-const DEMO_ACCOUNTS = [
-    {
-        id: 1,
-        email: 'client@mdla.bf',
-        password: 'demo123',
-        role: 'client',
-        name: 'Jean Dupont',
-        phone: '+226 70 12 34 56'
-    },
-    {
-        id: 2,
-        email: 'admin@mdla.bf',
-        password: 'admin123',
-        role: 'admin',
-        name: 'Admin MDLA',
-        phone: '+226 25 36 29 52'
-    },
-    {
-        id: 3,
-        email: 'etudiant@mdla.bf',
-        password: 'demo123',
-        role: 'student',
-        name: 'Marie Kaboré',
-        phone: '+226 70 98 76 54'
-    },
-    {
-        id: 4,
-        email: 'prof@mdla.bf',
-        password: 'demo123',
-        role: 'prof',
-        name: 'Prof. Schmidt',
-        phone: '+226 70 11 22 33'
-    },
-    {
-        id: 5,
-        email: 'transit@mdla.bf',
-        password: 'demo123',
-        role: 'transit',
-        name: 'Amadou Traoré',
-        phone: '+226 70 44 55 66'
-    }
-];
-
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -61,94 +18,80 @@ export const AuthProvider = ({ children }) => {
     // Load user from localStorage on init
     useEffect(() => {
         const savedUser = localStorage.getItem('mdla-user');
-        if (savedUser) {
+        const token = localStorage.getItem('mdla-token');
+
+        if (savedUser && token) {
             try {
                 setUser(JSON.parse(savedUser));
             } catch (error) {
                 console.error('Error loading user:', error);
                 localStorage.removeItem('mdla-user');
+                localStorage.removeItem('mdla-token');
             }
         }
         setIsLoading(false);
     }, []);
 
-    // Save user to localStorage whenever it changes
-    useEffect(() => {
-        if (user) {
-            localStorage.setItem('mdla-user', JSON.stringify(user));
-        } else {
-            localStorage.removeItem('mdla-user');
-        }
-    }, [user]);
-
     const login = async (email, password) => {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 500));
+        try {
+            const { data } = await api.post('/auth/login', { email, password });
 
-        // Check demo accounts
-        const account = DEMO_ACCOUNTS.find(
-            acc => acc.email === email && acc.password === password
-        );
+            const { token, ...userData } = data;
 
-        if (account) {
-            const { password: _, ...userWithoutPassword } = account;
-            setUser(userWithoutPassword);
-            return { success: true, user: userWithoutPassword };
+            // Save token and user data
+            localStorage.setItem('mdla-token', token);
+            localStorage.setItem('mdla-user', JSON.stringify(userData));
+            setUser(userData);
+
+            return { success: true, user: userData };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response?.data?.message || 'Email ou mot de passe incorrect'
+            };
         }
-
-        // Check if it's a new signup (stored in localStorage)
-        const signupUsers = JSON.parse(localStorage.getItem('mdla-signup-users') || '[]');
-        const signupUser = signupUsers.find(
-            u => u.email === email && u.password === password
-        );
-
-        if (signupUser) {
-            const { password: _, ...userWithoutPassword } = signupUser;
-            setUser(userWithoutPassword);
-            return { success: true, user: userWithoutPassword };
-        }
-
-        return { success: false, error: 'Email ou mot de passe incorrect' };
     };
 
     const signup = async (userData) => {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 500));
+        try {
+            const { data } = await api.post('/auth/register', userData);
 
-        const { email, password, firstName, lastName, phone } = userData;
+            const { token, ...userInfo } = data;
 
-        // Check if email already exists
-        const emailExists = DEMO_ACCOUNTS.some(acc => acc.email === email);
-        const signupUsers = JSON.parse(localStorage.getItem('mdla-signup-users') || '[]');
-        const emailExistsInSignup = signupUsers.some(u => u.email === email);
+            // Save token and user data
+            localStorage.setItem('mdla-token', token);
+            localStorage.setItem('mdla-user', JSON.stringify(userInfo));
+            setUser(userInfo);
 
-        if (emailExists || emailExistsInSignup) {
-            return { success: false, error: 'Cet email est déjà utilisé' };
+            return { success: true, user: userInfo };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response?.data?.message || 'Erreur lors de l\'inscription'
+            };
         }
-
-        // Create new user
-        const newUser = {
-            id: Date.now(),
-            email,
-            password,
-            role: 'client',
-            name: `${firstName} ${lastName}`,
-            phone
-        };
-
-        // Save to localStorage
-        signupUsers.push(newUser);
-        localStorage.setItem('mdla-signup-users', JSON.stringify(signupUsers));
-
-        // Auto-login
-        const { password: _, ...userWithoutPassword } = newUser;
-        setUser(userWithoutPassword);
-
-        return { success: true, user: userWithoutPassword };
     };
 
     const logout = () => {
+        localStorage.removeItem('mdla-token');
+        localStorage.removeItem('mdla-user');
         setUser(null);
+    };
+
+    const updateProfile = async (updates) => {
+        try {
+            const { data } = await api.put(`/users/${user.id}`, updates);
+
+            localStorage.setItem('mdla-user', JSON.stringify(data));
+            setUser(data);
+
+            return { success: true, user: data };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response?.data?.message || 'Erreur lors de la mise à jour'
+            };
+        }
     };
 
     const value = {
@@ -158,7 +101,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         signup,
-        demoAccounts: DEMO_ACCOUNTS.map(({ password, ...acc }) => acc)
+        updateProfile
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

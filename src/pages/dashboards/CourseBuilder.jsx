@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useCourses } from '../../context/CoursesContext';
 import {
     ChevronRight,
     Save,
@@ -14,7 +15,11 @@ import CurriculumEditor from '../../components/course-builder/CurriculumEditor';
 const CourseBuilder = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
+    const { getCourseById, updateLesson, addLesson, deleteLesson, createCourse } = useCourses();
     const [activeStep, setActiveStep] = useState(1);
+    const [loading, setLoading] = useState(false);
+
+    // Initial state matching your form structure
     const [courseData, setCourseData] = useState({
         title: '',
         description: '',
@@ -23,20 +28,126 @@ const CourseBuilder = () => {
         modules: []
     });
 
+    useEffect(() => {
+        if (courseId) {
+            loadCourse();
+        }
+    }, [courseId]);
+
+    const loadCourse = async () => {
+        setLoading(true);
+        const data = await getCourseById(courseId);
+        if (data) {
+            // Transform flat lessons into modules for the editor
+            const modulesMap = {};
+            // Default module if none exists
+            if (!data.courseLessons || data.courseLessons.length === 0) {
+                modulesMap['Module 1'] = { id: 'module-default', title: 'Module 1', lessons: [] };
+            }
+
+            (data.courseLessons || []).forEach(lesson => {
+                const sectionTitle = lesson.section || 'Module 1';
+                if (!modulesMap[sectionTitle]) {
+                    modulesMap[sectionTitle] = {
+                        id: `module-${sectionTitle.replace(/\s+/g, '-')}`,
+                        title: sectionTitle,
+                        lessons: []
+                    };
+                }
+
+                // Map backend lesson to frontend lesson format if needed
+                // CurriculumEditor expects: { id, title, type: 'video'|'pdf'|'interactive', content }
+                // Backend has: { id, title, content, videoUrl, section, ... }
+                // We need to infer type
+                let type = 'video';
+                if (lesson.videoUrl) type = 'video';
+                else if (lesson.content && lesson.content.includes('pdf')) type = 'pdf'; // Simplified inference
+                else type = 'interactive';
+
+                modulesMap[sectionTitle].lessons.push({
+                    ...lesson,
+                    type // Attach inferred type
+                });
+            });
+
+            setCourseData({
+                ...data,
+                modules: Object.values(modulesMap)
+            });
+        }
+        setLoading(false);
+    };
+
     const steps = [
         { id: 1, title: 'Informations Générales', icon: Layout },
         { id: 2, title: 'Programme du Cours', icon: List },
         { id: 3, title: 'Révision & Publication', icon: CheckCircle },
     ];
 
-    const handleSaveDraft = () => {
-        // TODO: Save to backend
-        console.log('Saving draft:', courseData);
-        alert('Brouillon sauvegardé !');
+    const saveCurriculum = async () => {
+        setLoading(true);
+        try {
+            let orderCounter = 1;
+            const promises = [];
+
+            // Iterate through modules to save structure
+            for (const module of courseData.modules) {
+                // If module is new/renamed, lessons will be updated with new section name
+                for (const lesson of module.lessons) {
+                    const lessonData = {
+                        title: lesson.title,
+                        content: typeof lesson.content === 'string' ? lesson.content : JSON.stringify(lesson.content || {}),
+                        videoUrl: lesson.type === 'video' ? (lesson.videoUrl || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ') : null,
+                        duration: lesson.duration || 10,
+                        order: orderCounter++,
+                        section: module.title,
+                        isFreePreview: lesson.isFreePreview || false
+                    };
+
+                    // If it has a numeric ID, it's an existing lesson -> Update
+                    // If ID starts with 'lesson-', it's a temp ID -> Create
+                    if (lesson.id && !lesson.id.toString().startsWith('lesson-')) {
+                        promises.push(updateLesson(courseId, lesson.id, lessonData));
+                    } else {
+                        promises.push(addLesson(courseId, lessonData));
+                    }
+                }
+            }
+
+            await Promise.all(promises);
+            await loadCourse(); // Refresh data to get real IDs
+            alert('Programme sauvegardé avec succès !');
+        } catch (error) {
+            console.error('Error saving curriculum:', error);
+            alert('Erreur lors de la sauvegarde du programme');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handlePublish = () => {
-        // TODO: Send to backend
+    const handleSaveDraft = async () => {
+        console.log('Saving draft:', courseData);
+
+        // If creating new course
+        if (!courseId) {
+            const result = await createCourse(courseData);
+            if (result.success) {
+                navigate(`/dashboard/cours/edit/${result.course.id}`);
+            }
+        } else {
+            // Save curriculum if editing existing
+            if (activeStep === 2) {
+                await saveCurriculum();
+            } else {
+                alert('Brouillon sauvegardé !');
+            }
+        }
+    };
+
+    const handlePublish = async () => {
+        if (activeStep === 2) {
+            await saveCurriculum();
+        }
         console.log('Publishing:', courseData);
         alert('Cours envoyé pour validation !');
         navigate('/dashboard/mes-cours');
@@ -90,8 +201,8 @@ const CourseBuilder = () => {
                                     key={step.id}
                                     onClick={() => setActiveStep(step.id)}
                                     className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${activeStep === step.id
-                                            ? 'bg-blue-50 text-blue-700'
-                                            : 'text-gray-600 hover:bg-gray-50'
+                                        ? 'bg-blue-50 text-blue-700'
+                                        : 'text-gray-600 hover:bg-gray-50'
                                         }`}
                                 >
                                     <step.icon className={`w-5 h-5 ${activeStep === step.id ? 'text-blue-600' : 'text-gray-400'}`} />
