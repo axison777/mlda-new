@@ -1,119 +1,82 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CourseCard from '../components/CourseCard';
+import PaymentModal from '../components/PaymentModal';
+import { useAuth } from '../context/AuthContext';
+import api from '../utils/api';
 
 const CoursesPage = () => {
     const [activeFilter, setActiveFilter] = useState('Tous');
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [enrollments, setEnrollments] = useState([]);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState(null);
 
-    // Mock course data
-    const courses = [
-        {
-            id: 1,
-            title: 'Allemand pour Débutants - Niveau A1',
-            instructor: 'Prof. Schmidt',
-            level: 'A1',
-            price: 150000,
-            discount_price: null,
-            image: '/api/placeholder/400/300',
-            description: 'Apprenez les bases de l\'allemand : alphabet, grammaire de base, vocabulaire essentiel.',
-            category: 'Débutant'
-        },
-        {
-            id: 2,
-            title: 'Allemand Élémentaire - Niveau A2',
-            instructor: 'Prof. Müller',
-            level: 'A2',
-            price: 175000,
-            discount_price: 140000,
-            image: '/api/placeholder/400/300',
-            description: 'Consolidez vos bases et développez vos compétences en communication quotidienne.',
-            category: 'Débutant'
-        },
-        {
-            id: 3,
-            title: 'Allemand Intermédiaire - Niveau B1',
-            instructor: 'Prof. Weber',
-            level: 'B1',
-            price: 200000,
-            discount_price: null,
-            image: '/api/placeholder/400/300',
-            description: 'Maîtrisez les situations courantes et exprimez-vous avec plus de fluidité.',
-            category: 'Intermédiaire'
-        },
-        {
-            id: 4,
-            title: 'Allemand Avancé - Niveau B2',
-            instructor: 'Prof. Fischer',
-            level: 'B2',
-            price: 225000,
-            discount_price: 180000,
-            image: '/api/placeholder/400/300',
-            description: 'Perfectionnez votre allemand pour des échanges professionnels et académiques.',
-            category: 'Intermédiaire'
-        },
-        {
-            id: 5,
-            title: 'Allemand Professionnel - Business',
-            instructor: 'Prof. Becker',
-            level: 'B2-C1',
-            price: 250000,
-            discount_price: null,
-            image: '/api/placeholder/400/300',
-            description: 'Allemand des affaires : négociations, présentations, correspondance professionnelle.',
-            category: 'Professionnel'
-        },
-        {
-            id: 6,
-            title: 'Préparation Visa Étudiant',
-            instructor: 'Prof. Hoffmann',
-            level: 'A2-B1',
-            price: 180000,
-            discount_price: 150000,
-            image: '/api/placeholder/400/300',
-            description: 'Préparez-vous aux examens requis pour votre visa étudiant en Allemagne.',
-            category: 'Préparation Visa'
-        },
-        {
-            id: 7,
-            title: 'Allemand Médical - Secteur Santé',
-            instructor: 'Dr. Klein',
-            level: 'B2',
-            price: 275000,
-            discount_price: null,
-            image: '/api/placeholder/400/300',
-            description: 'Vocabulaire médical et communication pour professionnels de la santé.',
-            category: 'Professionnel'
-        },
-        {
-            id: 8,
-            title: 'Allemand Technique - Ingénierie',
-            instructor: 'Ing. Schneider',
-            level: 'B1-B2',
-            price: 260000,
-            discount_price: 220000,
-            image: '/api/placeholder/400/300',
-            description: 'Terminologie technique pour ingénieurs et techniciens.',
-            category: 'Professionnel'
+    const navigate = useNavigate();
+    const { user } = useAuth();
+
+    useEffect(() => {
+        fetchPublishedCourses();
+        if (user) {
+            fetchMyEnrollments();
         }
-    ];
+    }, [user]);
+
+    const fetchPublishedCourses = async () => {
+        try {
+            setLoading(true);
+            const { data } = await api.get('/courses?status=published');
+            setCourses(data);
+        } catch (error) {
+            console.error('Error fetching courses:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchMyEnrollments = async () => {
+        try {
+            const { data } = await api.get('/enrollments');
+            setEnrollments(data);
+        } catch (error) {
+            console.error('Error fetching enrollments:', error);
+        }
+    };
+
+    const isEnrolled = (courseId) => {
+        return enrollments.some(enrollment => enrollment.courseId === courseId);
+    };
+
+    const handleEnroll = (course) => {
+        if (!user) {
+            alert('Veuillez vous connecter pour vous inscrire');
+            navigate('/login');
+            return;
+        }
+        setSelectedCourse(course);
+        setShowPaymentModal(true);
+    };
+
+    const handleEnrollmentSuccess = () => {
+        fetchMyEnrollments();
+    };
 
     const filters = [
         'Tous',
-        'Débutant',
-        'Intermédiaire',
-        'Professionnel',
-        'Préparation Visa'
+        'A1',
+        'A2',
+        'B1',
+        'B2',
+        'C1',
+        'C2'
     ];
 
     const filteredCourses = activeFilter === 'Tous'
         ? courses
-        : courses.filter(course => course.category === activeFilter);
-
-    const navigate = useNavigate();
+        : courses.filter(course => course.level === activeFilter);
 
     const handleCourseAction = (courseId) => {
-        // Navigate to course detail page (to be implemented)
-        console.log('View course:', courseId);
         navigate(`/formations/${courseId}`);
     };
 
@@ -166,14 +129,42 @@ const CoursesPage = () => {
             {/* Courses Grid */}
             <section className="py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {filteredCourses.length > 0 ? (
+                    {loading ? (
+                        <div className="text-center py-16">
+                            <p className="text-gray-500 text-lg">Chargement des cours...</p>
+                        </div>
+                    ) : filteredCourses.length > 0 ? (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {filteredCourses.map((course) => (
-                                <CourseCard
-                                    key={course.id}
-                                    course={course}
-                                    onAction={handleCourseAction}
-                                />
+                                <div key={course.id} className="relative">
+                                    <CourseCard
+                                        course={course}
+                                        onAction={handleCourseAction}
+                                    />
+                                    {/* Enrollment Button Overlay */}
+                                    {user && (
+                                        <div className="absolute bottom-6 left-6 right-6">
+                                            {isEnrolled(course.id) ? (
+                                                <button
+                                                    disabled
+                                                    className="w-full bg-green-100 text-green-800 px-6 py-3 rounded-lg font-bold cursor-not-allowed"
+                                                >
+                                                    ✓ Déjà inscrit
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleEnroll(course);
+                                                    }}
+                                                    className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-105"
+                                                >
+                                                    S'inscrire
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             ))}
                         </div>
                     ) : (
@@ -185,6 +176,14 @@ const CoursesPage = () => {
                     )}
                 </div>
             </section>
+
+            {/* Payment Modal */}
+            <PaymentModal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                course={selectedCourse}
+                onSuccess={handleEnrollmentSuccess}
+            />
 
             {/* CTA Section */}
             <section className="py-16 bg-mdla-black text-white">

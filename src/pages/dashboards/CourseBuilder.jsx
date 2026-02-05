@@ -8,25 +8,38 @@ import {
     Layout,
     List,
     CheckCircle,
-    ArrowLeft
+    ArrowLeft,
+    Upload,
+    X
 } from 'lucide-react';
 import CurriculumEditor from '../../components/course-builder/CurriculumEditor';
+import api from '../../utils/api';
 
 const CourseBuilder = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
-    const { getCourseById, updateLesson, addLesson, deleteLesson, createCourse } = useCourses();
+    const {
+        getCourseById,
+        createCourse,
+        submitForReview,
+        createModule,
+        updateModule,
+        createItem,
+        updateItem
+    } = useCourses();
     const [activeStep, setActiveStep] = useState(1);
     const [loading, setLoading] = useState(false);
 
-    // Initial state matching your form structure
+    // Initial state
     const [courseData, setCourseData] = useState({
         title: '',
         description: '',
         level: 'A1',
-        image: null,
+        thumbnail: null,
         modules: []
     });
+    const [imagePreview, setImagePreview] = useState(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
 
     useEffect(() => {
         if (courseId) {
@@ -38,42 +51,35 @@ const CourseBuilder = () => {
         setLoading(true);
         const data = await getCourseById(courseId);
         if (data) {
-            // Transform flat lessons into modules for the editor
-            const modulesMap = {};
-            // Default module if none exists
-            if (!data.courseLessons || data.courseLessons.length === 0) {
-                modulesMap['Module 1'] = { id: 'module-default', title: 'Module 1', lessons: [] };
-            }
-
-            (data.courseLessons || []).forEach(lesson => {
-                const sectionTitle = lesson.section || 'Module 1';
-                if (!modulesMap[sectionTitle]) {
-                    modulesMap[sectionTitle] = {
-                        id: `module-${sectionTitle.replace(/\s+/g, '-')}`,
-                        title: sectionTitle,
-                        lessons: []
-                    };
-                }
-
-                // Map backend lesson to frontend lesson format if needed
-                // CurriculumEditor expects: { id, title, type: 'video'|'pdf'|'interactive', content }
-                // Backend has: { id, title, content, videoUrl, section, ... }
-                // We need to infer type
-                let type = 'video';
-                if (lesson.videoUrl) type = 'video';
-                else if (lesson.content && lesson.content.includes('pdf')) type = 'pdf'; // Simplified inference
-                else type = 'interactive';
-
-                modulesMap[sectionTitle].lessons.push({
-                    ...lesson,
-                    type // Attach inferred type
-                });
-            });
+            // Backend now returns: { ..., modules: [ { ..., items: [] } ] }
+            const mappedModules = (data.modules || []).map(mod => ({
+                id: mod.id,
+                title: mod.title,
+                order: mod.order,
+                lessons: (mod.items || []).map(item => ({
+                    id: item.id,
+                    title: item.title,
+                    type: item.type,
+                    content: item.content,
+                    duration: item.duration,
+                    order: item.order,
+                    isRequired: item.isRequired,
+                    audioUrl: item.audioUrl,
+                    pdfUrl: item.pdfUrl,
+                    description: item.description,
+                    videoUrl: item.type === 'video' ? item.content : null
+                })).sort((a, b) => a.order - b.order)
+            })).sort((a, b) => a.order - b.order);
 
             setCourseData({
                 ...data,
-                modules: Object.values(modulesMap)
+                modules: mappedModules
             });
+
+            // Set image preview if thumbnail exists
+            if (data.thumbnail) {
+                setImagePreview(data.thumbnail);
+            }
         }
         setLoading(false);
     };
@@ -87,35 +93,49 @@ const CourseBuilder = () => {
     const saveCurriculum = async () => {
         setLoading(true);
         try {
-            let orderCounter = 1;
-            const promises = [];
+            // This is a naive implementation: it saves everything. 
+            // In a real app, we should track dirty states or use a bulk endpoint.
+            // For now, checks if ID is temp or real.
 
-            // Iterate through modules to save structure
-            for (const module of courseData.modules) {
-                // If module is new/renamed, lessons will be updated with new section name
-                for (const lesson of module.lessons) {
-                    const lessonData = {
+            for (let modIndex = 0; modIndex < courseData.modules.length; modIndex++) {
+                const module = courseData.modules[modIndex];
+                let moduleId = module.id;
+
+                // Create or Update Module
+                if (typeof moduleId === 'string' && moduleId.startsWith('module-')) {
+                    const result = await createModule(courseId, {
+                        title: module.title,
+                        order: modIndex + 1
+                    });
+                    if (result.success) moduleId = result.module.id;
+                } else {
+                    await updateModule(moduleId, {
+                        title: module.title,
+                        order: modIndex + 1
+                    });
+                }
+
+                // Handle Lessons (CurriculumItems)
+                for (let itemIndex = 0; itemIndex < module.lessons.length; itemIndex++) {
+                    const lesson = module.lessons[itemIndex];
+                    const itemData = {
                         title: lesson.title,
-                        content: typeof lesson.content === 'string' ? lesson.content : JSON.stringify(lesson.content || {}),
-                        videoUrl: lesson.type === 'video' ? (lesson.videoUrl || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ') : null,
-                        duration: lesson.duration || 10,
-                        order: orderCounter++,
-                        section: module.title,
-                        isFreePreview: lesson.isFreePreview || false
+                        type: lesson.type || 'video',
+                        content: lesson.type === 'video' ? (lesson.videoUrl || lesson.content) : lesson.content,
+                        order: itemIndex + 1,
+                        isRequired: true
                     };
 
-                    // If it has a numeric ID, it's an existing lesson -> Update
-                    // If ID starts with 'lesson-', it's a temp ID -> Create
                     if (lesson.id && !lesson.id.toString().startsWith('lesson-')) {
-                        promises.push(updateLesson(courseId, lesson.id, lessonData));
-                    } else {
-                        promises.push(addLesson(courseId, lessonData));
+                        await updateItem(lesson.id, itemData);
+                    } else if (moduleId) {
+                        // Only create item if we have a valid module ID
+                        await createItem(moduleId, itemData);
                     }
                 }
             }
 
-            await Promise.all(promises);
-            await loadCourse(); // Refresh data to get real IDs
+            await loadCourse(); // Refresh to get real IDs back
             alert('Programme sauvegardé avec succès !');
         } catch (error) {
             console.error('Error saving curriculum:', error);
@@ -126,31 +146,87 @@ const CourseBuilder = () => {
     };
 
     const handleSaveDraft = async () => {
-        console.log('Saving draft:', courseData);
-
-        // If creating new course
-        if (!courseId) {
-            const result = await createCourse(courseData);
-            if (result.success) {
-                navigate(`/dashboard/cours/edit/${result.course.id}`);
+        setLoading(true);
+        try {
+            // Create new course if no courseId exists
+            if (!courseId) {
+                const result = await createCourse({
+                    ...courseData,
+                    status: 'draft'
+                });
+                if (result.success) {
+                    alert('Cours créé et sauvegardé comme brouillon !');
+                    navigate(`/dashboard/editer-cours/${result.course.id}`);
+                    return;
+                }
             }
-        } else {
-            // Save curriculum if editing existing
-            if (activeStep === 2) {
-                await saveCurriculum();
-            } else {
+
+            // Update existing course
+            if (courseId) {
+                // Save curriculum if on step 3 (curriculum editor)
+                if (activeStep === 3) {
+                    await saveCurriculum();
+                } else {
+                    // Update basic course info for steps 1 and 2
+                    await api.put(`/courses/${courseId}`, {
+                        ...courseData,
+                        status: 'draft' // Keep as draft
+                    });
+                }
                 alert('Brouillon sauvegardé !');
             }
+        } catch (error) {
+            console.error('Error saving draft:', error);
+            alert(error.response?.data?.message || 'Erreur lors de la sauvegarde');
+        } finally {
+            setLoading(false);
         }
     };
 
     const handlePublish = async () => {
-        if (activeStep === 2) {
-            await saveCurriculum();
+        if (!courseData.title || !courseData.description || !courseData.level) {
+            alert('Veuillez remplir tous les champs requis (titre, description, niveau)');
+            return;
         }
-        console.log('Publishing:', courseData);
-        alert('Cours envoyé pour validation !');
-        navigate('/dashboard/mes-cours');
+
+        setLoading(true);
+        try {
+            let currentCourseId = courseId;
+
+            // If no courseId, create the course first
+            if (!currentCourseId) {
+                const result = await createCourse({
+                    ...courseData,
+                    status: 'draft'
+                });
+                if (result.success) {
+                    currentCourseId = result.course.id;
+                } else {
+                    throw new Error('Impossible de créer le cours');
+                }
+            }
+
+            // Save curriculum if on step 3
+            if (activeStep === 3) {
+                await saveCurriculum();
+            } else if (activeStep === 1 || activeStep === 2) {
+                // Update basic info if on steps 1 or 2
+                await api.put(`/courses/${currentCourseId}`, {
+                    ...courseData,
+                    status: 'draft'
+                });
+            }
+
+            // Submit for review
+            await api.post(`/courses/${currentCourseId}/submit`);
+            alert('Cours envoyé pour validation !');
+            navigate('/dashboard/mes-cours');
+        } catch (error) {
+            console.error('Error submitting course:', error);
+            alert(error.response?.data?.message || 'Erreur lors de la soumission');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -242,6 +318,64 @@ const CourseBuilder = () => {
                                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mdla-yellow/50"
                                         placeholder="Décrivez ce que les étudiants vont apprendre..."
                                     />
+                                </div>
+
+                                {/* Cover Image Upload */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Image de couverture</label>
+                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-mdla-yellow transition-colors">
+                                        {imagePreview ? (
+                                            <div className="relative">
+                                                <img src={imagePreview} alt="Cover preview" className="max-h-48 mx-auto rounded-lg" />
+                                                <button
+                                                    onClick={() => {
+                                                        setImagePreview(null);
+                                                        setCourseData({ ...courseData, thumbnail: null });
+                                                    }}
+                                                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                                                <p className="text-sm text-gray-600 mb-2">Cliquez pour télécharger une image</p>
+                                                <p className="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 5MB</p>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files[0];
+                                                        if (file) {
+                                                            setUploadingImage(true);
+                                                            try {
+                                                                const formData = new FormData();
+                                                                formData.append('image', file);
+                                                                const { data } = await api.post('/upload/image', formData, {
+                                                                    headers: { 'Content-Type': 'multipart/form-data' }
+                                                                });
+                                                                setCourseData({ ...courseData, thumbnail: data.url });
+                                                                setImagePreview(data.url);
+                                                            } catch (error) {
+                                                                alert('Erreur lors du téléchargement de l\'image');
+                                                            } finally {
+                                                                setUploadingImage(false);
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="hidden"
+                                                    id="cover-upload"
+                                                />
+                                                <label
+                                                    htmlFor="cover-upload"
+                                                    className="mt-3 inline-block px-4 py-2 bg-mdla-yellow text-mdla-black rounded-lg font-medium cursor-pointer hover:bg-yellow-400 transition-colors"
+                                                >
+                                                    {uploadingImage ? 'Téléchargement...' : 'Choisir une image'}
+                                                </label>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

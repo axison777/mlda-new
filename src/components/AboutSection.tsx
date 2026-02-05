@@ -1,4 +1,5 @@
 import { Users, Award, Handshake } from 'lucide-react';
+import imageTeam from '../assets/image_team.jpg';
 
 const AboutSection = () => {
   const strengths = [
@@ -26,7 +27,7 @@ const AboutSection = () => {
           <div>
             <div className="bg-gray-300 rounded-lg overflow-hidden h-96 md:h-full">
               <img
-                src="https://placehold.co/600x500/1A1A1A/FFCC00?text=Equipe+MDLA+Service"
+                src={imageTeam}
                 alt="Équipe MDLA Service"
                 className="w-full h-full object-cover"
               />

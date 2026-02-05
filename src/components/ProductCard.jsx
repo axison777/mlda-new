@@ -10,7 +10,8 @@ const ProductCard = ({ product, onAddToCart }) => {
         category,
         description,
         badge,
-        rating
+        rating,
+        type
     } = product;
 
     const handleAddToCart = () => {
@@ -23,8 +24,8 @@ const ProductCard = ({ product, onAddToCart }) => {
             {badge && (
                 <div className="absolute top-4 left-4 z-10">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${badge === 'Nouveau' ? 'bg-green-500 text-white' :
-                            badge === 'Promo' ? 'bg-mdla-red text-white' :
-                                'bg-mdla-yellow text-mdla-black'
+                        badge === 'Promo' ? 'bg-mdla-red text-white' :
+                            'bg-mdla-yellow text-mdla-black'
                         }`}>
                         {badge}
                     </span>
@@ -80,18 +81,22 @@ const ProductCard = ({ product, onAddToCart }) => {
                 {/* Price */}
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-baseline gap-2">
-                        {discount_price ? (
+                        {type === 'sourcing' || !price ? (
+                            <span className="text-mdla-black text-xl font-bold">
+                                Sur Devis
+                            </span>
+                        ) : discount_price ? (
                             <>
                                 <span className="text-gray-400 text-sm line-through">
-                                    {price.toLocaleString()} FCFA
+                                    {price?.toLocaleString()} FCFA
                                 </span>
                                 <span className="text-mdla-red text-xl font-bold">
-                                    {discount_price.toLocaleString()} FCFA
+                                    {discount_price?.toLocaleString()} FCFA
                                 </span>
                             </>
                         ) : (
                             <span className="text-mdla-black text-xl font-bold">
-                                {price.toLocaleString()} FCFA
+                                {price?.toLocaleString()} FCFA
                             </span>
                         )}
                     </div>
@@ -103,7 +108,7 @@ const ProductCard = ({ product, onAddToCart }) => {
                     className="w-full bg-mdla-yellow text-mdla-black px-6 py-3 rounded-lg font-bold hover:bg-yellow-400 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
                 >
                     <ShoppingCart className="w-5 h-5" />
-                    Ajouter au panier
+                    {type === 'sourcing' ? 'Demander un devis' : 'Ajouter au panier'}
                 </button>
             </div>
         </div>

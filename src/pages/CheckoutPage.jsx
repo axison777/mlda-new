@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { usePayment } from '../context/PaymentContext';
+import { useOrders } from '../context/OrdersContext';
 import { Smartphone, CreditCard, Wallet, Loader, CheckCircle } from 'lucide-react';
 import OrangeMoneyForm from '../components/payment/OrangeMoneyForm';
 import VisaForm from '../components/payment/VisaForm';
@@ -10,9 +11,10 @@ import PayPalForm from '../components/payment/PayPalForm';
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
-    const { cart, getCartTotal, clearCart } = useCart();
+    const { cartItems, getCartTotal, clearCart } = useCart();
     const { user } = useAuth();
     const { processPayment, isProcessing } = usePayment();
+    const { createOrder } = useOrders();
 
     const [selectedMethod, setSelectedMethod] = useState(null);
     const [showPaymentForm, setShowPaymentForm] = useState(false);
@@ -29,25 +31,43 @@ const CheckoutPage = () => {
     };
 
     const handlePayment = async (paymentData) => {
-        const result = await processPayment({
-            ...paymentData,
-            method: selectedMethod,
-            userId: user?.id,
-            orderType: 'shop',
-            items: cart
-        });
+        try {
+            // 1. Create order first (unpaid)
+            const order = await createOrder({
+                items: cartItems,
+                totalAmount: total,
+                type: 'product', // or dynamic based on cart items
+                shippingDetails: {
+                    address: paymentData.address || 'Adresse Test',
+                    city: paymentData.city || 'Ville Test',
+                    phone: paymentData.phone || user?.phone
+                },
+                paymentMethod: selectedMethod
+            });
 
-        if (result.success) {
-            clearCart();
-            navigate(`/payment/success/${result.transactionId}`);
-        } else {
-            navigate('/payment/failed', { state: { error: result.error } });
+            // 2. Process payment with the created orderId
+            const result = await processPayment({
+                ...paymentData,
+                orderId: order.id,
+                amount: total,
+                method: selectedMethod
+            });
+
+            if (result.success) {
+                clearCart();
+                navigate(`/payment/success/${result.transactionId}`);
+            } else {
+                navigate('/payment/failed', { state: { error: result.error } });
+            }
+        } catch (error) {
+            console.error('Checkout error:', error);
+            alert('Une erreur est survenue lors de la commande');
         }
     };
 
     const total = getCartTotal();
 
-    if (cart.length === 0) {
+    if (cartItems.length === 0) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
@@ -151,7 +171,7 @@ const CheckoutPage = () => {
                             <h3 className="text-lg font-bold text-mdla-black mb-4">Récapitulatif</h3>
 
                             <div className="space-y-3 mb-6">
-                                {cart.map((item) => (
+                                {cartItems.map((item) => (
                                     <div key={item.id} className="flex justify-between text-sm">
                                         <span className="text-gray-600">
                                             {item.name} x{item.quantity}

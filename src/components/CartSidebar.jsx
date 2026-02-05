@@ -1,5 +1,6 @@
 import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useEffect } from 'react';
 
 const CartSidebar = () => {
     const {
@@ -11,6 +12,18 @@ const CartSidebar = () => {
         isCartOpen,
         setIsCartOpen,
     } = useCart();
+
+    // Emergency escape key handler to close cart
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape' && isCartOpen) {
+                setIsCartOpen(false);
+            }
+        };
+
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, [isCartOpen, setIsCartOpen]);
 
     if (!isCartOpen) return null;
 

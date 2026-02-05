@@ -13,45 +13,16 @@ import {
     Search
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useOrders } from '../../context/OrdersContext';
 
 const UserOverview = () => {
+    const { orders: myOrders, loading: ordersLoading } = useOrders();
     const { user: authUser } = useAuth();
 
-    // --- MOCK USER FOR TESTING SCENARIOS ---
-    // Change these values to test different views:
-    // Case A (Student): enrollments: [...], orders: []
-    // Case B (Client): enrollments: [], orders: [...]
-    // Case C (Hybrid): enrollments: [...], orders: [...]
-    // Case D (New): enrollments: [], orders: []
-
-    const [mockUser, setMockUser] = useState({
-        ...authUser,
-        name: authUser?.name || 'Utilisateur',
-        enrollments: [
-            { id: 1, title: 'Allemand B1 : Intermédiaire', progress: 65, lastLesson: 'Les verbes de modalité', image: 'https://images.unsplash.com/photo-1527866959252-deab85ef7d1b?auto=format&fit=crop&q=80&w=300&h=200' }
-        ],
-        orders: [
-            { id: 'ORD-2023-001', item: 'Mercedes C300', status: 'shipping', tracking: 'TRK-9988', location: 'En Mer', eta: '15 Nov' }
-        ]
-    });
-
-    // Toggle helpers for testing UI (Optional, can be removed in prod)
-    const toggleRole = (role) => {
-        if (role === 'student') {
-            setMockUser(prev => ({
-                ...prev,
-                enrollments: prev.enrollments.length ? [] : [{ id: 1, title: 'Allemand B1', progress: 65, lastLesson: 'Les verbes', image: 'https://images.unsplash.com/photo-1527866959252-deab85ef7d1b' }]
-            }));
-        } else if (role === 'client') {
-            setMockUser(prev => ({
-                ...prev,
-                orders: prev.orders.length ? [] : [{ id: 'ORD-1', item: 'Mercedes C300', status: 'shipping', tracking: 'TRK-99', location: 'En Mer', eta: '15 Nov' }]
-            }));
-        }
-    };
-
-    const isStudent = mockUser.enrollments && mockUser.enrollments.length > 0;
-    const isClient = mockUser.orders && mockUser.orders.length > 0;
+    const isStudent = false; // Add real course integration later
+    const isClient = myOrders && myOrders.length > 0;
+    const activeOrders = myOrders.filter(o => o.status !== 'delivered');
+    const completedOrders = myOrders.filter(o => o.status === 'delivered');
 
     // --- COMPONENTS ---
 
@@ -98,28 +69,31 @@ const UserOverview = () => {
                         <Truck className="w-8 h-8 text-mdla-yellow" />
                     </div>
                     <div>
-                        <h3 className="font-bold text-gray-900 text-lg">{order.item}</h3>
-                        <p className="text-sm text-gray-500">Tracking: {order.tracking}</p>
+                        <h3 className="font-bold text-gray-900 text-lg">{order.items?.[0]?.name || order.type}</h3>
+                        <p className="text-sm text-gray-500">Tracking: {order.trackingNumber}</p>
                     </div>
                 </div>
                 <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold animate-pulse">
-                    {order.location}
+                    {order.currentLocation || 'En transit'}
                 </span>
             </div>
 
             <div className="space-y-6 mb-6">
                 <div className="flex items-center gap-4">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
                     <div className="flex-1">
-                        <p className="text-sm font-bold text-gray-900">Statut Actuel</p>
-                        <p className="text-sm text-gray-500">{order.location} - Arrivée prévue le {order.eta}</p>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Statut Actuel</p>
+                        <p className="text-sm font-bold text-gray-900">
+                            {order.status || 'En attente traitement'}
+                        </p>
                     </div>
                 </div>
             </div>
 
             <div className="mt-auto">
-                <Link to={`/suivi/${order.tracking}`} className="w-full border border-gray-200 text-gray-700 px-4 py-3 rounded-xl font-bold hover:bg-gray-50 transition-colors flex justify-center items-center">
-                    Voir détails complets
+                <Link to={`/suivi/${order.trackingNumber}`} className="w-full bg-gray-900 text-white px-4 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-gray-800 transition-all flex justify-center items-center shadow-lg group">
+                    Suivre mon colis
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Link>
             </div>
         </div>
@@ -169,7 +143,7 @@ const UserOverview = () => {
             return (
                 <div className="max-w-7xl mx-auto">
                     <HeroSection
-                        title={`Ravi de vous revoir, ${mockUser.name.split(' ')[0]}`}
+                        title={`Ravi de vous revoir, ${authUser?.name?.split(' ')[0] || 'Utilisateur'}`}
                         subtitle="Voici un résumé de vos activités en cours."
                     />
 
@@ -182,22 +156,26 @@ const UserOverview = () => {
                                 </h2>
                                 <Link to="/dashboard/mes-cours" className="text-sm text-blue-600 font-bold hover:underline">Voir tout</Link>
                             </div>
-                            {mockUser.enrollments.map(course => (
+                            {/* Assuming enrollments will come from authUser or another context later */}
+                            {/* For now, this section will be empty if isStudent is false */}
+                            {/* {authUser.enrollments.map(course => (
                                 <CourseCard key={course.id} course={course} />
-                            ))}
+                            ))} */}
                         </div>
 
                         {/* Right: Orders */}
                         <div>
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                    <Package className="w-5 h-5" /> Mes Commandes
+                                <h2 className="text-xl font-black text-gray-900 flex items-center gap-2 font-outfit uppercase tracking-tighter">
+                                    <Package className="w-5 h-5 text-mdla-yellow" /> Mes Commandes
                                 </h2>
-                                <Link to="/dashboard/commandes" className="text-sm text-mdla-yellow font-bold hover:underline">Voir tout</Link>
+                                <Link to="/dashboard/commandes" className="text-[10px] font-black text-mdla-yellow uppercase tracking-widest hover:underline">Voir tout</Link>
                             </div>
-                            {mockUser.orders.map(order => (
-                                <TrackingCard key={order.id} order={order} />
-                            ))}
+                            <div className="space-y-4">
+                                {myOrders.slice(0, 3).map(order => (
+                                    <TrackingCard key={order.id} order={order} />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -210,15 +188,16 @@ const UserOverview = () => {
                 <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2">
                         <HeroSection
-                            title={`Bon retour en classe, ${mockUser.name.split(' ')[0]} 🎓`}
+                            title={`Bon retour en classe, ${authUser?.name?.split(' ')[0] || 'Utilisateur'} 🎓`}
                             subtitle="Prêt à continuer votre progression ?"
                             bgClass="bg-blue-100 text-blue-900"
                         />
 
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Dernier cours consulté</h2>
-                        {mockUser.enrollments.map(course => (
+                        {/* For now, this section will be empty if isStudent is false */}
+                        {/* {authUser.enrollments.map(course => (
                             <CourseCard key={course.id} course={course} fullWidth={true} />
-                        ))}
+                        ))} */}
                     </div>
 
                     <div className="space-y-6">
@@ -258,62 +237,88 @@ const UserOverview = () => {
             return (
                 <div className="max-w-7xl mx-auto">
                     <HeroSection
-                        title={`Suivi de vos achats, ${mockUser.name.split(' ')[0]} 📦`}
+                        title={`Suivi de vos achats, ${authUser?.name?.split(' ')[0] || 'Utilisateur'} 📦`}
                         subtitle="Suivez vos expéditions en temps réel."
                     />
 
                     <div className="grid lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2">
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">Suivi en cours</h2>
-                            {mockUser.orders.map(order => (
-                                <div key={order.id} className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-                                    <div className="flex justify-between items-start mb-8">
-                                        <div>
-                                            <h3 className="text-2xl font-bold text-gray-900">{order.item}</h3>
-                                            <p className="text-gray-500">Tracking ID: {order.tracking}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm text-gray-500">Arrivée estimée</p>
-                                            <p className="text-xl font-bold text-green-600">{order.eta}</p>
-                                        </div>
-                                    </div>
+                        <div className="lg:col-span-2 space-y-8">
+                            <h2 className="text-2xl font-black text-gray-900 font-outfit uppercase tracking-tighter flex items-center gap-3">
+                                <Clock className="w-6 h-6 text-mdla-yellow" />
+                                Suivis en cours
+                            </h2>
+                            <div className="grid gap-6">
+                                {activeOrders.map(order => (
+                                    <div key={order.id} className="bg-white rounded-[32px] p-8 shadow-xl border border-gray-100 hover:border-mdla-yellow transition-all group overflow-hidden relative">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-mdla-yellow/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
 
-                                    {/* Tracking Timeline */}
-                                    <div className="relative flex justify-between items-center mb-8">
-                                        <div className="absolute left-0 top-1/2 w-full h-1 bg-gray-100 -z-10"></div>
-                                        <div className="absolute left-0 top-1/2 w-1/2 h-1 bg-mdla-yellow -z-10"></div>
-
-                                        {['Commande', 'Expédition', 'Douane', 'Livraison'].map((step, index) => (
-                                            <div key={step} className="flex flex-col items-center gap-2 bg-white px-2">
-                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${index < 2 ? 'bg-mdla-yellow text-mdla-black' :
-                                                    index === 2 ? 'bg-mdla-yellow text-mdla-black ring-4 ring-yellow-100' : 'bg-gray-100 text-gray-400'
-                                                    }`}>
-                                                    {index + 1}
+                                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10">
+                                            <div className="flex items-center gap-5">
+                                                <div className={`p-4 rounded-2xl ${order.type === 'vehicle' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600 shadow-md ring-4 ring-white'}`}>
+                                                    {order.type === 'vehicle' ? <Truck className="w-8 h-8" /> : <Package className="w-8 h-8" />}
                                                 </div>
-                                                <span className={`text-xs font-medium ${index <= 2 ? 'text-gray-900' : 'text-gray-400'}`}>{step}</span>
+                                                <div>
+                                                    <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter">{order.items?.[0]?.name || order.type}</h3>
+                                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">ID: {order.trackingNumber}</p>
+                                                </div>
                                             </div>
-                                        ))}
-                                    </div>
+                                            <div className="text-right mt-4 md:mt-0">
+                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Mise à jour</p>
+                                                <p className="text-sm font-black text-mdla-black">{new Date(order.updatedAt).toLocaleDateString()}</p>
+                                            </div>
+                                        </div>
 
-                                    <div className="bg-gray-50 rounded-xl p-4 flex items-start gap-3">
-                                        <MapPin className="w-5 h-5 text-gray-400 mt-1" />
-                                        <div>
-                                            <p className="font-bold text-gray-900">Dernière position connue</p>
-                                            <p className="text-sm text-gray-600">{order.location} - Le 12 Oct à 14:30</p>
+                                        {/* Simplified Step Bar */}
+                                        <div className="relative h-2 bg-gray-100 rounded-full mb-8 overflow-hidden">
+                                            <div
+                                                className="absolute inset-y-0 left-0 bg-mdla-yellow transition-all duration-1000"
+                                                style={{ width: `${(order.currentStep / (order.timeline?.length || 5)) * 100}%` }}
+                                            />
+                                        </div>
+
+                                        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                                            <div className="bg-gray-50 flex-1 w-full px-6 py-4 rounded-[20px] flex items-center gap-3">
+                                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                                <span className="text-xs font-black text-gray-900 uppercase tracking-widest">
+                                                    {order.status}
+                                                </span>
+                                            </div>
+                                            <Link
+                                                to={`/suivi/${order.trackingNumber}`}
+                                                className="w-full md:w-auto bg-mdla-yellow text-mdla-black px-8 py-4 rounded-[20px] font-black uppercase tracking-widest text-[10px] hover:bg-yellow-400 transition-all shadow-lg hover:shadow-yellow-400/20"
+                                            >
+                                                Suivre en temps réel
+                                            </Link>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
 
                         <div>
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">Historique</h2>
-                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                                <div className="text-center py-8 text-gray-400">
-                                    <Package className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                                    <p>Pas d'anciennes commandes.</p>
-                                </div>
-                                <Link to="/dashboard/commandes" className="w-full mt-4 border border-gray-200 text-gray-700 px-4 py-2 rounded-xl font-bold hover:bg-gray-50 transition-colors flex justify-center items-center">
+                            <h2 className="text-2xl font-black text-gray-900 font-outfit uppercase tracking-tighter mb-4">Historique</h2>
+                            <div className="bg-white rounded-[32px] p-8 shadow-lg border border-gray-100">
+                                {completedOrders.length === 0 ? (
+                                    <div className="text-center py-8 text-gray-400">
+                                        <Package className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                                        <p className="text-[10px] font-black uppercase tracking-widest">Aucun historique</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {completedOrders.slice(0, 3).map(order => (
+                                            <div key={order.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl">
+                                                <div className="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center">
+                                                    <CheckCircle className="w-5 h-5" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-xs font-black text-gray-900 uppercase leading-none">{order.items?.[0]?.name}</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Livré le {new Date(order.updatedAt).toLocaleDateString()}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                <Link to="/dashboard/commandes" className="w-full mt-6 bg-white border-2 border-gray-100 text-gray-900 px-4 py-3 rounded-[20px] font-black uppercase tracking-widest text-[10px] hover:border-mdla-yellow hover:bg-yellow-50/50 transition-all flex justify-center items-center">
                                     Voir tout l'historique
                                 </Link>
                             </div>
@@ -326,21 +331,6 @@ const UserOverview = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 p-8">
-            {/* Dev Tools for Testing */}
-            {/* Dev Tools for Testing - Hidden in production */}
-            {import.meta.env.DEV && (
-                <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-xl backdrop-blur-sm z-50 text-xs">
-                    <p className="font-bold mb-2 uppercase tracking-wider text-gray-400">Dev Mode: Toggle Roles</p>
-                    <div className="flex gap-2">
-                        <button onClick={() => toggleRole('student')} className={`px-3 py-1 rounded ${isStudent ? 'bg-blue-600' : 'bg-gray-700'}`}>
-                            Student {isStudent ? 'ON' : 'OFF'}
-                        </button>
-                        <button onClick={() => toggleRole('client')} className={`px-3 py-1 rounded ${isClient ? 'bg-yellow-600' : 'bg-gray-700'}`}>
-                            Client {isClient ? 'ON' : 'OFF'}
-                        </button>
-                    </div>
-                </div>
-            )}
 
             {renderContent()}
         </div>

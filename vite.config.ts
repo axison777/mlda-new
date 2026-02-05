@@ -10,10 +10,15 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:55761',
         changeOrigin: true,
         secure: false
-      }
+      },
+      '/server/uploads': {
+        target: 'http://localhost:55761',
+        changeOrigin: true,
+        secure: false
+      },
     }
   }
 });

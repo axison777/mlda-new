@@ -18,13 +18,27 @@ import {
     LogOut
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
+import { useChat } from '../context/ChatContext';
+import { useState, useEffect } from 'react';
 
 const Sidebar = () => {
     const { user, logout } = useAuth();
+    const { unreadCount } = useChat();
     const location = useLocation();
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    // Close mobile menu when screen resizes to desktop to prevent overlay issues
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 1024) { // lg breakpoint
+                setIsMobileMenuOpen(false);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleLogout = () => {
         if (window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
@@ -44,7 +58,7 @@ const Sidebar = () => {
                     { path: '/dashboard', label: 'Accueil', icon: Home },
                     { path: '/dashboard/formations', label: 'Mes Formations', icon: BookOpen },
                     { path: '/dashboard/commandes', label: 'Mes Commandes', icon: ShoppingBag },
-                    { path: '/dashboard/messagerie', label: 'Messagerie', icon: MessageSquare },
+                    { path: '/dashboard/messagerie', label: 'Messagerie', icon: MessageSquare, badge: unreadCount },
                     { path: '/dashboard/profil', label: 'Profil', icon: User },
                 ];
 
@@ -53,7 +67,7 @@ const Sidebar = () => {
                     { path: '/dashboard', label: 'Vue d\'ensemble', icon: Home },
                     { path: '/dashboard/mes-cours', label: 'Mes Cours', icon: BookOpen },
                     { path: '/dashboard/etudiants', label: 'Mes Étudiants', icon: Users },
-                    { path: '/dashboard/messagerie-prof', label: 'Messagerie', icon: MessageSquare },
+                    { path: '/dashboard/messagerie', label: 'Messagerie', icon: MessageSquare, badge: unreadCount },
                 ];
 
             case 'transit':
@@ -62,7 +76,7 @@ const Sidebar = () => {
                     { path: '/dashboard/transit-dossiers', label: 'Dossiers en Cours', icon: Package },
                     { path: '/dashboard/transit-sourcing', label: 'Demandes de Devis', icon: ShoppingBag },
                     { path: '/dashboard/transit-nouveau', label: 'Créer un Dossier', icon: PlusCircle },
-                    { path: '/dashboard/transit-messagerie', label: 'Messagerie', icon: MessageSquare },
+                    { path: '/dashboard/messagerie', label: 'Messagerie', icon: MessageSquare, badge: unreadCount },
                 ];
 
             case 'admin':
@@ -71,7 +85,8 @@ const Sidebar = () => {
                     { path: '/dashboard/formation', label: 'Pôle Formation', icon: BookOpen },
                     { path: '/dashboard/logistique', label: 'Pôle Logistique', icon: Package },
                     { path: '/dashboard/boutique', label: 'Pôle Boutique', icon: Store },
-                    { path: '/dashboard/communication', label: 'Communication', icon: MessageSquare },
+                    { path: '/dashboard/communication', label: 'Live Chat', icon: MessageSquare, badge: unreadCount },
+                    { path: '/dashboard/messages-contact', label: 'Messages de Contact', icon: MapPin },
                     { path: '/dashboard/utilisateurs', label: 'Utilisateurs & Staff', icon: Users },
                     { path: '/dashboard/marketing', label: 'Marketing & Pubs', icon: BarChart3 },
                     { path: '/dashboard/finances', label: 'Finances', icon: DollarSign },
@@ -126,7 +141,12 @@ const Sidebar = () => {
                                         }`}
                                 >
                                     <Icon className="w-5 h-5" />
-                                    <span>{item.label}</span>
+                                    <span className="flex-1">{item.label}</span>
+                                    {item.badge > 0 && (
+                                        <span className="bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                            {item.badge > 9 ? '9+' : item.badge}
+                                        </span>
+                                    )}
                                 </Link>
                             </li>
                         );

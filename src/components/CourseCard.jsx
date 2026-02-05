@@ -5,12 +5,16 @@ const CourseCard = ({ course, onAction }) => {
         id,
         title,
         instructor,
+        Teacher,
         level,
         price,
         discount_price,
-        image,
+        thumbnail,
         description
     } = course;
+
+    // Use instructor name from Teacher object if available
+    const instructorName = instructor || Teacher?.name || 'Instructeur';
 
     // Determine badge color based on level
     const getLevelColor = (level) => {
@@ -25,9 +29,9 @@ const CourseCard = ({ course, onAction }) => {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group">
             {/* Course Image */}
             <div className="relative overflow-hidden h-48">
-                {image ? (
+                {thumbnail ? (
                     <img
-                        src={image}
+                        src={thumbnail}
                         alt={title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
@@ -55,7 +59,7 @@ const CourseCard = ({ course, onAction }) => {
                 {/* Instructor */}
                 <div className="flex items-center gap-2 mb-4 text-gray-600">
                     <User className="w-4 h-4" />
-                    <span className="text-sm">{instructor}</span>
+                    <span className="text-sm">{instructorName}</span>
                 </div>
 
                 {/* Description */}

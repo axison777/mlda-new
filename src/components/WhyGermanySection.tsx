@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import imageAllemagne from '../assets/image_allemagne.jpg';
 
 const WhyGermanySection = () => {
   const [offsetY, setOffsetY] = useState(0);
@@ -26,8 +27,7 @@ const WhyGermanySection = () => {
       id="why-germany-section"
       className="relative py-20 md:py-32 overflow-hidden"
       style={{
-        backgroundImage:
-          'url(https://placehold.co/1920x600/1A1A1A/FFCC00?text=Allemagne+Puissance+Economique)',
+        backgroundImage: `url(${imageAllemagne})`,
         backgroundAttachment: 'fixed',
         backgroundSize: 'cover',
         backgroundPosition: 'center',

@@ -17,10 +17,14 @@ export const OrdersProvider = ({ children }) => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Fetch user orders when user logs in
+    // Fetch orders when user logs in
     useEffect(() => {
         if (user) {
-            fetchMyOrders();
+            if (['admin', 'transit'].includes(user.role)) {
+                fetchAllOrders();
+            } else {
+                fetchMyOrders();
+            }
         } else {
             setOrders([]);
         }
@@ -38,8 +42,16 @@ export const OrdersProvider = ({ children }) => {
         }
     };
 
-    const getMyOrders = () => {
-        return orders;
+    const fetchAllOrders = async () => {
+        try {
+            setLoading(true);
+            const { data } = await api.get('/orders/all');
+            setOrders(data);
+        } catch (error) {
+            console.error('Error fetching all orders:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const getOrderByTracking = async (trackingNumber) => {
@@ -65,7 +77,12 @@ export const OrdersProvider = ({ children }) => {
     const createOrder = async (orderData) => {
         try {
             const { data } = await api.post('/orders', orderData);
-            setOrders([data, ...orders]);
+            // Refetch to ensure we have full object with associations
+            if (['admin', 'transit'].includes(user.role)) {
+                await fetchAllOrders();
+            } else {
+                await fetchMyOrders();
+            }
             return data;
         } catch (error) {
             console.error('Error creating order:', error);
@@ -76,7 +93,12 @@ export const OrdersProvider = ({ children }) => {
     const updateOrderStatus = async (orderId, statusData) => {
         try {
             const { data } = await api.put(`/orders/${orderId}/status`, statusData);
-            setOrders(orders.map(order => order.id === orderId ? data : order));
+            // Refetch to ensure we have full object with associations
+            if (['admin', 'transit'].includes(user.role)) {
+                await fetchAllOrders();
+            } else {
+                await fetchMyOrders();
+            }
             return data;
         } catch (error) {
             console.error('Error updating order:', error);
@@ -87,12 +109,11 @@ export const OrdersProvider = ({ children }) => {
     const value = {
         orders,
         loading,
-        getMyOrders,
         getOrderByTracking,
         getAllOrders,
         createOrder,
         updateOrderStatus,
-        refreshOrders: fetchMyOrders
+        refreshOrders: () => (user && ['admin', 'transit'].includes(user.role)) ? fetchAllOrders() : fetchMyOrders()
     };
 
     return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>;

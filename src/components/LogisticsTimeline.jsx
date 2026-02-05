@@ -7,7 +7,7 @@ const LogisticsTimeline = ({ steps }) => {
                 const isLast = index === steps.length - 1;
 
                 return (
-                    <div key={step.id} className="relative flex gap-6 pb-8">
+                    <div key={index} className="relative flex gap-6 pb-8">
                         {/* Timeline Line & Indicator */}
                         <div className="relative flex flex-col items-center">
                             {/* Indicator Circle */}
@@ -39,10 +39,10 @@ const LogisticsTimeline = ({ steps }) => {
                             {!isLast && (
                                 <div
                                     className={`w-1 flex-1 mt-2 ${step.status === 'completed'
-                                            ? 'bg-green-500'
-                                            : step.status === 'current'
-                                                ? 'bg-gradient-to-b from-mdla-yellow to-gray-300'
-                                                : 'bg-gray-300'
+                                        ? 'bg-green-500'
+                                        : step.status === 'current'
+                                            ? 'bg-gradient-to-b from-mdla-yellow to-gray-300'
+                                            : 'bg-gray-300'
                                         }`}
                                     style={{ minHeight: '60px' }}
                                 ></div>
@@ -52,8 +52,8 @@ const LogisticsTimeline = ({ steps }) => {
                         {/* Content */}
                         <div className="flex-1 pb-4">
                             <div className={`${step.status === 'current'
-                                    ? 'bg-mdla-yellow/10 border-2 border-mdla-yellow'
-                                    : 'bg-white border border-gray-200'
+                                ? 'bg-mdla-yellow/10 border-2 border-mdla-yellow'
+                                : 'bg-white border border-gray-200'
                                 } rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow`}>
                                 <h3 className={`text-lg font-bold mb-1 ${step.status === 'current' ? 'text-mdla-black' : 'text-gray-900'
                                     }`}>

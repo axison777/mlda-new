@@ -10,8 +10,15 @@ import {
     Gamepad2,
     ChevronDown,
     ChevronRight,
-    X
+    X,
+    Music,
+    Calendar,
+    HelpCircle
 } from 'lucide-react';
+import VideoEditor from './VideoEditor';
+import QuizEditor from './QuizEditor';
+import SessionEditor from './SessionEditor';
+import AudioEditor from './AudioEditor';
 import InteractiveLessonEditor from './InteractiveLessonEditor';
 
 const CurriculumEditor = ({ modules, setModules, onNext, onBack }) => {
@@ -19,6 +26,7 @@ const CurriculumEditor = ({ modules, setModules, onNext, onBack }) => {
     const [showLessonModal, setShowLessonModal] = useState(false);
     const [activeModuleId, setActiveModuleId] = useState(null);
     const [editingLesson, setEditingLesson] = useState(null);
+    const [editorType, setEditorType] = useState(null); // 'video', 'quiz', 'session', 'audio', 'interactive'
 
     // Toggle module expansion
     const toggleModule = (moduleId) => {
@@ -59,25 +67,51 @@ const CurriculumEditor = ({ modules, setModules, onNext, onBack }) => {
         setShowLessonModal(true);
     };
 
-    // Add lesson
+    // Add lesson - now opens appropriate editor
     const addLesson = (type) => {
         const newLesson = {
             id: `lesson-${Date.now()}`,
-            title: type === 'video' ? 'Nouvelle Vidéo' : type === 'pdf' ? 'Nouveau Document' : 'Leçon Interactive',
+            title: '',
             type: type,
-            content: type === 'interactive' ? { type: 'interactive', slides: [] } : null
+            content: null,
+            order: modules.find(m => m.id === activeModuleId)?.lessons?.length || 0
         };
 
+        setShowLessonModal(false);
+        setEditingLesson({ moduleId: activeModuleId, lesson: newLesson });
+        setEditorType(type);
+    };
+
+    // Save lesson from editor
+    const saveLessonFromEditor = (updatedLesson) => {
         setModules(modules.map(m =>
-            m.id === activeModuleId
-                ? { ...m, lessons: [...m.lessons, newLesson] }
+            m.id === editingLesson.moduleId
+                ? {
+                    ...m,
+                    lessons: m.lessons.some(l => l.id === updatedLesson.id)
+                        ? m.lessons.map(l => l.id === updatedLesson.id ? updatedLesson : l)
+                        : [...m.lessons, updatedLesson]
+                }
                 : m
         ));
-        setShowLessonModal(false);
+        setEditingLesson(null);
+        setEditorType(null);
+    };
 
-        // If interactive, immediately open editor
-        if (type === 'interactive') {
-            setEditingLesson({ moduleId: activeModuleId, lesson: newLesson });
+    // Edit existing lesson
+    const editLesson = (moduleId, lesson) => {
+        setEditingLesson({ moduleId, lesson });
+        setEditorType(lesson.type);
+    };
+
+    // Delete lesson
+    const deleteLesson = (moduleId, lessonId) => {
+        if (confirm('Supprimer cette leçon ?')) {
+            setModules(modules.map(m =>
+                m.id === moduleId
+                    ? { ...m, lessons: m.lessons.filter(l => l.id !== lessonId) }
+                    : m
+            ));
         }
     };
 
@@ -108,33 +142,69 @@ const CurriculumEditor = ({ modules, setModules, onNext, onBack }) => {
         }
     };
 
-    // Save interactive lesson content
-    const handleSaveInteractiveLesson = (updatedContent) => {
-        setModules(modules.map(m =>
-            m.id === editingLesson.moduleId
-                ? {
-                    ...m,
-                    lessons: m.lessons.map(l =>
-                        l.id === editingLesson.lesson.id
-                            ? { ...l, content: updatedContent }
-                            : l
-                    )
-                }
-                : m
-        ));
-        setEditingLesson(null);
+    // Get icon for lesson type
+    const getLessonIcon = (type) => {
+        switch (type) {
+            case 'video': return <Video className="w-4 h-4" />;
+            case 'audio': return <Music className="w-4 h-4" />;
+            case 'pdf': return <FileText className="w-4 h-4" />;
+            case 'quiz': return <HelpCircle className="w-4 h-4" />;
+            case 'live_session': return <Calendar className="w-4 h-4" />;
+            case 'interactive': return <Gamepad2 className="w-4 h-4" />;
+            default: return <FileText className="w-4 h-4" />;
+        }
     };
 
-    // If editing an interactive lesson, show the editor
-    if (editingLesson) {
-        return (
-            <InteractiveLessonEditor
-                initialContent={editingLesson.lesson.content}
-                onSave={handleSaveInteractiveLesson}
-                onCancel={() => setEditingLesson(null)}
-            />
-        );
-    }
+    // Get color for lesson type
+    const getLessonColor = (type) => {
+        switch (type) {
+            case 'video': return 'bg-blue-100 text-blue-600';
+            case 'audio': return 'bg-purple-100 text-purple-600';
+            case 'pdf': return 'bg-red-100 text-red-600';
+            case 'quiz': return 'bg-yellow-100 text-yellow-600';
+            case 'live_session': return 'bg-green-100 text-green-600';
+            case 'interactive': return 'bg-yellow-100 text-yellow-600';
+            default: return 'bg-gray-100 text-gray-600';
+        }
+    };
+
+    // Render appropriate editor based on type
+    const renderEditor = () => {
+        if (!editingLesson || !editorType) return null;
+
+        const commonProps = {
+            lesson: editingLesson.lesson,
+            onSave: saveLessonFromEditor,
+            onCancel: () => {
+                setEditingLesson(null);
+                setEditorType(null);
+            }
+        };
+
+        switch (editorType) {
+            case 'video':
+                return <VideoEditor {...commonProps} />;
+            case 'quiz':
+                return <QuizEditor {...commonProps} />;
+            case 'live_session':
+                return <SessionEditor {...commonProps} />;
+            case 'audio':
+                return <AudioEditor {...commonProps} />;
+            case 'interactive':
+                return (
+                    <InteractiveLessonEditor
+                        initialContent={editingLesson.lesson.content}
+                        onSave={(content) => saveLessonFromEditor({ ...editingLesson.lesson, content })}
+                        onCancel={() => {
+                            setEditingLesson(null);
+                            setEditorType(null);
+                        }}
+                    />
+                );
+            default:
+                return null;
+        }
+    };
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 min-h-[600px] flex flex-col">
@@ -208,23 +278,23 @@ const CurriculumEditor = ({ modules, setModules, onNext, onBack }) => {
                                                                             className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-mdla-yellow transition-colors group"
                                                                         >
                                                                             <GripVertical className="w-4 h-4 text-gray-300" />
-                                                                            <div className={`p-2 rounded-lg ${lesson.type === 'video' ? 'bg-blue-100 text-blue-600' :
-                                                                                    lesson.type === 'pdf' ? 'bg-red-100 text-red-600' :
-                                                                                        'bg-yellow-100 text-yellow-600'
-                                                                                }`}>
-                                                                                {lesson.type === 'video' ? <Video className="w-4 h-4" /> :
-                                                                                    lesson.type === 'pdf' ? <FileText className="w-4 h-4" /> :
-                                                                                        <Gamepad2 className="w-4 h-4" />}
+                                                                            <div className={`p-2 rounded-lg ${getLessonColor(lesson.type)}`}>
+                                                                                {getLessonIcon(lesson.type)}
                                                                             </div>
-                                                                            <span className="font-medium text-gray-700">{lesson.title}</span>
+                                                                            <span className="font-medium text-gray-700">{lesson.title || 'Untitled'}</span>
                                                                             <div className="ml-auto flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                                                 <button
-                                                                                    onClick={() => lesson.type === 'interactive' && setEditingLesson({ moduleId: module.id, lesson })}
+                                                                                    onClick={() => editLesson(module.id, lesson)}
                                                                                     className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                                                                                    title="Edit"
                                                                                 >
                                                                                     <Edit2 className="w-4 h-4" />
                                                                                 </button>
-                                                                                <button className="p-1 text-red-600 hover:bg-red-50 rounded">
+                                                                                <button
+                                                                                    onClick={() => deleteLesson(module.id, lesson.id)}
+                                                                                    className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                                                                    title="Delete"
+                                                                                >
                                                                                     <Trash2 className="w-4 h-4" />
                                                                                 </button>
                                                                             </div>
@@ -280,49 +350,57 @@ const CurriculumEditor = ({ modules, setModules, onNext, onBack }) => {
                                 <X className="w-6 h-6" />
                             </button>
                         </div>
-                        <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
                             <button
                                 onClick={() => addLesson('video')}
-                                className="w-full p-4 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all flex items-center gap-4 text-left group"
+                                className="p-4 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
                             >
-                                <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                    <Video className="w-6 h-6" />
+                                <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors mb-2">
+                                    <Video className="w-5 h-5" />
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-900">Vidéo</h4>
-                                    <p className="text-sm text-gray-500">Uploader une vidéo ou lien YouTube</p>
-                                </div>
+                                <h4 className="font-bold text-gray-900 text-sm">Vidéo</h4>
+                                <p className="text-xs text-gray-500">YouTube, Vimeo</p>
                             </button>
 
                             <button
-                                onClick={() => addLesson('pdf')}
-                                className="w-full p-4 border border-gray-200 rounded-xl hover:border-red-500 hover:bg-red-50 transition-all flex items-center gap-4 text-left group"
+                                onClick={() => addLesson('audio')}
+                                className="p-4 border border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all text-left group"
                             >
-                                <div className="w-12 h-12 bg-red-100 text-red-600 rounded-lg flex items-center justify-center group-hover:bg-red-200 transition-colors">
-                                    <FileText className="w-6 h-6" />
+                                <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors mb-2">
+                                    <Music className="w-5 h-5" />
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-900">Document PDF</h4>
-                                    <p className="text-sm text-gray-500">Support de cours à lire</p>
-                                </div>
+                                <h4 className="font-bold text-gray-900 text-sm">Audio</h4>
+                                <p className="text-xs text-gray-500">MP3, WAV</p>
                             </button>
 
                             <button
-                                onClick={() => addLesson('interactive')}
-                                className="w-full p-4 border border-mdla-yellow rounded-xl bg-yellow-50 hover:bg-yellow-100 transition-all flex items-center gap-4 text-left group ring-2 ring-mdla-yellow ring-opacity-50"
+                                onClick={() => addLesson('quiz')}
+                                className="p-4 border border-mdla-yellow rounded-xl bg-yellow-50 hover:bg-yellow-100 transition-all text-left group"
                             >
-                                <div className="w-12 h-12 bg-mdla-yellow text-mdla-black rounded-lg flex items-center justify-center transition-colors shadow-sm">
-                                    <Gamepad2 className="w-6 h-6" />
+                                <div className="w-10 h-10 bg-mdla-yellow text-mdla-black rounded-lg flex items-center justify-center mb-2">
+                                    <HelpCircle className="w-5 h-5" />
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-900">Leçon Interactive</h4>
-                                    <p className="text-sm text-gray-600">Quiz, Vocabulaire, Flashcards...</p>
+                                <h4 className="font-bold text-gray-900 text-sm">Quiz</h4>
+                                <p className="text-xs text-gray-600">QCM, Texte à trou</p>
+                            </button>
+
+                            <button
+                                onClick={() => addLesson('live_session')}
+                                className="p-4 border border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all text-left group"
+                            >
+                                <div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors mb-2">
+                                    <Calendar className="w-5 h-5" />
                                 </div>
+                                <h4 className="font-bold text-gray-900 text-sm">Session Live</h4>
+                                <p className="text-xs text-gray-500">En ligne / Présentiel</p>
                             </button>
                         </div>
                     </div>
                 </div>
             )}
+
+            {/* Render Editor */}
+            {renderEditor()}
         </div>
     );
 };

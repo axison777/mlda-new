@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MapPin, Phone, Clock, Mail, Facebook, Instagram, Send } from 'lucide-react';
+import api from '../utils/api';
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({
@@ -9,12 +10,34 @@ const ContactPage = () => {
         subject: 'Formation',
         message: ''
     });
+    const [loading, setLoading] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(null); // 'success' or 'error'
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // TODO: Implement form submission logic
-        console.log('Form submitted:', formData);
-        alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
+        setLoading(true);
+        setSubmitStatus(null);
+
+        try {
+            const response = await api.post('/contact', formData);
+
+            if (response.status === 200 || response.status === 201) {
+                setSubmitStatus('success');
+                // Clear form
+                setFormData({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    subject: 'Formation',
+                    message: ''
+                });
+            }
+        } catch (error) {
+            setSubmitStatus('error');
+            console.error('Error submitting form:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleChange = (e) => {
@@ -225,12 +248,38 @@ const ContactPage = () => {
                                     ></textarea>
                                 </div>
 
+                                {/* Success Message */}
+                                {submitStatus === 'success' && (
+                                    <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+                                        <p className="font-medium">✓ Message envoyé avec succès !</p>
+                                        <p className="text-sm">Nous vous répondrons dans les plus brefs délais.</p>
+                                    </div>
+                                )}
+
+                                {/* Error Message */}
+                                {submitStatus === 'error' && (
+                                    <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+                                        <p className="font-medium">✗ Erreur lors de l'envoi</p>
+                                        <p className="text-sm">Veuillez réessayer ou nous contacter directement.</p>
+                                    </div>
+                                )}
+
                                 <button
                                     type="submit"
-                                    className="w-full bg-mdla-yellow text-mdla-black px-6 py-4 rounded-lg font-bold hover:bg-yellow-400 transition-all flex items-center justify-center gap-2 group"
+                                    disabled={loading}
+                                    className="w-full bg-mdla-yellow text-mdla-black px-6 py-4 rounded-lg font-bold hover:bg-yellow-400 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                    Envoyer le message
+                                    {loading ? (
+                                        <>
+                                            <div className="w-5 h-5 border-2 border-mdla-black border-t-transparent rounded-full animate-spin"></div>
+                                            Envoi en cours...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                            Envoyer le message
+                                        </>
+                                    )}
                                 </button>
                             </form>
                         </div>

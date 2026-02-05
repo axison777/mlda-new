@@ -1,193 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
+import api from '../utils/api';
 
 const ShopPage = () => {
     const [activeFilter, setActiveFilter] = useState('Tous');
     const { addToCart } = useCart();
+    const [products, setProducts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Mock product data with various categories
-    const products = [
-        // Alimentaire & Boissons
-        {
-            id: 1,
-            name: 'Vin Rouge Allemand - Spätburgunder',
-            price: 25000,
-            discount_price: null,
-            image: '/api/placeholder/400/400',
-            category: 'Alimentaire & Boissons',
-            description: 'Vin rouge premium de la région du Bade, arômes fruités et élégants.',
-            badge: 'Nouveau',
-            rating: 5
-        },
-        {
-            id: 2,
-            name: 'Bière Allemande Assortiment (6x)',
-            price: 18000,
-            discount_price: 15000,
-            image: '/api/placeholder/400/400',
-            category: 'Alimentaire & Boissons',
-            description: 'Pack de 6 bières allemandes traditionnelles variées.',
-            badge: 'Promo',
-            rating: 5
-        },
-        {
-            id: 3,
-            name: 'Chocolat Ritter Sport - Assortiment',
-            price: 8000,
-            discount_price: null,
-            image: '/api/placeholder/400/400',
-            category: 'Alimentaire & Boissons',
-            description: 'Assortiment de 10 tablettes de chocolat Ritter Sport.',
-            badge: null,
-            rating: 4
-        },
-        {
-            id: 4,
-            name: 'Saucisses Bratwurst (Pack de 6)',
-            price: 12000,
-            discount_price: 10000,
-            image: '/api/placeholder/400/400',
-            category: 'Alimentaire & Boissons',
-            description: 'Authentiques saucisses allemandes Bratwurst, prêtes à griller.',
-            badge: 'Promo',
-            rating: 5
-        },
-
-        // Électronique
-        {
-            id: 5,
-            name: 'Smartphone Samsung Galaxy S23',
-            price: 450000,
-            discount_price: 420000,
-            image: '/api/placeholder/400/400',
-            category: 'Électronique',
-            description: 'Smartphone haut de gamme, 256GB, importé d\'Allemagne.',
-            badge: 'Promo',
-            rating: 5
-        },
-        {
-            id: 6,
-            name: 'Ordinateur Portable HP Pavilion',
-            price: 550000,
-            discount_price: null,
-            image: '/api/placeholder/400/400',
-            category: 'Électronique',
-            description: 'PC portable 15.6", Intel i5, 16GB RAM, 512GB SSD.',
-            badge: 'Nouveau',
-            rating: 4
-        },
-        {
-            id: 7,
-            name: 'Écouteurs Bluetooth Sony WH-1000XM5',
-            price: 180000,
-            discount_price: 160000,
-            image: '/api/placeholder/400/400',
-            category: 'Électronique',
-            description: 'Casque sans fil avec réduction de bruit active.',
-            badge: 'Promo',
-            rating: 5
-        },
-        {
-            id: 8,
-            name: 'Tablette Apple iPad Air',
-            price: 380000,
-            discount_price: null,
-            image: '/api/placeholder/400/400',
-            category: 'Électronique',
-            description: 'iPad Air 10.9", 64GB, WiFi, dernière génération.',
-            badge: null,
-            rating: 5
-        },
-
-        // Ustensiles de Cuisine
-        {
-            id: 9,
-            name: 'Set Couteaux WMF Professional',
-            price: 85000,
-            discount_price: 75000,
-            image: '/api/placeholder/400/400',
-            category: 'Ustensiles de Cuisine',
-            description: 'Set de 5 couteaux professionnels en acier inoxydable.',
-            badge: 'Promo',
-            rating: 5
-        },
-        {
-            id: 10,
-            name: 'Batterie de Cuisine Fissler',
-            price: 120000,
-            discount_price: null,
-            image: '/api/placeholder/400/400',
-            category: 'Ustensiles de Cuisine',
-            description: 'Set complet de casseroles et poêles haut de gamme.',
-            badge: 'Nouveau',
-            rating: 5
-        },
-        {
-            id: 11,
-            name: 'Machine à Café Bosch Tassimo',
-            price: 95000,
-            discount_price: 80000,
-            image: '/api/placeholder/400/400',
-            category: 'Ustensiles de Cuisine',
-            description: 'Machine à café à capsules, préparation rapide et facile.',
-            badge: 'Promo',
-            rating: 4
-        },
-
-        // Gadgets
-        {
-            id: 12,
-            name: 'Montre Connectée Garmin Fenix 7',
-            price: 280000,
-            discount_price: null,
-            image: '/api/placeholder/400/400',
-            category: 'Gadgets',
-            description: 'Montre GPS multisport avec suivi santé avancé.',
-            badge: 'Nouveau',
-            rating: 5
-        },
-        {
-            id: 13,
-            name: 'Enceinte Bluetooth JBL Charge 5',
-            price: 75000,
-            discount_price: 65000,
-            image: '/api/placeholder/400/400',
-            category: 'Gadgets',
-            description: 'Enceinte portable étanche avec autonomie 20h.',
-            badge: 'Promo',
-            rating: 4
-        },
-        {
-            id: 14,
-            name: 'Appareil Photo Canon EOS R50',
-            price: 520000,
-            discount_price: null,
-            image: '/api/placeholder/400/400',
-            category: 'Gadgets',
-            description: 'Appareil photo hybride 24MP avec objectif 18-45mm.',
-            badge: null,
-            rating: 5
-        },
-        {
-            id: 15,
-            name: 'Drone DJI Mini 3 Pro',
-            price: 420000,
-            discount_price: 390000,
-            image: '/api/placeholder/400/400',
-            category: 'Gadgets',
-            description: 'Drone compact avec caméra 4K et autonomie 34 min.',
-            badge: 'Promo',
-            rating: 5
-        }
-    ];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const { data } = await api.get('/products');
+                setProducts(data);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchProducts();
+    }, []);
 
     const categories = [
         'Tous',
-        'Alimentaire & Boissons',
-        'Électronique',
-        'Ustensiles de Cuisine',
-        'Gadgets'
+        ...new Set(products.map(p => p.category))
     ];
 
     const filteredProducts = activeFilter === 'Tous'
@@ -217,8 +55,8 @@ const ShopPage = () => {
                                 key={category}
                                 onClick={() => setActiveFilter(category)}
                                 className={`px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 ${activeFilter === category
-                                        ? 'bg-mdla-yellow text-mdla-black shadow-lg'
-                                        : 'bg-white text-gray-700 hover:bg-gray-100 border-2 border-gray-200'
+                                    ? 'bg-mdla-yellow text-mdla-black shadow-lg'
+                                    : 'bg-white text-gray-700 hover:bg-gray-100 border-2 border-gray-200'
                                     }`}
                             >
                                 {category}

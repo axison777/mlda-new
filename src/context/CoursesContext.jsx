@@ -66,51 +66,73 @@ export const CoursesProvider = ({ children }) => {
         }
     };
 
-    const addLesson = async (courseId, lessonData) => {
+    const createModule = async (courseId, moduleData) => {
         try {
             setLoading(true);
-            const { data } = await api.post(`/courses/${courseId}/lessons`, lessonData);
-            await fetchCourses();
-            return { success: true, lesson: data };
+            const { data } = await api.post(`/curriculum/courses/${courseId}/modules`, moduleData);
+            await fetchCourses(); // Refresh to get updated structure (optional, might be heavy)
+            return { success: true, module: data };
         } catch (error) {
             return {
                 success: false,
-                error: error.response?.data?.message || 'Erreur lors de l\'ajout de la leçon'
+                error: error.response?.data?.message || 'Erreur lors de la création du module'
             };
         } finally {
             setLoading(false);
         }
     };
 
-    const updateLesson = async (courseId, lessonId, lessonData) => {
+    const updateModule = async (moduleId, moduleData) => {
         try {
-            setLoading(true);
-            const { data } = await api.put(`/courses/${courseId}/lessons/${lessonId}`, lessonData);
-            await fetchCourses();
-            return { success: true, lesson: data };
+            const { data } = await api.put(`/curriculum/modules/${moduleId}`, moduleData);
+            return { success: true, module: data };
         } catch (error) {
-            return {
-                success: false,
-                error: error.response?.data?.message || 'Erreur lors de la modification de la leçon'
-            };
-        } finally {
-            setLoading(false);
+            return { success: false, error: error.message };
         }
     };
 
-    const deleteLesson = async (courseId, lessonId) => {
+    const deleteModule = async (moduleId) => {
         try {
-            setLoading(true);
-            await api.delete(`/courses/${courseId}/lessons/${lessonId}`);
-            await fetchCourses();
+            await api.delete(`/curriculum/modules/${moduleId}`);
             return { success: true };
         } catch (error) {
-            return {
-                success: false,
-                error: error.response?.data?.message || 'Erreur lors de la suppression de la leçon'
-            };
-        } finally {
-            setLoading(false);
+            return { success: false, error: error.message };
+        }
+    };
+
+    const createItem = async (moduleId, itemData) => {
+        try {
+            const { data } = await api.post(`/curriculum/modules/${moduleId}/items`, itemData);
+            return { success: true, item: data };
+        } catch (error) {
+            return { success: false, error: error.response?.data?.message || 'Erreur lors de la création de l\'élément' };
+        }
+    };
+
+    const updateItem = async (itemId, itemData) => {
+        try {
+            const { data } = await api.put(`/curriculum/items/${itemId}`, itemData);
+            return { success: true, item: data };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    };
+
+    const deleteItem = async (itemId) => {
+        try {
+            await api.delete(`/curriculum/items/${itemId}`);
+            return { success: true };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    };
+
+    const submitForReview = async (courseId) => {
+        try {
+            await api.post(`/courses/${courseId}/submit`);
+            return { success: true };
+        } catch (error) {
+            return { success: false, error: error.message };
         }
     };
 
@@ -120,9 +142,13 @@ export const CoursesProvider = ({ children }) => {
         getCourseById,
         createCourse,
         enrollCourse,
-        addLesson,
-        updateLesson,
-        deleteLesson,
+        createModule,
+        updateModule,
+        deleteModule,
+        createItem,
+        updateItem,
+        deleteItem,
+        submitForReview,
         refreshCourses: fetchCourses
     };
 

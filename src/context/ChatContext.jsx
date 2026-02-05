@@ -13,12 +13,14 @@ export const ChatProvider = ({ children }) => {
     const [messages, setMessages] = useState([]);
     const [activeChat, setActiveChat] = useState(null); // Could be userID or roomID
     const [connected, setConnected] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     // Initialize Socket
     useEffect(() => {
         if (!user || !token) return;
 
-        const newSocket = io('http://localhost:5000', {
+        const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:55761';
+        const newSocket = io(socketUrl, {
             auth: { token },
             reconnection: true,
         });
@@ -32,6 +34,10 @@ export const ChatProvider = ({ children }) => {
 
         newSocket.on('receive_message', (message) => {
             setMessages((prev) => [...prev, message]);
+            // Increment unread count if message is for me and I'm not in that chat
+            if (message.receiverId === user.id && message.senderId !== activeChat) {
+                setUnreadCount(prev => prev + 1);
+            }
         });
 
         newSocket.on('disconnect', () => {
@@ -42,6 +48,13 @@ export const ChatProvider = ({ children }) => {
         setSocket(newSocket);
 
         return () => newSocket.close();
+    }, [user, token]);
+
+    // Fetch unread count on mount
+    useEffect(() => {
+        if (user && token) {
+            fetchUnreadCount();
+        }
     }, [user, token]);
 
     // Fetch conversation history
@@ -79,6 +92,16 @@ export const ChatProvider = ({ children }) => {
         }
     };
 
+    // Fetch unread count
+    const fetchUnreadCount = async () => {
+        try {
+            const res = await axios.get('/api/chat/unread');
+            setUnreadCount(res.data.total);
+        } catch (error) {
+            console.error('Error fetching unread count:', error);
+        }
+    };
+
     const sendMessage = (content, receiverId, roomId = null) => {
         if (!socket) return;
 
@@ -94,6 +117,38 @@ export const ChatProvider = ({ children }) => {
         // OR add optimistically here
     };
 
+    // Get available users to chat with
+    const getAvailableUsers = async () => {
+        try {
+            const res = await axios.get('/api/chat/users');
+            return res.data;
+        } catch (error) {
+            console.error('Error loading available users:', error);
+            return [];
+        }
+    };
+
+    // Initiate a new conversation
+    const initiateConversation = async (userId) => {
+        try {
+            const res = await axios.post('/api/chat/initiate', { userId });
+            return res.data;
+        } catch (error) {
+            console.error('Error initiating conversation:', error);
+            throw error;
+        }
+    };
+
+    // Mark messages as read
+    const markMessagesAsRead = async (userId) => {
+        try {
+            await axios.put(`/api/chat/read/${userId}`);
+            await fetchUnreadCount();
+        } catch (error) {
+            console.error('Error marking messages as read:', error);
+        }
+    };
+
     return (
         <ChatContext.Provider value={{
             socket,
@@ -103,7 +158,12 @@ export const ChatProvider = ({ children }) => {
             loadMessages,
             sendMessage,
             activeChat,
-            getConversations
+            getConversations,
+            unreadCount,
+            fetchUnreadCount,
+            getAvailableUsers,
+            initiateConversation,
+            markMessagesAsRead
         }}>
             {children}
         </ChatContext.Provider>

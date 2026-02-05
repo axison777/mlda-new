@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -32,10 +32,22 @@ api.interceptors.response.use(
             // Token expired or invalid
             localStorage.removeItem('mdla-token');
             localStorage.removeItem('mdla-user');
-            window.location.href = '/login';
+            window.location.href = '/connexion';
         }
         return Promise.reject(error);
     }
 );
+
+// Helper for file uploads
+export const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const { data } = await api.post('/upload', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return data;
+};
 
 export default api;

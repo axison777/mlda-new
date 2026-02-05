@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import imageEtudiant from '../assets/image_etudiant.jpg';
+import imageProfessionnel from '../assets/image_professionnel.jpg';
+import imageVoiture from '../assets/image_voiture.jpg';
 
 interface Slide {
   title: string;
@@ -19,7 +22,7 @@ const HeroCarousel = () => {
       subtitle: 'Rejoignez notre programme sur mesure pour étudiants et professionnels. Niveau A1 à C1.',
       buttonText: 'Voir les cours',
       buttonLink: '/formations',
-      imageUrl: 'https://placehold.co/1920x800/1A1A1A/FFCC00?text=Etudiants+Africains',
+      imageUrl: imageEtudiant,
       imageAlt: 'Étudiants africains apprenant l\'allemand',
     },
     {
@@ -27,7 +30,7 @@ const HeroCarousel = () => {
       subtitle: 'Formation professionnelle (Ausbildung), recrutement infirmiers et techniciens. Nous vous accompagnons.',
       buttonText: 'En savoir plus',
       buttonLink: '/services',
-      imageUrl: 'https://placehold.co/1920x800/1A1A1A/FFCC00?text=Professionnel+Medical',
+      imageUrl: imageProfessionnel,
       imageAlt: 'Professionnels dans un environnement médical',
     },
     {
@@ -35,7 +38,7 @@ const HeroCarousel = () => {
       subtitle: 'Achat de véhicules, pièces détachées et représentation commerciale.',
       buttonText: 'Visiter la Boutique',
       buttonLink: '/boutique',
-      imageUrl: 'https://placehold.co/1920x800/1A1A1A/FFCC00?text=Vehicules+Allemands',
+      imageUrl: imageVoiture,
       imageAlt: 'Véhicules allemands et logistique',
     },
   ];
@@ -65,9 +68,8 @@ const HeroCarousel = () => {
       {slides.map((slide, index) => (
         <div
           key={index}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'
+            }`}
         >
           <div
             className="absolute inset-0 bg-cover bg-center"
@@ -118,9 +120,8 @@ const HeroCarousel = () => {
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all ${
-              index === currentSlide ? 'bg-mdla-yellow w-8' : 'bg-white/50 hover:bg-white/75'
-            }`}
+            className={`w-3 h-3 rounded-full transition-all ${index === currentSlide ? 'bg-mdla-yellow w-8' : 'bg-white/50 hover:bg-white/75'
+              }`}
             aria-label={`Aller au slide ${index + 1}`}
           />
         ))}

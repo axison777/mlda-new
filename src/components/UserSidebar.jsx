@@ -11,9 +11,11 @@ import {
     Settings
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useChat } from '../context/ChatContext';
 
 const UserSidebar = ({ mockUserOverride }) => {
     const { user: authUser, logout } = useAuth();
+    const { unreadCount } = useChat();
     const location = useLocation();
 
     // Allow overriding user for testing purposes via props, otherwise use auth context
@@ -28,7 +30,7 @@ const UserSidebar = ({ mockUserOverride }) => {
 
     const isActive = (path) => location.pathname === path;
 
-    const NavItem = ({ to, icon: Icon, label }) => (
+    const NavItem = ({ to, icon: Icon, label, badge }) => (
         <Link
             to={to}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive(to)
@@ -37,7 +39,12 @@ const UserSidebar = ({ mockUserOverride }) => {
                 }`}
         >
             <Icon className="w-5 h-5" />
-            <span>{label}</span>
+            <span className="flex-1">{label}</span>
+            {badge > 0 && (
+                <span className="bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {badge > 9 ? '9+' : badge}
+                </span>
+            )}
         </Link>
     );
 
@@ -59,7 +66,7 @@ const UserSidebar = ({ mockUserOverride }) => {
                     <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Menu</p>
                     <NavItem to="/dashboard" icon={Home} label="Accueil" />
                     <NavItem to="/dashboard/profil" icon={User} label="Mon Profil" />
-                    <NavItem to="/dashboard/messagerie" icon={MessageSquare} label="Messagerie" />
+                    <NavItem to="/dashboard/messagerie" icon={MessageSquare} label="Messagerie" badge={unreadCount} />
                 </div>
 
                 {/* Conditional Sections */}

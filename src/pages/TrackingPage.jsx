@@ -9,23 +9,29 @@ const TrackingPage = () => {
     const { trackingNumber: urlTrackingNumber } = useParams();
     const [trackingNumber, setTrackingNumber] = useState(urlTrackingNumber || '');
     const [orderData, setOrderData] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const { getOrderByTracking } = useOrders();
     const { isAuthenticated } = useAuth();
 
     useEffect(() => {
         if (urlTrackingNumber) {
-            // Auto-load if tracking number in URL
-            const order = getOrderByTracking(urlTrackingNumber);
-            setOrderData(order);
-            setTrackingNumber(urlTrackingNumber);
+            handleTrack(null, urlTrackingNumber);
         }
-    }, [urlTrackingNumber, getOrderByTracking]);
+    }, [urlTrackingNumber]);
 
-    const handleTrack = (e) => {
-        e.preventDefault();
-        if (trackingNumber.trim()) {
-            const order = getOrderByTracking(trackingNumber.trim());
-            setOrderData(order);
+    const handleTrack = async (e, tNumber) => {
+        if (e) e.preventDefault();
+        const num = tNumber || trackingNumber;
+        if (num.trim()) {
+            setIsLoading(true);
+            try {
+                const order = await getOrderByTracking(num.trim());
+                setOrderData(order);
+            } catch (error) {
+                console.error('Tracking error:', error);
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
@@ -97,11 +103,10 @@ const TrackingPage = () => {
 
                                 <div className="p-6">
                                     <div className="grid md:grid-cols-2 gap-6">
-                                        {/* Product Image */}
                                         <div className="rounded-lg overflow-hidden">
                                             <img
-                                                src={orderData.product.image}
-                                                alt={orderData.product.model}
+                                                src={orderData.items?.[0]?.image || 'https://placehold.co/600x400?text=Marchandise'}
+                                                alt={orderData.items?.[0]?.name}
                                                 className="w-full h-full object-cover"
                                             />
                                         </div>
@@ -109,22 +114,31 @@ const TrackingPage = () => {
                                         {/* Product Info */}
                                         <div className="space-y-4">
                                             <div>
-                                                <h3 className="text-2xl font-bold text-mdla-black mb-2">
-                                                    {orderData.product.model}
+                                                <h3 className="text-2xl font-bold text-mdla-black mb-1">
+                                                    {orderData.items?.[0]?.description || 'Marchandise sans description'}
                                                 </h3>
-                                                {orderData.product.vin && (
+                                                <p className="text-sm text-gray-500 font-bold uppercase tracking-widest mb-2">
+                                                    {orderData.type === 'vehicle' ? 'Véhicule' : orderData.type === 'container' ? 'Conteneur' : 'Marchandise'}
+                                                </p>
+                                                {orderData.metadata?.vin && (
                                                     <p className="text-gray-600 text-sm">
-                                                        VIN: {orderData.product.vin}
+                                                        VIN: {orderData.metadata.vin}
                                                     </p>
                                                 )}
+                                                <div className="inline-block bg-gray-100 px-3 py-1 rounded-lg">
+                                                    <p className="text-xs font-black text-gray-500 uppercase">Valeur Déclarée</p>
+                                                    <p className="font-bold text-mdla-black">
+                                                        {new Intl.NumberFormat('fr-FR').format(orderData.totalAmount)} FCFA
+                                                    </p>
+                                                </div>
                                             </div>
 
-                                            <div className="space-y-3">
+                                            <div className="space-y-3 pt-2">
                                                 <div className="flex items-center gap-3">
                                                     <Calendar className="w-5 h-5 text-mdla-yellow" />
                                                     <div>
                                                         <p className="text-xs text-gray-500">Date de commande</p>
-                                                        <p className="font-semibold">{orderData.orderDate}</p>
+                                                        <p className="font-semibold">{new Date(orderData.createdAt).toLocaleDateString()}</p>
                                                     </div>
                                                 </div>
 
@@ -132,7 +146,7 @@ const TrackingPage = () => {
                                                     <MapPin className="w-5 h-5 text-mdla-yellow" />
                                                     <div>
                                                         <p className="text-xs text-gray-500">Destination</p>
-                                                        <p className="font-semibold">{orderData.destination}</p>
+                                                        <p className="font-semibold">{orderData.shippingDetails?.arrivalCity || orderData.shippingDetails?.city || 'N/A'}</p>
                                                     </div>
                                                 </div>
 
@@ -141,7 +155,7 @@ const TrackingPage = () => {
                                                     <div>
                                                         <p className="text-xs text-gray-500">Arrivée estimée</p>
                                                         <p className="font-semibold text-green-600">
-                                                            {orderData.estimatedDelivery}
+                                                            {orderData.estimatedDelivery || 'En attente'}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -156,7 +170,22 @@ const TrackingPage = () => {
                                 <h2 className="text-2xl font-bold text-mdla-black mb-6">
                                     Suivi de l'Expédition
                                 </h2>
-                                <LogisticsTimeline steps={orderData.steps} />
+                                {/* Ensure we pass the events as 'steps' and map them if necessary, but backend usually sends 'timeline' or 'events' */}
+                                {/* Ensure we pass the events as 'steps' and map them if necessary, but backend usually sends 'timeline' or 'events' */}
+                                <LogisticsTimeline
+                                    steps={(orderData.events || orderData.timeline || []).map((event, index) => ({
+                                        title: event.status.toUpperCase(), // Or event.location
+                                        date: new Date(event.eventDate).toLocaleDateString('fr-FR', {
+                                            day: 'numeric',
+                                            month: 'long',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        }),
+                                        description: event.description || `Lieu : ${event.location}`,
+                                        status: index === 0 ? 'current' : 'completed' // Assume first item is latest/current because of DESC sort
+                                    }))}
+                                />
                             </div>
                         </div>
 
@@ -212,17 +241,17 @@ const TrackingPage = () => {
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm text-gray-600">Progression</span>
                                             <span className="font-bold text-mdla-black">
-                                                {Math.round((orderData.currentStep / orderData.steps.length) * 100)}%
+                                                {Math.round((orderData.currentStep / (orderData.timeline?.length || 1)) * 100)}%
                                             </span>
                                         </div>
                                         <div className="w-full bg-gray-200 rounded-full h-2">
                                             <div
                                                 className="bg-green-500 h-2 rounded-full"
-                                                style={{ width: `${(orderData.currentStep / orderData.steps.length) * 100}%` }}
+                                                style={{ width: `${(orderData.currentStep / (orderData.timeline?.length || 1)) * 100}%` }}
                                             ></div>
                                         </div>
                                         <div className="flex justify-between items-center text-xs text-gray-500">
-                                            <span>{orderData.currentStep}/{orderData.steps.length} étapes complétées</span>
+                                            <span>{orderData.currentStep}/{orderData.timeline?.length || 0} étapes complétées</span>
                                         </div>
                                     </div>
                                 </div>
