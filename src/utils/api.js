@@ -32,7 +32,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
+        // Build the login URL path to check against
+        const loginUrl = '/auth/login';
+
+        // Check if the error is 401 AND it's NOT a login request
+        // (Login requests should be handled by the component to show "Wrong password")
+        if (error.response?.status === 401 && !error.config.url.includes(loginUrl)) {
             // Token expired or invalid
             localStorage.removeItem('mdla-token');
             localStorage.removeItem('mdla-user');
