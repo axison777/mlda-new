@@ -1,6 +1,8 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
+console.log('📢 Frontend API_URL:', API_URL); // Debugging connection
+
 
 // Create axios instance with default config
 const api = axios.create({
