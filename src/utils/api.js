@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-// Hardcoding URL for debugging - Environment variable seems flaky
-const API_URL = 'https://mlda-backend.onrender.com/api';
-console.log('📢 Frontend API_URL (Hardcoded):', API_URL);
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 
 

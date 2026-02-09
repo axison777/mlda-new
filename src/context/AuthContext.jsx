@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }) => {
 
             return { success: true, user: userData };
         } catch (error) {
+            console.log('🔴 LOGIN ERROR DETAIL:', error.response?.data); // Show debug info to user
             return {
                 success: false,
                 error: error.response?.data?.message || 'Email ou mot de passe incorrect'
