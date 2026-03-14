@@ -70,7 +70,7 @@ const FormationServicePage = () => {
                             </div>
                         </div>
                         <div className="bg-white rounded-xl shadow-lg p-8">
-                            <div className="grid grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                                 <div className="text-center">
                                     <Users className="w-12 h-12 text-mdla-yellow mx-auto mb-3" />
                                     <p className="text-3xl font-bold text-mdla-black">500+</p>
@@ -85,11 +85,6 @@ const FormationServicePage = () => {
                                     <BookOpen className="w-12 h-12 text-mdla-yellow mx-auto mb-3" />
                                     <p className="text-3xl font-bold text-mdla-black">15</p>
                                     <p className="text-sm text-gray-600">Ans d'expérience</p>
-                                </div>
-                                <div className="text-center">
-                                    <Clock className="w-12 h-12 text-mdla-yellow mx-auto mb-3" />
-                                    <p className="text-3xl font-bold text-mdla-black">3-5</p>
-                                    <p className="text-sm text-gray-600">Mois par niveau</p>
                                 </div>
                             </div>
                         </div>
@@ -116,15 +111,9 @@ const FormationServicePage = () => {
                                     <h3 className="font-bold text-mdla-black mb-1">{level.name}</h3>
                                     <p className="text-sm text-gray-600">{level.description}</p>
                                 </div>
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Durée:</span>
-                                        <span className="font-semibold">{level.duration}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Prix:</span>
-                                        <span className="font-semibold text-mdla-yellow">{level.price}</span>
-                                    </div>
+                                <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+                                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Prix de la formation</p>
+                                    <p className="text-lg font-bold text-mdla-yellow">À partir de {level.price}</p>
                                 </div>
                             </div>
                         ))}

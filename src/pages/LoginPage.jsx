@@ -47,24 +47,6 @@ const LoginPage = () => {
         setIsLoading(false);
     };
 
-    const handleDemoLogin = async (email, password) => {
-        setFormData({ ...formData, email, password });
-        setError('');
-        setIsLoading(true);
-
-        const result = await login(email, password);
-
-        if (result.success) {
-            if (result.user.role === 'student') {
-                navigate('/dashboard');
-            } else {
-                navigate('/');
-            }
-        }
-
-        setIsLoading(false);
-    };
-
     return (
         <div className="min-h-screen bg-gray-50 flex">
             {/* Left Side - Form */}
@@ -173,70 +155,6 @@ const LoginPage = () => {
                         </Link>
                     </p>
 
-                    {/* Demo Accounts */}
-                    <div className="mt-8 pt-8 border-t border-gray-200">
-                        <p className="text-sm font-semibold text-gray-700 mb-4 text-center">
-                            Comptes de démonstration
-                        </p>
-                        <div className="space-y-2">
-                            <button
-                                onClick={() => handleDemoLogin('client@mdla.bf', 'demo123')}
-                                className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-semibold text-gray-900">Jean Dupont</p>
-                                        <p className="text-xs text-gray-600">client@mdla.bf</p>
-                                    </div>
-                                    <span className="text-xs bg-mdla-yellow text-mdla-black px-2 py-1 rounded font-semibold">
-                                        Client
-                                    </span>
-                                </div>
-                            </button>
-                            <button
-                                onClick={() => handleDemoLogin('admin@mdla.bf', 'admin123')}
-                                className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-semibold text-gray-900">Admin MDLA</p>
-                                        <p className="text-xs text-gray-600">admin@mdla.bf</p>
-                                    </div>
-                                    <span className="text-xs bg-mdla-yellow text-mdla-black px-2 py-1 rounded font-semibold">
-                                        Admin
-                                    </span>
-                                </div>
-                            </button>
-                            <button
-                                onClick={() => handleDemoLogin('prof@mdla.bf', 'demo123')}
-                                className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-semibold text-gray-900">Prof. Schmidt</p>
-                                        <p className="text-xs text-gray-600">prof@mdla.bf</p>
-                                    </div>
-                                    <span className="text-xs bg-mdla-yellow text-mdla-black px-2 py-1 rounded font-semibold">
-                                        Professeur
-                                    </span>
-                                </div>
-                            </button>
-                            <button
-                                onClick={() => handleDemoLogin('transit@mdla.bf', 'demo123')}
-                                className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-semibold text-gray-900">Amadou Traoré</p>
-                                        <p className="text-xs text-gray-600">transit@mdla.bf</p>
-                                    </div>
-                                    <span className="text-xs bg-mdla-yellow text-mdla-black px-2 py-1 rounded font-semibold">
-                                        Transit
-                                    </span>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
 

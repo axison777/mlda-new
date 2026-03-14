@@ -88,7 +88,7 @@ const Sidebar = () => {
                     { path: '/dashboard/communication', label: 'Live Chat', icon: MessageSquare, badge: unreadCount },
                     { path: '/dashboard/messages-contact', label: 'Messages de Contact', icon: MapPin },
                     { path: '/dashboard/utilisateurs', label: 'Utilisateurs & Staff', icon: Users },
-                    { path: '/dashboard/marketing', label: 'Marketing & Pubs', icon: BarChart3 },
+                    // { path: '/dashboard/marketing', label: 'Marketing & Pubs', icon: BarChart3 },
                     { path: '/dashboard/finances', label: 'Finances', icon: DollarSign },
                 ];
 

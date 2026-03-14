@@ -47,9 +47,10 @@ const CourseBuilder = () => {
         }
     }, [courseId]);
 
-    const loadCourse = async () => {
+    const loadCourse = async (idToLoad = courseId) => {
+        if (!idToLoad) return;
         setLoading(true);
-        const data = await getCourseById(courseId);
+        const data = await getCourseById(idToLoad);
         if (data) {
             // Backend now returns: { ..., modules: [ { ..., items: [] } ] }
             const mappedModules = (data.modules || []).map(mod => ({
@@ -90,7 +91,7 @@ const CourseBuilder = () => {
         { id: 3, title: 'Révision & Publication', icon: CheckCircle },
     ];
 
-    const saveCurriculum = async () => {
+    const saveCurriculum = async (targetCourseId = courseId) => {
         setLoading(true);
         try {
             // This is a naive implementation: it saves everything. 
@@ -103,7 +104,7 @@ const CourseBuilder = () => {
 
                 // Create or Update Module
                 if (typeof moduleId === 'string' && moduleId.startsWith('module-')) {
-                    const result = await createModule(courseId, {
+                    const result = await createModule(targetCourseId, {
                         title: module.title,
                         order: modIndex + 1
                     });
@@ -135,7 +136,7 @@ const CourseBuilder = () => {
                 }
             }
 
-            await loadCourse(); // Refresh to get real IDs back
+            await loadCourse(targetCourseId); // Refresh to get real IDs back
             alert('Programme sauvegardé avec succès !');
         } catch (error) {
             console.error('Error saving curriculum:', error);
@@ -165,7 +166,7 @@ const CourseBuilder = () => {
             if (courseId) {
                 // Save curriculum if on step 3 (curriculum editor)
                 if (activeStep === 3) {
-                    await saveCurriculum();
+                    await saveCurriculum(courseId);
                 } else {
                     // Update basic course info for steps 1 and 2
                     await api.put(`/courses/${courseId}`, {
@@ -208,7 +209,7 @@ const CourseBuilder = () => {
 
             // Save curriculum if on step 3
             if (activeStep === 3) {
-                await saveCurriculum();
+                await saveCurriculum(currentCourseId);
             } else if (activeStep === 1 || activeStep === 2) {
                 // Update basic info if on steps 1 or 2
                 await api.put(`/courses/${currentCourseId}`, {

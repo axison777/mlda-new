@@ -664,7 +664,26 @@ const AdminEducation = () => {
                                                                 )}
 
                                                                 <div className="ml-6 space-y-1">
-                                                                    {/* Video URL is stored in 'content' field for type='video' */}
+                                                                    {/* Generic content link if it is just a URL (fallback) */}
+                                                                    {item.content && item.content.startsWith('http') && item.type !== 'video' && item.type !== 'quiz' && (
+                                                                        <a
+                                                                            href={item.content}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                                                                        >
+                                                                            <FileText className="w-4 h-4" />
+                                                                            <span>Consulter le lien Web</span>
+                                                                            <ExternalLink className="w-3 h-3" />
+                                                                        </a>
+                                                                    )}
+                                                                    {/* Text content if it's not a URL */}
+                                                                    {item.content && !item.content.startsWith('http') && item.type !== 'quiz' && (
+                                                                        <div className="bg-gray-50 p-3 rounded text-sm text-gray-700 mt-2">
+                                                                            {item.content}
+                                                                        </div>
+                                                                    )}
+                                                                    {/* Video */}
                                                                     {item.type === 'video' && item.content && (
                                                                         <a
                                                                             href={item.content}
@@ -677,6 +696,7 @@ const AdminEducation = () => {
                                                                             <ExternalLink className="w-3 h-3" />
                                                                         </a>
                                                                     )}
+                                                                    {/* Audio */}
                                                                     {item.audioUrl && (
                                                                         <a
                                                                             href={item.audioUrl}
@@ -689,6 +709,7 @@ const AdminEducation = () => {
                                                                             <ExternalLink className="w-3 h-3" />
                                                                         </a>
                                                                     )}
+                                                                    {/* PDF */}
                                                                     {item.pdfUrl && (
                                                                         <a
                                                                             href={item.pdfUrl}
@@ -701,7 +722,14 @@ const AdminEducation = () => {
                                                                             <ExternalLink className="w-3 h-3" />
                                                                         </a>
                                                                     )}
-                                                                    {/* Show "no content" only if truly no content */}
+                                                                    {/* Quiz */}
+                                                                    {item.type === 'quiz' && (
+                                                                        <div className="flex items-center gap-2 text-sm text-orange-600">
+                                                                            <FileText className="w-4 h-4" />
+                                                                            <span>Ce contenu est un quiz. Connectez-vous en tant qu'étudiant pour le tester.</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {/* Handle empty content securely */}
                                                                     {!item.content && !item.audioUrl && !item.pdfUrl && item.type !== 'quiz' && item.type !== 'live_session' && (
                                                                         <p className="text-xs text-gray-400 italic">Aucun contenu disponible</p>
                                                                     )}
