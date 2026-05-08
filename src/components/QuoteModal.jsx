@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { X, Upload, Send } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import api from '../utils/api';
 
 const QuoteModal = ({ isOpen, onClose, preSelectedService = '' }) => {
+    const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -20,12 +26,49 @@ const QuoteModal = ({ isOpen, onClose, preSelectedService = '' }) => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Quote request:', formData);
-        alert('Votre demande de devis a été envoyée avec succès ! Nous vous contacterons sous 24h.');
-        onClose();
-        // TODO: Send to backend
+        
+        if (!isAuthenticated) {
+            alert('Veuillez vous connecter pour envoyer une demande de devis.');
+            onClose();
+            navigate('/connexion', { state: { returnUrl: '/devis' } });
+            return;
+        }
+
+        setLoading(true);
+
+        const budgetMap = {
+            'moins-100k': 50000,
+            '100k-500k': 250000,
+            '500k-1m': 750000,
+            '1m-5m': 2500000,
+            'plus-5m': 5000000
+        };
+        const budgetValue = budgetMap[formData.budget] || 0;
+
+        const details = `Service: ${formData.service}
+Description: ${formData.description}
+Urgence: ${formData.urgency}
+Contact: ${formData.firstName} ${formData.lastName}
+Email: ${formData.email}
+Téléphone: ${formData.phone}`;
+
+        try {
+            await api.post('/sourcing', {
+                clientName: `${formData.firstName} ${formData.lastName}`,
+                itemRequested: formData.service || 'Demande de devis',
+                budget: budgetValue,
+                details
+            });
+            alert('Votre demande de devis a été envoyée avec succès ! Nous vous contacterons sous 24h.');
+            onClose();
+        } catch (error) {
+            console.error('Erreur lors de l\'envoi:', error);
+            alert('Une erreur est survenue lors de l\'envoi de votre demande.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (!isOpen) return null;
@@ -205,10 +248,20 @@ const QuoteModal = ({ isOpen, onClose, preSelectedService = '' }) => {
                         <div className="mt-8 flex gap-4">
                             <button
                                 type="submit"
-                                className="flex-1 bg-mdla-yellow text-mdla-black px-8 py-4 rounded-lg font-bold hover:bg-yellow-400 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+                                disabled={loading}
+                                className="flex-1 bg-mdla-yellow text-mdla-black px-8 py-4 rounded-lg font-bold hover:bg-yellow-400 transition-all transform hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             >
-                                <Send className="w-5 h-5" />
-                                Envoyer la demande
+                                {loading ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-mdla-black border-t-transparent rounded-full animate-spin"></div>
+                                        Envoi en cours...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Send className="w-5 h-5" />
+                                        Envoyer la demande
+                                    </>
+                                )}
                             </button>
                             <button
                                 type="button"

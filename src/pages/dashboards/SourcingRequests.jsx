@@ -17,9 +17,11 @@ import {
     Tag,
     Briefcase
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 
 const SourcingRequests = () => {
+    const navigate = useNavigate();
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedRequest, setSelectedRequest] = useState(null);
@@ -118,7 +120,10 @@ const SourcingRequests = () => {
                     <button className="p-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
                         <Filter className="w-5 h-5 text-gray-400" />
                     </button>
-                    <button className="bg-mdla-black text-white px-6 py-2.5 rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center gap-2 shadow-lg">
+                    <button 
+                        onClick={() => navigate('/devis')}
+                        className="bg-mdla-black text-white px-6 py-2.5 rounded-xl font-bold hover:bg-gray-800 transition-all flex items-center gap-2 shadow-lg"
+                    >
                         <PlusCircle className="w-5 h-5 text-mdla-yellow" />
                         Nouvelle Demande
                     </button>

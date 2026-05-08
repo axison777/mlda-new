@@ -54,6 +54,7 @@ import AdminUsers from './pages/dashboards/AdminUsers';
 import AdminMarketing from './pages/dashboards/AdminMarketing';
 import AdminFinance from './pages/dashboards/AdminFinance';
 import Messages from './pages/Messages';
+import PlaceholderPage from './components/PlaceholderPage';
 
 // Dashboard Router Component - renders appropriate dashboard based on role
 const DashboardRouter = () => {
@@ -270,14 +271,14 @@ function App() {
                     <Route path="transit-sourcing" element={<SourcingRequests />} />
                     <Route path="transit-nouveau" element={<CreateFolder />} />
                     <Route path="transit-messagerie" element={<TransitChat />} />
-                    <Route path="transit-archives" element={<div className="p-8">Archives (À venir)</div>} />
+                    <Route path="transit-archives" element={<PlaceholderPage title="Archives" />} />
 
                     {/* Client Routes */}
                     <Route path="cours/:courseId" element={<CourseViewer />} />
-                    <Route path="formations" element={<div className="p-8"><h1 className="text-2xl font-bold">Mes Formations</h1></div>} />
-                    <Route path="commandes" element={<div className="p-8"><h1 className="text-2xl font-bold">Mes Commandes</h1></div>} />
+                    <Route path="formations" element={<PlaceholderPage title="Mes Formations" />} />
+                    <Route path="commandes" element={<PlaceholderPage title="Mes Commandes" />} />
                     <Route path="messagerie" element={<Messages />} />
-                    <Route path="profil" element={<div className="p-8"><h1 className="text-2xl font-bold">Mon Profil</h1></div>} />
+                    <Route path="profil" element={<PlaceholderPage title="Mon Profil" />} />
                   </Route>
                 </Routes>
               </ChatProvider>
