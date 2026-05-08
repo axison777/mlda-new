@@ -24,6 +24,7 @@ import TrackingPage from './pages/TrackingPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import CheckoutPage from './pages/CheckoutPage';
+import PaymentResultPage from './pages/PaymentResultPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentFailedPage from './pages/PaymentFailedPage';
 import FormationServicePage from './pages/services/FormationServicePage';
@@ -237,6 +238,13 @@ function App() {
                     <div className="min-h-screen bg-white">
                       <Navbar />
                       <PaymentFailedPage />
+                      <Footer />
+                    </div>
+                  } />
+                  <Route path="/payment-result" element={
+                    <div className="min-h-screen bg-white">
+                      <Navbar />
+                      <PaymentResultPage />
                       <Footer />
                     </div>
                   } />

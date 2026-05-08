@@ -4,10 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { usePayment } from '../context/PaymentContext';
 import { useOrders } from '../context/OrdersContext';
-import { Smartphone, CreditCard, Wallet, Loader, CheckCircle } from 'lucide-react';
-import OrangeMoneyForm from '../components/payment/OrangeMoneyForm';
-import VisaForm from '../components/payment/VisaForm';
-import PayPalForm from '../components/payment/PayPalForm';
+import { CreditCard, Loader, ArrowRight } from 'lucide-react';
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
@@ -16,52 +13,40 @@ const CheckoutPage = () => {
     const { processPayment, isProcessing } = usePayment();
     const { createOrder } = useOrders();
 
-    const [selectedMethod, setSelectedMethod] = useState(null);
-    const [showPaymentForm, setShowPaymentForm] = useState(false);
+    const total = getCartTotal();
 
-    const paymentMethods = [
-        { id: 'orange_money', name: 'Orange Money', icon: Smartphone, color: 'orange' },
-        { id: 'visa', name: 'Carte Visa', icon: CreditCard, color: 'blue' },
-        { id: 'paypal', name: 'PayPal', icon: Wallet, color: 'blue' }
-    ];
-
-    const handleMethodSelect = (methodId) => {
-        setSelectedMethod(methodId);
-        setShowPaymentForm(true);
-    };
-
-    const handlePayment = async (paymentData) => {
+    const handlePayment = async () => {
         try {
             // 1. Create order first (unpaid)
             const order = await createOrder({
                 items: cartItems,
                 totalAmount: total,
-                type: 'product', // or dynamic based on cart items
+                type: 'product',
                 shippingDetails: {
-                    address: paymentData.address || 'Adresse Test',
-                    city: paymentData.city || 'Ville Test',
-                    phone: paymentData.phone || user?.phone
+                    address: 'Adresse de livraison', // Idéalement à demander à l'utilisateur avant
+                    city: 'Ville',
+                    phone: user?.phone || ''
                 },
-                paymentMethod: selectedMethod
+                paymentMethod: 'orange_money' // Fallback pour la BDD comme dans PaymentModal
             });
 
             // 2. Process payment with the created orderId
             const result = await processPayment({
-                ...paymentData,
                 orderId: order.id,
                 amount: total,
-                method: selectedMethod
+                method: 'orange_money' // Fallback pour la BDD
             });
 
-            if (result.success) {
+            if (result.success && result.checkoutUrl) {
                 clearCart();
-                navigate(`/payment/success/${result.transactionId}`);
+                // Redirect user to Yengapay Checkout
+                window.location.href = result.checkoutUrl;
             } else {
-                navigate('/payment/failed', { state: { error: result.error } });
+                alert('Erreur: URL de paiement introuvable ou paiement refusé');
             }
         } catch (error) {
             console.error('Checkout error:', error);
-            alert('Une erreur est survenue lors de la commande');
+            alert('Une erreur est survenue lors de la création de la commande');
         }
     };
 
@@ -91,78 +76,31 @@ const CheckoutPage = () => {
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Payment Section */}
                     <div className="lg:col-span-2">
-                        {!showPaymentForm ? (
-                            <div className="bg-white rounded-xl shadow-md p-6">
-                                <h2 className="text-xl font-bold text-mdla-black mb-6">
-                                    Choisissez votre méthode de paiement
-                                </h2>
-                                <div className="space-y-4">
-                                    {paymentMethods.map((method) => {
-                                        const Icon = method.icon;
-                                        return (
-                                            <button
-                                                key={method.id}
-                                                onClick={() => handleMethodSelect(method.id)}
-                                                className="w-full flex items-center gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-mdla-yellow transition-colors"
-                                            >
-                                                <div className={`w-12 h-12 bg-${method.color}-100 rounded-lg flex items-center justify-center`}>
-                                                    <Icon className={`w-6 h-6 text-${method.color}-600`} />
-                                                </div>
-                                                <div className="flex-1 text-left">
-                                                    <p className="font-semibold text-gray-900">{method.name}</p>
-                                                </div>
-                                                <div className="w-6 h-6 border-2 border-gray-300 rounded-full"></div>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="bg-white rounded-xl shadow-md p-6">
-                                <div className="flex items-center justify-between mb-6">
-                                    <h2 className="text-xl font-bold text-mdla-black">
-                                        {paymentMethods.find(m => m.id === selectedMethod)?.name}
-                                    </h2>
-                                    <button
-                                        onClick={() => setShowPaymentForm(false)}
-                                        className="text-sm text-gray-600 hover:text-mdla-black"
-                                    >
-                                        Changer
-                                    </button>
-                                </div>
+                        <div className="bg-white rounded-xl shadow-md p-6">
+                            <h2 className="text-xl font-bold text-mdla-black mb-6 flex items-center gap-2">
+                                <CreditCard className="w-6 h-6 text-mdla-yellow" />
+                                Paiement sécurisé
+                            </h2>
 
-                                {isProcessing ? (
-                                    <div className="text-center py-12">
-                                        <Loader className="w-12 h-12 text-mdla-yellow animate-spin mx-auto mb-4" />
-                                        <p className="text-gray-600">Traitement du paiement en cours...</p>
-                                    </div>
-                                ) : (
-                                    <>
-                                        {selectedMethod === 'orange_money' && (
-                                            <OrangeMoneyForm
-                                                amount={total}
-                                                onSubmit={handlePayment}
-                                                onCancel={() => setShowPaymentForm(false)}
-                                            />
-                                        )}
-                                        {selectedMethod === 'visa' && (
-                                            <VisaForm
-                                                amount={total}
-                                                onSubmit={handlePayment}
-                                                onCancel={() => setShowPaymentForm(false)}
-                                            />
-                                        )}
-                                        {selectedMethod === 'paypal' && (
-                                            <PayPalForm
-                                                amount={total}
-                                                onSubmit={handlePayment}
-                                                onCancel={() => setShowPaymentForm(false)}
-                                            />
-                                        )}
-                                    </>
-                                )}
-                            </div>
-                        )}
+                            <p className="text-gray-600 mb-8">
+                                Vous allez être redirigé vers l'interface sécurisée de notre partenaire de paiement (Yengapay) pour finaliser votre commande. Vous pourrez y choisir votre méthode préférée (Orange Money, Carte Bancaire, etc.).
+                            </p>
+
+                            {isProcessing ? (
+                                <div className="text-center py-12">
+                                    <Loader className="w-12 h-12 text-mdla-yellow animate-spin mx-auto mb-4" />
+                                    <p className="text-gray-600">Préparation de la page de paiement sécurisée...</p>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={handlePayment}
+                                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl transition-colors flex items-center justify-center gap-3 text-lg"
+                                >
+                                    Payer ma commande sur Yengapay
+                                    <ArrowRight className="w-6 h-6" />
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Order Summary */}
