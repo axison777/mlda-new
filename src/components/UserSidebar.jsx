@@ -70,22 +70,13 @@ const UserSidebar = ({ mockUserOverride }) => {
                     <NavItem to="/dashboard/messagerie" icon={MessageSquare} label="Messagerie" badge={unreadCount} />
                 </div>
 
-                {/* Conditional Sections */}
-                {(isStudent || isClient) && (
-                    <div className="mb-6">
-                        <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Mes Activités</p>
+                <div className="mb-6">
+                    <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Mes Activités</p>
 
-                        {isStudent && (
-                            <NavItem to="/dashboard/mes-cours" icon={BookOpen} label="Mon Apprentissage" />
-                        )}
-
-                        {isClient && (
-                            <NavItem to="/dashboard/commandes" icon={Package} label="Mes Commandes" />
-                        )}
-
-                        <NavItem to="/dashboard/paiements" icon={CreditCard} label="Mes Paiements" />
-                    </div>
-                )}
+                    <NavItem to="/dashboard/mes-cours" icon={BookOpen} label="Mon Apprentissage" />
+                    <NavItem to="/dashboard/commandes" icon={Package} label="Mes Commandes" />
+                    <NavItem to="/dashboard/paiements" icon={CreditCard} label="Mes Paiements" />
+                </div>
             </nav>
 
             {/* Footer Actions */}

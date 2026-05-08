@@ -50,7 +50,6 @@ const CheckoutPage = () => {
         }
     };
 
-    const total = getCartTotal();
 
     if (cartItems.length === 0) {
         return (
