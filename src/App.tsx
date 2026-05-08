@@ -32,6 +32,8 @@ import ImportExportServicePage from './pages/services/ImportExportServicePage';
 import RepresentationServicePage from './pages/services/RepresentationServicePage';
 import TraductionServicePage from './pages/services/TraductionServicePage';
 import UserDashboard from './pages/dashboards/UserDashboard';
+import UserOrders from './pages/dashboards/UserOrders';
+import UserPayments from './pages/dashboards/UserPayments';
 import TeacherOverview from './pages/dashboards/TeacherOverview';
 import TeacherCourses from './pages/dashboards/TeacherCourses';
 import TeacherStudents from './pages/dashboards/TeacherStudents';
@@ -284,7 +286,8 @@ function App() {
                     {/* Client Routes */}
                     <Route path="cours/:courseId" element={<CourseViewer />} />
                     <Route path="formations" element={<PlaceholderPage title="Mes Formations" />} />
-                    <Route path="commandes" element={<PlaceholderPage title="Mes Commandes" />} />
+                    <Route path="commandes" element={<UserOrders />} />
+                    <Route path="paiements" element={<UserPayments />} />
                     <Route path="messagerie" element={<Messages />} />
                     <Route path="profil" element={<PlaceholderPage title="Mon Profil" />} />
                   </Route>

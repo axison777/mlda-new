@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../../utils/api';
 import {
     DollarSign,
     TrendingUp,
@@ -34,20 +35,62 @@ import {
 const AdminFinance = () => {
     const [selectedPeriod, setSelectedPeriod] = useState('month');
     const [selectedCategory, setSelectedCategory] = useState('all');
+    const [transactions, setTransactions] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Mock Data - KPIs
-    const kpiData = {
-        totalRevenue: 125450000, // FCFA
-        coursesRevenue: 45780000,
-        shopRevenue: 58920000,
-        importsRevenue: 20750000,
-        monthlyGrowth: 12.5,
-        pendingPayments: 8500000,
-        completedTransactions: 156,
-        pendingTransactions: 12
+    useEffect(() => {
+        fetchTransactions();
+    }, []);
+
+    const fetchTransactions = async () => {
+        try {
+            const { data } = await api.get('/payments/all');
+            // Transformer les données de l'API pour matcher le format d'affichage
+            const formattedData = data.map(payment => {
+                const isCourse = payment.metadata?.courseId || payment.metadata?.learningMode;
+                const type = isCourse ? 'cours' : (payment.order?.type === 'vehicle' || payment.order?.type === 'container' ? 'import' : 'boutique');
+                let itemName = 'Article/Service';
+                
+                if (isCourse && payment.metadata?.courseId) itemName = `Formation ID: ${payment.metadata.courseId}`;
+                else if (payment.order?.type) itemName = payment.order.type;
+
+                return {
+                    id: payment.transactionId || `TRX-${payment.id}`,
+                    date: new Date(payment.createdAt).toLocaleDateString('fr-FR'),
+                    client: payment.user?.name || 'Inconnu',
+                    category: type,
+                    item: itemName,
+                    amount: parseFloat(payment.amount),
+                    status: payment.status,
+                    method: payment.method
+                };
+            });
+            setTransactions(formattedData);
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Mock Data - Revenue Evolution
+    // Calculate KPIs dynamically
+    const totalRevenue = transactions.filter(t => t.status === 'completed' || t.status === 'DONE').reduce((acc, t) => acc + t.amount, 0);
+    const coursesRevenue = transactions.filter(t => (t.status === 'completed' || t.status === 'DONE') && t.category === 'cours').reduce((acc, t) => acc + t.amount, 0);
+    const shopRevenue = transactions.filter(t => (t.status === 'completed' || t.status === 'DONE') && t.category === 'boutique').reduce((acc, t) => acc + t.amount, 0);
+    const importsRevenue = transactions.filter(t => (t.status === 'completed' || t.status === 'DONE') && t.category === 'import').reduce((acc, t) => acc + t.amount, 0);
+    
+    const kpiData = {
+        totalRevenue,
+        coursesRevenue,
+        shopRevenue,
+        importsRevenue,
+        monthlyGrowth: 0, // Needs historical data comparison
+        pendingPayments: transactions.filter(t => t.status === 'pending' || t.status === 'INITIALIZED').reduce((acc, t) => acc + t.amount, 0),
+        completedTransactions: transactions.filter(t => t.status === 'completed' || t.status === 'DONE').length,
+        pendingTransactions: transactions.filter(t => t.status === 'pending' || t.status === 'INITIALIZED').length
+    };
+
+    // Keep Mock Data for Chart Evolution for now until we have real month-by-month history API
     const revenueEvolution = [
         { month: 'Jan', cours: 3200000, boutique: 4500000, import: 1800000 },
         { month: 'Fév', cours: 3800000, boutique: 5200000, import: 2100000 },
@@ -58,27 +101,14 @@ const AdminFinance = () => {
         { month: 'Juil', cours: 4578000, boutique: 5892000, import: 2075000 },
     ];
 
-    // Mock Data - Revenue Distribution
     const revenueDistribution = [
-        { name: 'Formations', value: 45780000, color: '#3B82F6' },
-        { name: 'Boutique', value: 58920000, color: '#FFCC00' },
-        { name: 'Import/Export', value: 20750000, color: '#10B981' },
-    ];
-
-    // Mock Data - Recent Transactions
-    const recentTransactions = [
-        { id: 'TRX-8821', date: '2024-03-15', client: 'Jean Dupont', category: 'cours', item: 'Allemand B1 - Complet', amount: 125000, status: 'completed', method: 'Orange Money' },
-        { id: 'TRX-8822', date: '2024-03-15', client: 'Marie Koné', category: 'boutique', item: 'iPhone 15 Pro', amount: 850000, status: 'completed', method: 'Visa' },
-        { id: 'TRX-8823', date: '2024-03-14', client: 'SARL Transport', category: 'import', item: 'Toyota RAV4 2020', amount: 12500000, status: 'pending', method: 'Virement' },
-        { id: 'TRX-8824', date: '2024-03-14', client: 'Sophie Martin', category: 'cours', item: 'Allemand A2', amount: 85000, status: 'completed', method: 'PayPal' },
-        { id: 'TRX-8825', date: '2024-03-13', client: 'Auto Import', category: 'import', item: 'Mercedes C300', amount: 15200000, status: 'completed', method: 'Virement' },
-        { id: 'TRX-8826', date: '2024-03-13', client: 'Fatou Sow', category: 'boutique', item: 'MacBook Pro M3', amount: 1250000, status: 'pending', method: 'Orange Money' },
-        { id: 'TRX-8827', date: '2024-03-12', client: 'Paul Diallo', category: 'cours', item: 'Business Allemand', amount: 150000, status: 'completed', method: 'Visa' },
-        { id: 'TRX-8828', date: '2024-03-12', client: 'BTP Construction', category: 'import', item: 'Matériel Lourd', amount: 8900000, status: 'failed', method: 'Virement' },
+        { name: 'Formations', value: coursesRevenue, color: '#3B82F6' },
+        { name: 'Boutique', value: shopRevenue, color: '#FFCC00' },
+        { name: 'Import/Export', value: importsRevenue, color: '#10B981' },
     ];
 
     const formatCurrency = (value) => {
-        return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF', minimumFractionDigits: 0 }).format(value);
+        return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF', minimumFractionDigits: 0 }).format(value || 0);
     };
 
     const getCategoryIcon = (category) => {
@@ -102,15 +132,19 @@ const AdminFinance = () => {
     const getStatusBadge = (status) => {
         switch (status) {
             case 'completed':
-                return <span className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+            case 'DONE':
+                return <span className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full w-fit">
                     <CheckCircle className="w-3 h-3" /> Complété
                 </span>;
             case 'pending':
-                return <span className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
+            case 'INITIALIZED':
+                return <span className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full w-fit">
                     <Clock className="w-3 h-3" /> En attente
                 </span>;
             case 'failed':
-                return <span className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">
+            case 'FAILED':
+            case 'CANCELED':
+                return <span className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full w-fit">
                     <XCircle className="w-3 h-3" /> Échoué
                 </span>;
             default:
@@ -119,8 +153,17 @@ const AdminFinance = () => {
     };
 
     const filteredTransactions = selectedCategory === 'all'
-        ? recentTransactions
-        : recentTransactions.filter(t => t.category === selectedCategory);
+        ? transactions
+        : transactions.filter(t => t.category === selectedCategory);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mdla-yellow"></div>
+                <p className="mt-4 text-gray-500 animate-pulse font-medium">Chargement des données financières...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="p-6 space-y-6">

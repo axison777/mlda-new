@@ -8,7 +8,8 @@ import {
     Package,
     LogOut,
     Compass,
-    Settings
+    Settings,
+    CreditCard
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useChat } from '../context/ChatContext';
@@ -81,6 +82,8 @@ const UserSidebar = ({ mockUserOverride }) => {
                         {isClient && (
                             <NavItem to="/dashboard/commandes" icon={Package} label="Mes Commandes" />
                         )}
+
+                        <NavItem to="/dashboard/paiements" icon={CreditCard} label="Mes Paiements" />
                     </div>
                 )}
             </nav>
