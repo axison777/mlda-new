@@ -57,6 +57,9 @@ import AdminUsers from './pages/dashboards/AdminUsers';
 import AdminMarketing from './pages/dashboards/AdminMarketing';
 import AdminFinance from './pages/dashboards/AdminFinance';
 import Messages from './pages/Messages';
+import UserProfile from './pages/dashboards/UserProfile';
+import UserFormations from './pages/dashboards/UserFormations';
+import TransitArchives from './pages/dashboards/TransitArchives';
 import PlaceholderPage from './components/PlaceholderPage';
 
 // Dashboard Router Component - renders appropriate dashboard based on role
@@ -281,15 +284,15 @@ function App() {
                     <Route path="transit-sourcing" element={<SourcingRequests />} />
                     <Route path="transit-nouveau" element={<CreateFolder />} />
                     <Route path="transit-messagerie" element={<TransitChat />} />
-                    <Route path="transit-archives" element={<PlaceholderPage title="Archives" />} />
+                    <Route path="transit-archives" element={<TransitArchives />} />
 
                     {/* Client Routes */}
                     <Route path="cours/:courseId" element={<CourseViewer />} />
-                    <Route path="formations" element={<PlaceholderPage title="Mes Formations" />} />
+                    <Route path="formations" element={<UserFormations />} />
                     <Route path="commandes" element={<UserOrders />} />
                     <Route path="paiements" element={<UserPayments />} />
                     <Route path="messagerie" element={<Messages />} />
-                    <Route path="profil" element={<PlaceholderPage title="Mon Profil" />} />
+                    <Route path="profil" element={<UserProfile />} />
                   </Route>
                 </Routes>
               </ChatProvider>
