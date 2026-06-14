@@ -134,6 +134,7 @@ const AdminShop = () => {
             fetchProducts();
         } catch (error) {
             console.error('Error saving product:', error);
+            alert("Erreur lors de l'enregistrement du produit : " + (error.response?.data?.message || error.message));
         }
     };
 
