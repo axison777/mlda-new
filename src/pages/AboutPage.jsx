@@ -5,12 +5,12 @@ const AboutPage = () => {
         {
             icon: GraduationCap,
             title: 'Élèves et Étudiants',
-            description: 'Accompagnement démarches administratives, inscription universitaire, visa. Frais de scolarité bas en Allemagne.',
+            description: 'Accompagnement démarches administratives, inscription universitaire, et obtention de visa.',
             features: [
                 'Aide aux démarches administratives',
                 'Inscription universitaire simplifiée',
                 'Assistance visa étudiant',
-                'Frais de scolarité abordables'
+                'Insertion estudiantine'
             ]
         },
         {
@@ -32,7 +32,7 @@ const AboutPage = () => {
                 'Formation duale reconnue',
                 'Secteur santé et social',
                 'Opportunités techniques',
-                'Insertion professionnelle garantie'
+                'Insertion professionnelle et sociale'
             ]
         }
     ];
@@ -108,13 +108,13 @@ const AboutPage = () => {
                         <div className="relative">
                             <div className="relative overflow-hidden rounded-2xl shadow-2xl">
                                 <img
-                                    src="https://placehold.co/600x800/1A1A1A/FFCC00?text=Dr.+Amadou+TRAORE%0ADirecteur+MDLA"
-                                    alt="Dr. Amadou TRAORE - Directeur MDLA"
+                                    src="https://placehold.co/600x800/1A1A1A/FFCC00?text=+R.Gustave+SAWADOGO%0AFONDATEUR+MDLA"
+                                    alt="R. Gustave Sawadogo - Directeur MDLA"
                                     className="w-full h-auto object-cover"
                                 />
                                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-mdla-black to-transparent p-6">
-                                    <h3 className="text-2xl font-bold text-white">Dr. Amadou TRAORE</h3>
-                                    <p className="text-mdla-yellow font-semibold">Directeur Général - MDLA</p>
+                                    <h3 className="text-2xl font-bold text-white">R. Gustave SAWADOGO</h3>
+                                    <p className="text-mdla-yellow font-semibold">FONDATEUR - MDLA</p>
                                 </div>
                             </div>
                         </div>
@@ -148,8 +148,8 @@ const AboutPage = () => {
                                         Ensemble, construisons votre avenir. Ensemble, réalisons vos ambitions.
                                     </p>
                                     <p className="text-right">
-                                        <span className="block font-bold text-mdla-black">Dr. Amadou TRAORE</span>
-                                        <span className="block text-sm text-gray-600">Directeur Général</span>
+                                        <span className="block font-bold text-mdla-black">R. Gustave SAWADOGO</span>
+                                        <span className="block text-sm text-gray-600">FONDATEUR</span>
                                     </p>
                                 </div>
                                 <div className="absolute -right-4 -bottom-4 text-8xl text-mdla-yellow/20 font-serif">"</div>

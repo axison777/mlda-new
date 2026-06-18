@@ -5,7 +5,7 @@ const TargetsSection = () => {
     {
       icon: BookOpen,
       title: 'Élèves et Étudiants',
-      description: 'Accompagnement inscriptions universitaires, frais de scolarité réduits.',
+      description: 'Accompagnement inscriptions universitaires.',
       bgColor: 'bg-blue-50',
     },
     {

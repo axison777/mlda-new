@@ -114,7 +114,7 @@ const CheckoutPage = () => {
                                             {item.name} x{item.quantity}
                                         </span>
                                         <span className="font-semibold">
-                                            {(item.price * item.quantity).toLocaleString()} FCFA
+                                            {((item.discount_price || item.price || 0) * item.quantity).toLocaleString()} FCFA
                                         </span>
                                     </div>
                                 ))}

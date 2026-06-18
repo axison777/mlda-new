@@ -15,11 +15,11 @@ const ServicesPage = () => {
         {
             icon: Package,
             title: 'Représentation & Sourcing',
-            description: 'Représentation de produits sur le marché germanophone (agroalimentaire, santé...). Recherche de véhicules et pièces détachées.',
+            description: 'Représentation de produits sur le marché germanophone (agroalimentaire, santé...). Recherche de marchandises et véhicules.',
             details: [
                 'Représentation commerciale en Allemagne',
                 'Sourcing de produits agroalimentaires',
-                'Import de véhicules allemands',
+                'Import de marchandises et véhicules',
                 'Recherche de pièces détachées',
                 'Négociation avec fournisseurs'
             ]

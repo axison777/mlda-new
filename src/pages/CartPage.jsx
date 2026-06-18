@@ -130,15 +130,15 @@ const CartPage = () => {
                                             {/* Price */}
                                             <div className="text-right">
                                                 <p className="text-xl font-bold text-mdla-black">
-                                                    {((item.discount_price || item.price) * item.quantity).toLocaleString()} FCFA
+                                                    {((item.discount_price || item.price || 0) * item.quantity).toLocaleString()} FCFA
                                                 </p>
                                                 {item.discount_price && (
                                                     <p className="text-sm text-gray-400 line-through">
-                                                        {(item.price * item.quantity).toLocaleString()} FCFA
+                                                        {((item.price || 0) * item.quantity).toLocaleString()} FCFA
                                                     </p>
                                                 )}
                                                 <p className="text-xs text-gray-500 mt-1">
-                                                    {(item.discount_price || item.price).toLocaleString()} FCFA / unité
+                                                    {(item.discount_price || item.price || 0).toLocaleString()} FCFA / unité
                                                 </p>
                                             </div>
                                         </div>

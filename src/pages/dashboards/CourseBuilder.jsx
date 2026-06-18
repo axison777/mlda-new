@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCourses } from '../../context/CoursesContext';
+import { useAuth } from '../../context/AuthContext';
 import {
     ChevronRight,
     Save,
@@ -18,6 +19,7 @@ import api from '../../utils/api';
 const CourseBuilder = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const {
         getCourseById,
         createCourse,
@@ -29,6 +31,8 @@ const CourseBuilder = () => {
     } = useCourses();
     const [activeStep, setActiveStep] = useState(1);
     const [loading, setLoading] = useState(false);
+
+    const redirectPath = user?.role === 'admin' ? '/dashboard/formation' : '/dashboard/mes-cours';
 
     // Initial state
     const [courseData, setCourseData] = useState({
@@ -221,7 +225,7 @@ const CourseBuilder = () => {
             // Submit for review
             await api.post(`/courses/${currentCourseId}/submit`);
             alert('Cours envoyé pour validation !');
-            navigate('/dashboard/mes-cours');
+            navigate(redirectPath);
         } catch (error) {
             console.error('Error submitting course:', error);
             alert(error.response?.data?.message || 'Erreur lors de la soumission');
@@ -236,7 +240,7 @@ const CourseBuilder = () => {
             <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
                 <div className="flex items-center gap-4">
                     <button
-                        onClick={() => navigate('/dashboard/mes-cours')}
+                        onClick={() => navigate(redirectPath)}
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                     >
                         <ArrowLeft className="w-5 h-5 text-gray-500" />

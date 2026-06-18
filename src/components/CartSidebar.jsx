@@ -118,11 +118,11 @@ const CartSidebar = () => {
                                             {/* Price */}
                                             <div className="text-right">
                                                 <p className="font-bold text-mdla-black">
-                                                    {((item.discount_price || item.price) * item.quantity).toLocaleString()} FCFA
+                                                    {((item.discount_price || item.price || 0) * item.quantity).toLocaleString()} FCFA
                                                 </p>
                                                 {item.discount_price && (
                                                     <p className="text-xs text-gray-400 line-through">
-                                                        {(item.price * item.quantity).toLocaleString()} FCFA
+                                                        {((item.price || 0) * item.quantity).toLocaleString()} FCFA
                                                     </p>
                                                 )}
                                             </div>

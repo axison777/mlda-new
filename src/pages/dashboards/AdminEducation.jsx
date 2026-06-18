@@ -21,7 +21,8 @@ import {
     FileText,
     Video,
     Music,
-    ExternalLink
+    ExternalLink,
+    PlusCircle
 } from 'lucide-react';
 import api from '../../utils/api';
 import AttendanceTab from '../../components/AttendanceTab';
@@ -299,10 +300,19 @@ const AdminEducation = () => {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="p-6 border-b border-gray-100">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-semibold text-gray-900">Tous les cours</h2>
-                            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                                {allCourses.filter(c => statusFilter === 'all' || c.status === statusFilter).length} cours
-                            </span>
+                            <div className="flex items-center gap-2">
+                                <h2 className="text-lg font-semibold text-gray-900">Tous les cours</h2>
+                                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                    {allCourses.filter(c => statusFilter === 'all' || c.status === statusFilter).length} cours
+                                </span>
+                            </div>
+                            <button
+                                onClick={() => navigate('/dashboard/creer-cours')}
+                                className="bg-mdla-yellow hover:bg-yellow-400 text-mdla-black px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 text-sm shadow-md"
+                            >
+                                <PlusCircle className="w-4 h-4" />
+                                Créer un cours
+                            </button>
                         </div>
 
                         {/* Filters */}

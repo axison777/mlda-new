@@ -136,7 +136,7 @@ function App() {
                       <Footer />
                     </div>
                   } />
-                  <Route path="/services/representation" element={
+                  <Route path="/services/b2b" element={
                     <div className="min-h-screen bg-white">
                       <Navbar />
                       <CartSidebar />

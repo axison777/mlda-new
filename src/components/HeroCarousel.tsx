@@ -34,8 +34,8 @@ const HeroCarousel = () => {
       imageAlt: 'Professionnels dans un environnement médical',
     },
     {
-      title: 'Import-Export & Véhicules Allemands',
-      subtitle: 'Achat de véhicules, pièces détachées et représentation commerciale.',
+      title: 'Import et Export',
+      subtitle: 'Électronique, électroménager, agroalimentaire, véhicules, cosmétiques et plus.',
       buttonText: 'Visiter la Boutique',
       buttonLink: '/boutique',
       imageUrl: imageVoiture,

@@ -13,7 +13,7 @@ const Navbar = () => {
 
   const servicesMenu = [
     { label: 'Formation & Langue', href: '/services/formation' },
-    { label: 'Import / Export & Véhicules', href: '/services/import-export' },
+    { label: 'Import et Export', href: '/services/import-export' },
     { label: 'Représentation & B2B', href: '/services/b2b' },
     { label: 'Traduction & Démarches', href: '/services/traduction' },
   ];
@@ -79,17 +79,19 @@ const Navbar = () => {
 
           {/* Cart Icon & Connexion */}
           <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="relative text-mdla-black hover:text-mdla-yellow transition-colors"
-            >
-              <ShoppingCart className="w-6 h-6" />
-              {getCartCount() > 0 && (
-                <span className="absolute -top-2 -right-2 bg-mdla-red text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {getCartCount()}
-                </span>
-              )}
-            </button>
+            {isAuthenticated && (
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="relative text-mdla-black hover:text-mdla-yellow transition-colors"
+              >
+                <ShoppingCart className="w-6 h-6" />
+                {getCartCount() > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-mdla-red text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {getCartCount()}
+                  </span>
+                )}
+              </button>
+            )}
 
             {/* User Menu */}
             {isAuthenticated ? (

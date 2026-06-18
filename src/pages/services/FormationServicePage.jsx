@@ -7,11 +7,11 @@ const FormationServicePage = () => {
     const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
     const levels = [
-        { name: 'A1 - Débutant', duration: '3 mois', price: '150 000 FCFA', description: 'Bases de la langue allemande' },
-        { name: 'A2 - Élémentaire', duration: '3 mois', price: '175 000 FCFA', description: 'Communication simple et quotidienne' },
-        { name: 'B1 - Intermédiaire', duration: '4 mois', price: '200 000 FCFA', description: 'Conversations courantes et professionnelles' },
-        { name: 'B2 - Avancé', duration: '4 mois', price: '225 000 FCFA', description: 'Maîtrise approfondie de la langue' },
-        { name: 'C1 - Autonome', duration: '5 mois', price: '250 000 FCFA', description: 'Expression fluide et spontanée' }
+        { name: 'A1 - Débutant', duration: '3 mois', description: 'Bases de la langue allemande' },
+        { name: 'A2 - Élémentaire', duration: '3 mois', description: 'Communication simple et quotidienne' },
+        { name: 'B1 - Intermédiaire', duration: '4 mois', description: 'Conversations courantes et professionnelles' },
+        { name: 'B2 - Avancé', duration: '4 mois', description: 'Maîtrise approfondie de la langue' },
+        { name: 'C1 - Autonome', duration: '5 mois', description: 'Expression fluide et spontanée' }
     ];
 
     const advantages = [
@@ -112,8 +112,8 @@ const FormationServicePage = () => {
                                     <p className="text-sm text-gray-600">{level.description}</p>
                                 </div>
                                 <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-                                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Prix de la formation</p>
-                                    <p className="text-lg font-bold text-mdla-yellow">À partir de {level.price}</p>
+                                    
+
                                 </div>
                             </div>
                         ))}

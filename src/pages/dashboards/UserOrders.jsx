@@ -16,7 +16,9 @@ import {
     Calendar,
     ChevronRight,
     Search,
-    User
+    User,
+    ArrowRight,
+    CheckCircle
 } from 'lucide-react';
 import { getClientStatus, getStatusPhase } from '../../utils/logisticsHelper';
 

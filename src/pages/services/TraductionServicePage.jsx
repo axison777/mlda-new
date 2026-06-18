@@ -11,19 +11,18 @@ const TraductionServicePage = () => {
             icon: FileText,
             title: 'Documents officiels',
             description: 'Actes de naissance, diplômes, certificats',
-            price: 'À partir de 25€'
         },
         {
             icon: Globe,
             title: 'Documents commerciaux',
             description: 'Contrats, factures, documents d\'entreprise',
-            price: 'À partir de 30€'
+            
         },
         {
             icon: Award,
             title: 'Documents académiques',
             description: 'Relevés de notes, lettres de motivation',
-            price: 'À partir de 20€'
+            
         },
         {
             icon: Languages,
@@ -208,52 +207,6 @@ const TraductionServicePage = () => {
                                 <p className="text-sm text-gray-300">{item.description}</p>
                             </div>
                         ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Pricing */}
-            <section className="py-16 bg-white">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold text-mdla-black mb-12 text-center">
-                        Tarification
-                    </h2>
-                    <div className="bg-gradient-to-br from-mdla-yellow to-yellow-400 rounded-xl p-8">
-                        <div className="grid md:grid-cols-2 gap-6 mb-6">
-                            <div className="bg-white rounded-lg p-6">
-                                <h3 className="font-bold text-mdla-black mb-4">Traduction standard</h3>
-                                <p className="text-3xl font-bold text-mdla-black mb-2">0,08€</p>
-                                <p className="text-sm text-gray-600 mb-4">par mot</p>
-                                <ul className="space-y-2 text-sm text-gray-700">
-                                    <li className="flex items-center gap-2">
-                                        <CheckCircle className="w-4 h-4 text-mdla-yellow" />
-                                        Délai: 3-5 jours
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <CheckCircle className="w-4 h-4 text-mdla-yellow" />
-                                        Relecture incluse
-                                    </li>
-                                </ul>
-                            </div>
-                            <div className="bg-white rounded-lg p-6">
-                                <h3 className="font-bold text-mdla-black mb-4">Traduction express</h3>
-                                <p className="text-3xl font-bold text-mdla-black mb-2">0,12€</p>
-                                <p className="text-sm text-gray-600 mb-4">par mot</p>
-                                <ul className="space-y-2 text-sm text-gray-700">
-                                    <li className="flex items-center gap-2">
-                                        <CheckCircle className="w-4 h-4 text-mdla-yellow" />
-                                        Délai: 24-48h
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <CheckCircle className="w-4 h-4 text-mdla-yellow" />
-                                        Priorité maximale
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <p className="text-center text-sm text-mdla-black">
-                            Certification officielle: +15€ par document
-                        </p>
                     </div>
                 </div>
             </section>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, User, Phone, UserPlus, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import allemagne1Img from '../assets/allemagne_1.jpg';
 
 const SignupPage = () => {
     const navigate = useNavigate();
@@ -97,32 +98,45 @@ const SignupPage = () => {
     return (
         <div className="min-h-screen bg-gray-50 flex">
             {/* Left Side - Image/Illustration */}
-            <div className="hidden lg:flex lg:flex-1 bg-gradient-to-br from-mdla-yellow to-yellow-400 items-center justify-center p-12">
-                <div className="max-w-md text-center">
+            <div 
+                className="hidden lg:flex lg:flex-1 items-center justify-center p-12 relative overflow-hidden"
+                style={{
+                    backgroundImage: `url(${allemagne1Img})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                }}
+            >
+                {/* Yellow overlay with opacity */}
+                <div 
+                    className="absolute inset-0 bg-[#FFCC00] opacity-85" 
+                    style={{ backgroundColor: 'rgba(255, 204, 0, 0.85)' }}
+                />
+
+                <div className="max-w-md text-center relative z-10">
                     <h3 className="text-4xl font-bold text-mdla-black mb-6">
                         Rejoignez MDLA
                     </h3>
-                    <p className="text-lg text-mdla-black/80 mb-8">
+                    <p className="text-lg text-mdla-black/90 mb-8 font-semibold">
                         Créez votre compte et accédez à tous nos services
                     </p>
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center flex-shrink-0">
                                 <span className="text-mdla-yellow font-bold">1</span>
                             </div>
-                            <p className="text-mdla-black">Inscription rapide et gratuite</p>
+                            <p className="text-mdla-black font-semibold">Inscription rapide et gratuite</p>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center flex-shrink-0">
                                 <span className="text-mdla-yellow font-bold">2</span>
                             </div>
-                            <p className="text-mdla-black">Accès à tous nos services</p>
+                            <p className="text-mdla-black font-semibold">Accès à tous nos services</p>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center flex-shrink-0">
                                 <span className="text-mdla-yellow font-bold">3</span>
                             </div>
-                            <p className="text-mdla-black">Support personnalisé</p>
+                            <p className="text-mdla-black font-semibold">Support personnalisé</p>
                         </div>
                     </div>
                 </div>

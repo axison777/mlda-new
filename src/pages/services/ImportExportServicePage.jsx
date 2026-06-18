@@ -1,30 +1,29 @@
 import { Link } from 'react-router-dom';
-import { Car, Ship, CheckCircle, Clock, Shield, TrendingUp } from 'lucide-react';
+import { Car, Ship, CheckCircle, Clock, Shield, TrendingUp, Smartphone, Home, Coffee, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import QuoteModal from '../../components/QuoteModal';
 
 const ImportExportServicePage = () => {
     const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
-    const vehicleTypes = [
-        { name: 'Berlines', description: 'Mercedes, BMW, Audi, VW', icon: Car },
-        { name: 'SUV & 4x4', description: 'Land Rover, Porsche, Range Rover', icon: Car },
-        { name: 'Utilitaires', description: 'Sprinter, Transit, Crafter', icon: Car },
-        { name: 'Véhicules de luxe', description: 'Porsche, Ferrari, Lamborghini', icon: Car }
+    const productTypes = [
+        { name: 'Électronique', description: 'Smartphones, ordinateurs, accessoires', icon: Smartphone },
+        { name: 'Électroménager', description: 'Réfrigérateurs, fours, climatiseurs', icon: Home },
+        { name: 'Agroalimentaire', description: 'Produits transformés, denrées', icon: Coffee },
+        { name: 'Véhicules', description: 'Berlines, SUV, utilitaires', icon: Car },
+        { name: 'Cosmétiques', description: 'Soins, beauté, parfums', icon: Sparkles }
     ];
 
     const processSteps = [
         { step: 1, title: 'Consultation', description: 'Définition de vos besoins et budget' },
-        { step: 2, title: 'Recherche', description: 'Sourcing du véhicule en Allemagne' },
+        { step: 2, title: 'Recherche', description: 'Sourcing des marchandises en Allemagne' },
         { step: 3, title: 'Achat', description: 'Négociation et acquisition' },
         { step: 4, title: 'Transport', description: 'Acheminement maritime vers l\'Afrique' },
-        { step: 5, title: 'Dédouanement', description: 'Formalités douanières' },
-        { step: 6, title: 'Livraison', description: 'Réception de votre véhicule' }
+        { step: 5, title: 'Livraison', description: 'Réception de vos marchandises' }
     ];
 
     const advantages = [
-        { icon: Shield, title: 'Garantie qualité', description: 'Véhicules vérifiés et certifiés' },
-        { icon: TrendingUp, title: 'Prix compétitifs', description: 'Économisez jusqu\'à 40%' },
+        { icon: Shield, title: 'Garantie qualité', description: 'Marchandises vérifiées et certifiées' },
         { icon: Clock, title: 'Délais respectés', description: 'Livraison en 4-8 semaines' },
         { icon: CheckCircle, title: 'Service complet', description: 'De A à Z sans souci' }
     ];
@@ -37,16 +36,16 @@ const ImportExportServicePage = () => {
                     <div className="text-center">
                         <Ship className="w-20 h-20 text-mdla-yellow mx-auto mb-6" />
                         <h1 className="text-5xl font-bold text-white mb-4">
-                            Import/Export & Véhicules
+                            Import et Export
                         </h1>
                         <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-                            Importez votre véhicule d'Allemagne en toute sérénité. Qualité allemande, prix abordables.
+                            Importez vos marchandises d'Allemagne en toute sérénité. Qualité allemande, prix abordables.
                         </p>
                         <button
                             onClick={() => setIsQuoteModalOpen(true)}
                             className="bg-mdla-yellow text-mdla-black px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-400 transition-all transform hover:scale-105"
                         >
-                            Commander un véhicule
+                            Commander des marchandises
                         </button>
                     </div>
                 </div>
@@ -58,7 +57,7 @@ const ImportExportServicePage = () => {
                     <h2 className="text-3xl font-bold text-mdla-black mb-12 text-center">
                         Pourquoi importer avec MDLA ?
                     </h2>
-                    <div className="grid md:grid-cols-4 gap-8">
+                    <div className="grid md:grid-cols-3 gap-8">
                         {advantages.map((advantage, index) => {
                             const Icon = advantage.icon;
                             return (
@@ -79,10 +78,10 @@ const ImportExportServicePage = () => {
             <section className="py-16 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl font-bold text-mdla-black mb-12 text-center">
-                        Types de Véhicules Disponibles
+                        Types de Produits Disponibles
                     </h2>
-                    <div className="grid md:grid-cols-4 gap-6">
-                        {vehicleTypes.map((type, index) => {
+                    <div className="grid md:grid-cols-5 gap-6">
+                        {productTypes.map((type, index) => {
                             const Icon = type.icon;
                             return (
                                 <div
@@ -105,7 +104,7 @@ const ImportExportServicePage = () => {
                     <h2 className="text-3xl font-bold text-mdla-black mb-12 text-center">
                         Notre Processus d'Import
                     </h2>
-                    <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-6">
+                    <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
                         {processSteps.map((item, index) => (
                             <div key={index} className="text-center">
                                 <div className="w-16 h-16 bg-mdla-yellow rounded-full flex items-center justify-center mx-auto mb-4">
@@ -119,45 +118,12 @@ const ImportExportServicePage = () => {
                 </div>
             </section>
 
-            {/* Pricing Info */}
-            <section className="py-16 bg-gradient-to-br from-mdla-yellow to-yellow-400">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl font-bold text-mdla-black mb-6">
-                        Tarifs Transparents
-                    </h2>
-                    <div className="bg-white rounded-xl p-8 shadow-lg">
-                        <div className="grid md:grid-cols-3 gap-6 mb-6">
-                            <div>
-                                <p className="text-sm text-gray-600 mb-2">Prix véhicule</p>
-                                <p className="text-2xl font-bold text-mdla-black">Variable</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-2">Transport maritime</p>
-                                <p className="text-2xl font-bold text-mdla-black">800-1200€</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-2">Frais de service</p>
-                                <p className="text-2xl font-bold text-mdla-black">500€</p>
-                            </div>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-6">
-                            Délai moyen de livraison : 4-8 semaines selon destination
-                        </p>
-                        <button
-                            onClick={() => setIsQuoteModalOpen(true)}
-                            className="bg-mdla-black text-white px-8 py-3 rounded-lg font-bold hover:bg-gray-800 transition-all"
-                        >
-                            Demander un devis personnalisé
-                        </button>
-                    </div>
-                </div>
-            </section>
 
             {/* CTA Section */}
             <section className="py-16 bg-mdla-black">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-3xl font-bold text-white mb-4">
-                        Prêt à importer votre véhicule ?
+                        Prêt à importer vos marchandises ?
                     </h2>
                     <p className="text-gray-300 mb-8">
                         Contactez-nous pour une consultation gratuite et un devis personnalisé
@@ -183,7 +149,7 @@ const ImportExportServicePage = () => {
             <QuoteModal
                 isOpen={isQuoteModalOpen}
                 onClose={() => setIsQuoteModalOpen(false)}
-                preSelectedService="Import/Export & Véhicules"
+                preSelectedService="Import et Export"
             />
         </div>
     );

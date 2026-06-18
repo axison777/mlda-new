@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, LogIn, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import allemagneImg from '../assets/allemagne.jpg';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -159,32 +160,45 @@ const LoginPage = () => {
             </div>
 
             {/* Right Side - Image/Illustration */}
-            <div className="hidden lg:flex lg:flex-1 bg-gradient-to-br from-mdla-yellow to-yellow-400 items-center justify-center p-12">
-                <div className="max-w-md text-center">
+            <div 
+                className="hidden lg:flex lg:flex-1 items-center justify-center p-12 relative overflow-hidden"
+                style={{
+                    backgroundImage: `url(${allemagneImg})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                }}
+            >
+                {/* Yellow overlay with opacity */}
+                <div 
+                    className="absolute inset-0 bg-[#FFCC00] opacity-85" 
+                    style={{ backgroundColor: 'rgba(255, 204, 0, 0.85)' }}
+                />
+
+                <div className="max-w-md text-center relative z-10">
                     <h3 className="text-4xl font-bold text-mdla-black mb-6">
                         Bienvenue chez MDLA
                     </h3>
-                    <p className="text-lg text-mdla-black/80 mb-8">
+                    <p className="text-lg text-mdla-black/90 mb-8 font-semibold">
                         Votre partenaire de confiance pour l'Allemagne et l'Afrique
                     </p>
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center flex-shrink-0">
                                 <span className="text-mdla-yellow font-bold">✓</span>
                             </div>
-                            <p className="text-mdla-black">Formation en allemand</p>
+                            <p className="text-mdla-black font-semibold">Formation en allemand</p>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center flex-shrink-0">
                                 <span className="text-mdla-yellow font-bold">✓</span>
                             </div>
-                            <p className="text-mdla-black">Import/Export de véhicules</p>
+                            <p className="text-mdla-black font-semibold">Import et Export</p>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-mdla-black rounded-full flex items-center justify-center flex-shrink-0">
                                 <span className="text-mdla-yellow font-bold">✓</span>
                             </div>
-                            <p className="text-mdla-black">Services de traduction</p>
+                            <p className="text-mdla-black font-semibold">Services de traduction</p>
                         </div>
                     </div>
                 </div>

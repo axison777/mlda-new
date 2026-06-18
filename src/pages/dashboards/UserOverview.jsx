@@ -128,7 +128,7 @@ const UserOverview = () => {
                                 <Package className="w-10 h-10 text-mdla-yellow" />
                             </div>
                             <h2 className="text-2xl font-bold text-gray-900 mb-2">Commander / Importer</h2>
-                            <p className="text-gray-500 mb-8">Importez des véhicules ou marchandises depuis l'Europe en toute simplicité.</p>
+                            <p className="text-gray-500 mb-8">Importez et exportez vos marchandises (électronique, véhicules, etc.) en toute simplicité.</p>
                             <span className="inline-flex items-center gap-2 text-mdla-yellow font-bold group-hover:gap-4 transition-all">
                                 Voir la boutique <ArrowRight className="w-5 h-5" />
                             </span>

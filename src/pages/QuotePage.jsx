@@ -215,7 +215,7 @@ Ville: ${formData.city || 'N/A'}`;
                                         >
                                             <option value="">Sélectionnez un service</option>
                                             <option value="formation">Formation & Langue Allemande</option>
-                                            <option value="import-export">Import/Export & Véhicules</option>
+                                            <option value="import-export">Import et Export</option>
                                             <option value="representation">Représentation & B2B</option>
                                             <option value="traduction">Traduction & Démarches</option>
                                             <option value="autre">Autre</option>
