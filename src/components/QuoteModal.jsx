@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 
+import toast from 'react-hot-toast';
+
 const QuoteModal = ({ isOpen, onClose, preSelectedService = '' }) => {
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
@@ -30,7 +32,7 @@ const QuoteModal = ({ isOpen, onClose, preSelectedService = '' }) => {
         e.preventDefault();
         
         if (!isAuthenticated) {
-            alert('Veuillez vous connecter pour envoyer une demande de devis.');
+            toast.error('Veuillez vous connecter pour envoyer une demande de devis.');
             onClose();
             navigate('/connexion', { state: { returnUrl: '/devis' } });
             return;
@@ -61,11 +63,11 @@ Téléphone: ${formData.phone}`;
                 budget: budgetValue,
                 details
             });
-            alert('Votre demande de devis a été envoyée avec succès ! Nous vous contacterons sous 24h.');
+            toast.success('Votre demande de devis a été envoyée avec succès ! Nous vous contacterons sous 24h.');
             onClose();
         } catch (error) {
             console.error('Erreur lors de l\'envoi:', error);
-            alert('Une erreur est survenue lors de l\'envoi de votre demande.');
+            toast.error('Une erreur est survenue lors de l\'envoi de votre demande.');
         } finally {
             setLoading(false);
         }

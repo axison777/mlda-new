@@ -20,6 +20,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 
+import toast from 'react-hot-toast';
+
 const SourcingRequests = () => {
     const navigate = useNavigate();
     const [requests, setRequests] = useState([]);
@@ -69,12 +71,12 @@ const SourcingRequests = () => {
         try {
             setSubmitting(true);
             await api.post(`/sourcing/${selectedRequest.id}/offer`, offerForm);
-            alert('Offre envoyée avec succès !');
+            toast.success('Offre envoyée avec succès !');
             handleCloseOffer();
             fetchRequests();
         } catch (err) {
             console.error(err);
-            alert("Erreur lors de l'envoi de l'offre");
+            toast.error("Erreur lors de l'envoi de l'offre");
         } finally {
             setSubmitting(false);
         }

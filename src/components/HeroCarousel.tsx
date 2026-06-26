@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import imageEtudiant from '../assets/image_etudiant.jpg';
 import imageProfessionnel from '../assets/image_professionnel.jpg';
 import imageVoiture from '../assets/image_voiture.jpg';
+import api from '../utils/api';
 
 interface Slide {
   title: string;
@@ -15,8 +17,11 @@ interface Slide {
 
 const HeroCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [slides, setSlides] = useState<Slide[]>([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const slides: Slide[] = [
+  const defaultSlides: Slide[] = [
     {
       title: "Apprendre l'Allemand devient plus facile",
       subtitle: 'Rejoignez notre programme sur mesure pour étudiants et professionnels. Niveau A1 à C1.',
@@ -44,6 +49,38 @@ const HeroCarousel = () => {
   ];
 
   useEffect(() => {
+    const fetchHeroCampaigns = async () => {
+      try {
+        const { data } = await api.get('/campaigns/active');
+        const heroCampaigns = data.filter((c: any) => c.placement === 'hero');
+        
+        if (heroCampaigns.length > 0) {
+          const dynamicSlides = heroCampaigns.map((c: any) => ({
+            title: c.title,
+            subtitle: c.description || '',
+            buttonText: c.buttonText || 'Découvrir',
+            buttonLink: c.url || '#',
+            imageUrl: c.imageUrl || imageEtudiant, // Fallback image if none provided
+            imageAlt: c.title,
+            campaignId: c.id // Store campaign id to track clicks
+          }));
+          setSlides(dynamicSlides);
+        } else {
+          setSlides(defaultSlides);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des bannières hero:', error);
+        setSlides(defaultSlides);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHeroCampaigns();
+  }, []);
+
+  useEffect(() => {
+    if (slides.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
@@ -63,6 +100,25 @@ const HeroCarousel = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
+  const handleCTA = async (slide: any) => {
+    if (slide.campaignId) {
+      api.post(`/campaigns/${slide.campaignId}/click`).catch(console.error);
+    }
+    if (slide.buttonLink.startsWith('http')) {
+      window.open(slide.buttonLink, '_blank');
+    } else if (slide.buttonLink !== '#') {
+      navigate(slide.buttonLink);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full h-[600px] md:h-[700px] bg-mdla-black flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-mdla-yellow animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-[600px] md:h-[700px] overflow-hidden">
       {slides.map((slide, index) => (
@@ -79,20 +135,20 @@ const HeroCarousel = () => {
           </div>
 
           <div className="relative h-full flex items-center">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-              <div className="max-w-2xl">
-                <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+            <div className="max-w-[90rem] mx-auto px-6 md:px-12 lg:px-20 w-full">
+              <div className="text-left">
+                <h1 className="max-w-5xl text-4xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
                   {slide.title}
                 </h1>
-                <p className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed">
+                <p className="max-w-2xl text-lg md:text-xl text-gray-200 mb-8 leading-relaxed">
                   {slide.subtitle}
                 </p>
-                <a
-                  href={slide.buttonLink}
+                <button
+                  onClick={() => handleCTA(slide)}
                   className="inline-block bg-mdla-red text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-opacity-90 transition-all transform hover:scale-105"
                 >
                   {slide.buttonText}
-                </a>
+                </button>
               </div>
             </div>
           </div>

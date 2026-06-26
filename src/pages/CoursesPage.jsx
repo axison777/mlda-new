@@ -4,6 +4,7 @@ import CourseCard from '../components/CourseCard';
 import PaymentModal from '../components/PaymentModal';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import { Helmet } from 'react-helmet-async';
 
 const CoursesPage = () => {
     const [activeFilter, setActiveFilter] = useState('Tous');
@@ -82,32 +83,31 @@ const CoursesPage = () => {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Hero Section with Background Image */}
-            <section
-                className="relative bg-cover bg-center py-32"
-                style={{
-                    backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/api/placeholder/1920/600")',
-                }}
-            >
+            <Helmet>
+                <title>Toutes les Formations | MDLA Services</title>
+                <meta name="description" content="Découvrez nos cours de langue allemande de tous niveaux, du débutant (A1) au professionnel (C2). Inscrivez-vous pour apprendre avec nos formateurs experts." />
+            </Helmet>
+            {/* Hero Section */}
+            <section className="relative bg-mdla-yellow py-32">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                    <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+                    <h1 className="text-5xl md:text-6xl font-bold text-mdla-black mb-6">
                         Nos Cours d'Allemand
                     </h1>
-                    <p className="text-xl text-white/90 max-w-3xl mx-auto">
+                    <p className="text-xl text-gray-800 max-w-3xl mx-auto font-medium">
                         Des formations de qualité pour tous les niveaux, du débutant au professionnel
                     </p>
                 </div>
             </section>
 
             {/* Filters Section */}
-            <section className="py-8 bg-gray-50 sticky top-20 z-40 shadow-md">
+            <section className="py-4 bg-gray-50 sticky top-20 z-40 shadow-md border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-wrap gap-3 justify-center">
+                    <div className="flex flex-wrap gap-2 justify-center">
                         {filters.map((filter) => (
                             <button
                                 key={filter}
                                 onClick={() => setActiveFilter(filter)}
-                                className={`px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 ${activeFilter === filter
+                                className={`px-5 py-2 rounded-lg font-semibold transition-all transform hover:scale-105 ${activeFilter === filter
                                     ? 'bg-mdla-yellow text-mdla-black shadow-lg'
                                     : 'bg-white text-gray-700 hover:bg-gray-100 border-2 border-gray-200'
                                     }`}
@@ -118,8 +118,8 @@ const CoursesPage = () => {
                     </div>
 
                     {/* Results Count */}
-                    <div className="text-center mt-4">
-                        <p className="text-gray-600">
+                    <div className="text-center mt-2">
+                        <p className="text-sm text-gray-600">
                             <span className="font-bold text-mdla-black">{filteredCourses.length}</span> cours disponible{filteredCourses.length > 1 ? 's' : ''}
                         </p>
                     </div>
@@ -136,15 +136,14 @@ const CoursesPage = () => {
                     ) : filteredCourses.length > 0 ? (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {filteredCourses.map((course) => (
-                                <div key={course.id} className="relative">
+                                <div key={course.id} className="h-full">
                                     <CourseCard
                                         course={course}
                                         onAction={handleCourseAction}
-                                    />
-                                    {/* Enrollment Button Overlay */}
-                                    {user && (
-                                        <div className="absolute bottom-6 left-6 right-6">
-                                            {isEnrolled(course.id) ? (
+                                    >
+                                        {/* Enrollment Button */}
+                                        {user && (
+                                            isEnrolled(course.id) ? (
                                                 <button
                                                     disabled
                                                     className="w-full bg-green-100 text-green-800 px-6 py-3 rounded-lg font-bold cursor-not-allowed"
@@ -161,9 +160,9 @@ const CoursesPage = () => {
                                                 >
                                                     S'inscrire
                                                 </button>
-                                            )}
-                                        </div>
-                                    )}
+                                            )
+                                        )}
+                                    </CourseCard>
                                 </div>
                             ))}
                         </div>

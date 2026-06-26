@@ -17,6 +17,8 @@ import { useOrders } from '../../context/OrdersContext';
 import api from '../../utils/api';
 import LocationSelector from '../../components/common/LocationSelector';
 
+import toast from 'react-hot-toast';
+
 const CreateFolder = () => {
     const { createOrder } = useOrders();
     const [step, setStep] = useState(1);
@@ -81,12 +83,12 @@ const CreateFolder = () => {
 
             // Validation
             if (formData.clientType === 'existing' && !formData.userId) {
-                alert('Veuillez sélectionner un client existant');
+                toast.error('Veuillez sélectionner un client existant');
                 return;
             }
 
             if (!formData.departureCity || !formData.arrivalCity) {
-                alert('Veuillez renseigner la ville de départ et de destination');
+                toast.error('Veuillez renseigner la ville de départ et de destination');
                 return;
             }
 
@@ -122,12 +124,12 @@ const CreateFolder = () => {
 
             const newOrder = await createOrder(orderData);
             if (newOrder) {
-                alert(`Dossier #${newOrder.trackingNumber} créé avec succès !`);
+                toast.success(`Dossier #${newOrder.trackingNumber} créé avec succès !`);
                 window.location.href = '/dashboard/transit-dossiers';
             }
         } catch (err) {
             console.error(err);
-            alert('Erreur lors de la création du dossier');
+            toast.error('Erreur lors de la création du dossier');
         } finally {
             setLoading(false);
         }

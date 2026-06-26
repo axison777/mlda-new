@@ -15,6 +15,9 @@ import {
 } from 'lucide-react';
 import api from '../../utils/api';
 
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
+
 const AdminShop = () => {
     const [products, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -22,6 +25,9 @@ const AdminShop = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [isSourcing, setIsSourcing] = useState(false);
+    
+    // Modal de confirmation
+    const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
     const [formData, setFormData] = useState({
         name: '',
         category: 'Électronique',
@@ -66,7 +72,7 @@ const AdminShop = () => {
             setFormData({ ...formData, image: data.image });
         } catch (error) {
             console.error('Error uploading file:', error);
-            alert('Erreur lors du chargement de l\'image');
+            toast.error('Erreur lors du chargement de l\'image');
         } finally {
             setIsUploading(false);
         }
@@ -93,14 +99,20 @@ const AdminShop = () => {
         setShowAddModal(true);
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Voulez-vous vraiment supprimer ce produit ?')) {
-            try {
-                await api.delete(`/products/${id}`);
-                fetchProducts();
-            } catch (error) {
-                console.error('Error deleting product:', error);
-            }
+    const handleDelete = (id) => {
+        setDeleteConfirm({ show: true, id });
+    };
+
+    const executeDelete = async () => {
+        try {
+            await api.delete(`/products/${deleteConfirm.id}`);
+            toast.success('Produit supprimé');
+            fetchProducts();
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            toast.error('Erreur lors de la suppression.');
+        } finally {
+            setDeleteConfirm({ show: false, id: null });
         }
     };
 
@@ -134,7 +146,7 @@ const AdminShop = () => {
             fetchProducts();
         } catch (error) {
             console.error('Error saving product:', error);
-            alert("Erreur lors de l'enregistrement du produit : " + (error.response?.data?.message || error.message));
+            toast.error("Erreur lors de l'enregistrement du produit : " + (error.response?.data?.message || error.message));
         }
     };
 
@@ -452,6 +464,13 @@ const AdminShop = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal 
+                isOpen={deleteConfirm.show}
+                onClose={() => setDeleteConfirm({ show: false, id: null })}
+                onConfirm={executeDelete}
+                message="Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible."
+            />
         </div>
     );
 };

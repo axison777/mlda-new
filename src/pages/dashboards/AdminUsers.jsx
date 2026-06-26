@@ -25,6 +25,9 @@ import {
 } from 'lucide-react';
 import api from '../../utils/api';
 
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
+
 const AdminUsers = () => {
     const [activeTab, setActiveTab] = useState('clients');
     const [users, setUsers] = useState([]);
@@ -44,6 +47,9 @@ const AdminUsers = () => {
         status: 'active',
         password: ''
     });
+
+    // Modal de confirmation
+    const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
     const fetchUsers = async () => {
         try {
@@ -111,7 +117,7 @@ const AdminUsers = () => {
             setSelectedUser(data);
         } catch (err) {
             console.error(err);
-            alert('Erreur lors du chargement des détails');
+            toast.error('Erreur lors du chargement des détails');
             setShowDetailsModal(false);
         } finally {
             setDetailsLoading(false);
@@ -130,18 +136,24 @@ const AdminUsers = () => {
             fetchUsers();
         } catch (err) {
             console.error(err);
-            alert(err.response?.data?.message || 'Une erreur est survenue');
+            toast.error(err.response?.data?.message || 'Une erreur est survenue');
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return;
+    const handleDelete = (id) => {
+        setDeleteConfirm({ show: true, id });
+    };
+
+    const executeDelete = async () => {
         try {
-            await api.delete(`/users/${id}`);
+            await api.delete(`/users/${deleteConfirm.id}`);
+            toast.success('Utilisateur supprimé');
             fetchUsers();
         } catch (err) {
             console.error(err);
-            alert('Erreur lors de la suppression');
+            toast.error('Erreur lors de la suppression');
+        } finally {
+            setDeleteConfirm({ show: false, id: null });
         }
     };
 
@@ -152,7 +164,7 @@ const AdminUsers = () => {
             fetchUsers();
         } catch (err) {
             console.error(err);
-            alert('Erreur lors de la modification du statut');
+            toast.error('Erreur lors de la modification du statut');
         }
     };
 
@@ -542,6 +554,13 @@ const AdminUsers = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal 
+                isOpen={deleteConfirm.show}
+                onClose={() => setDeleteConfirm({ show: false, id: null })}
+                onConfirm={executeDelete}
+                message="Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible."
+            />
         </div>
     );
 };

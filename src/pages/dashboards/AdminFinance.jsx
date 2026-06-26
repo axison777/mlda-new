@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api';
+import toast from 'react-hot-toast';
 import {
     DollarSign,
     TrendingUp,
@@ -253,7 +254,7 @@ const AdminFinance = () => {
 
     const handleExport = () => {
         if (filteredTransactions.length === 0) {
-            alert('Aucune transaction à exporter');
+            toast('Aucune transaction à exporter');
             return;
         }
 

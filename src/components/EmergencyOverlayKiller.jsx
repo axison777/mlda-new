@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 
+import toast from 'react-hot-toast';
+
 /**
  * Emergency Overlay Killer
  * Press Ctrl+Shift+X to force close all overlays and reset modal states
@@ -35,7 +37,7 @@ const EmergencyOverlayKiller = () => {
                     }
                 });
 
-                alert('✅ Tous les overlays ont été fermés ! La page devrait être utilisable maintenant.');
+                toast('✅ Tous les overlays ont été fermés ! La page devrait être utilisable maintenant.');
             }
         };
 

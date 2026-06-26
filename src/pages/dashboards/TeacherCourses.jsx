@@ -12,6 +12,8 @@ import {
 import { useCourses } from '../../context/CoursesContext';
 import api from '../../utils/api'; // Import api to call getMyCourses directly if not in context
 
+import toast from 'react-hot-toast';
+
 const TeacherCourses = () => {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -134,7 +136,7 @@ const TeacherCourses = () => {
                                                     <button
                                                         className="p-1 text-red-600 hover:bg-red-50 rounded"
                                                         title={course.rejectionReason}
-                                                        onClick={() => alert(`Motif de refus : ${course.rejectionReason}`)}
+                                                        onClick={() => toast(`Motif de refus : ${course.rejectionReason}`)}
                                                     >
                                                         <AlertCircle className="w-4 h-4" />
                                                     </button>

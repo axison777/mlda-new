@@ -12,6 +12,7 @@ import CartSidebar from './components/CartSidebar';
 import EmergencyOverlayKiller from './components/EmergencyOverlayKiller';
 import DashboardLayout from './components/DashboardLayout';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Toaster } from 'react-hot-toast';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ServicesPage from './pages/ServicesPage';
@@ -20,6 +21,7 @@ import CoursesPage from './pages/CoursesPage';
 import ShopPage from './pages/ShopPage';
 import CartPage from './pages/CartPage';
 import QuotePage from './pages/QuotePage';
+import CourseDetailsPage from './pages/CourseDetailsPage';
 import TrackingPage from './pages/TrackingPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -88,6 +90,19 @@ const DashboardRouter = () => {
 function App() {
   return (
     <AuthProvider>
+      <Toaster 
+        position="top-right" 
+        toastOptions={{
+          style: {
+            fontSize: '16px',
+            padding: '16px 24px',
+            maxWidth: '500px',
+            fontWeight: '500',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)'
+          },
+          duration: 4000,
+        }}
+      />
       <CoursesProvider>
         <OrdersProvider>
           <PaymentProvider>
@@ -165,6 +180,14 @@ function App() {
                       <Navbar />
                       <CartSidebar />
                       <CoursesPage />
+                      <Footer />
+                    </div>
+                  } />
+                  <Route path="/formations/:courseId" element={
+                    <div className="min-h-screen bg-white">
+                      <Navbar />
+                      <CartSidebar />
+                      <CourseDetailsPage />
                       <Footer />
                     </div>
                   } />

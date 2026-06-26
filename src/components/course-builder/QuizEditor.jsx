@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { X, Plus, Trash2, Save, HelpCircle, CheckCircle } from 'lucide-react';
 
+import toast from 'react-hot-toast';
+import ConfirmModal from '../ConfirmModal';
+
 const QuizEditor = ({ lesson, onSave, onCancel }) => {
     const initialQuiz = lesson?.content ? JSON.parse(lesson.content) : {
         passingScore: 80,
@@ -15,6 +18,7 @@ const QuizEditor = ({ lesson, onSave, onCancel }) => {
     });
 
     const [editingQuestion, setEditingQuestion] = useState(null);
+    const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
     const questionTypes = [
         { value: 'multiple_choice', label: 'Multiple Choice (QCM)', icon: '☑️' },
@@ -34,22 +38,22 @@ const QuizEditor = ({ lesson, onSave, onCancel }) => {
 
     const saveQuestion = () => {
         if (!editingQuestion.text.trim()) {
-            alert('Please enter a question');
+            toast('Please enter a question');
             return;
         }
 
         if (editingQuestion.type === 'multiple_choice') {
             if (editingQuestion.options.filter(o => o.trim()).length < 2) {
-                alert('Please provide at least 2 options');
+                toast('Please provide at least 2 options');
                 return;
             }
             if (!editingQuestion.correctAnswer.trim()) {
-                alert('Please select the correct answer');
+                toast('Please select the correct answer');
                 return;
             }
         } else if (editingQuestion.type === 'fill_blanks') {
             if (!editingQuestion.correctAnswer.trim()) {
-                alert('Please provide the correct answer');
+                toast('Please provide the correct answer');
                 return;
             }
         }
@@ -66,18 +70,21 @@ const QuizEditor = ({ lesson, onSave, onCancel }) => {
     };
 
     const deleteQuestion = (id) => {
-        if (confirm('Delete this question?')) {
-            setFormData({ ...formData, questions: formData.questions.filter(q => q.id !== id) });
-        }
+        setDeleteConfirm({ show: true, id });
+    };
+
+    const executeDelete = () => {
+        setFormData({ ...formData, questions: formData.questions.filter(q => q.id !== deleteConfirm.id) });
+        setDeleteConfirm({ show: false, id: null });
     };
 
     const handleSave = () => {
         if (!formData.title.trim()) {
-            alert('Please enter a title');
+            toast('Please enter a title');
             return;
         }
         if (formData.questions.length === 0) {
-            alert('Please add at least one question');
+            toast('Please add at least one question');
             return;
         }
 
@@ -366,6 +373,13 @@ const QuizEditor = ({ lesson, onSave, onCancel }) => {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal 
+                isOpen={deleteConfirm.show}
+                onClose={() => setDeleteConfirm({ show: false, id: null })}
+                onConfirm={executeDelete}
+                message="Êtes-vous sûr de vouloir supprimer cette question ?"
+            />
         </div>
     );
 };

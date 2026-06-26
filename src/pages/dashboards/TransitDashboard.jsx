@@ -6,6 +6,8 @@ import { trackingSteps } from '../../data/mockOrders';
 import UpdateTrackingModal from '../../components/UpdateTrackingModal';
 import StatusBadge from '../../components/StatusBadge';
 
+import toast from 'react-hot-toast';
+
 const TransitDashboard = () => {
     const { user } = useAuth();
     const [shipments, setShipments] = useState(mockShipments);
@@ -57,7 +59,7 @@ const TransitDashboard = () => {
         );
 
         // Show success notification (you could use a toast library here)
-        alert(`✅ Suivi mis à jour avec succès pour ${updateData.trackingNumber}`);
+        toast.success(`✅ Suivi mis à jour avec succès pour ${updateData.trackingNumber}`);
     };
 
     return (

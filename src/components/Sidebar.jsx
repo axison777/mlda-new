@@ -20,6 +20,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useChat } from '../context/ChatContext';
 import { useState, useEffect } from 'react';
+import ConfirmModal from './ConfirmModal';
 
 const Sidebar = () => {
     const { user, logout } = useAuth();
@@ -27,6 +28,7 @@ const Sidebar = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     // Close mobile menu when screen resizes to desktop to prevent overlay issues
     useEffect(() => {
@@ -40,11 +42,14 @@ const Sidebar = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const handleLogout = () => {
-        if (window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-            logout();
-            navigate('/');
-        }
+    const handleLogoutClick = () => {
+        setShowLogoutConfirm(true);
+    };
+
+    const executeLogout = () => {
+        logout();
+        navigate('/');
+        setShowLogoutConfirm(false);
     };
 
     // Navigation items based on role
@@ -88,7 +93,7 @@ const Sidebar = () => {
                     { path: '/dashboard/communication', label: 'Live Chat', icon: MessageSquare, badge: unreadCount },
                     { path: '/dashboard/messages-contact', label: 'Messages de Contact', icon: MapPin },
                     { path: '/dashboard/utilisateurs', label: 'Utilisateurs & Staff', icon: Users },
-                    // { path: '/dashboard/marketing', label: 'Marketing & Pubs', icon: BarChart3 },
+                    { path: '/dashboard/marketing', label: 'Marketing & Pubs', icon: BarChart3 },
                     { path: '/dashboard/finances', label: 'Finances', icon: DollarSign },
                 ];
 
@@ -177,7 +182,7 @@ const Sidebar = () => {
                             <span className="text-sm font-medium">Retour au site</span>
                         </Link>
                         <button
-                            onClick={handleLogout}
+                            onClick={handleLogoutClick}
                             className="w-full flex items-center gap-2 px-4 py-3 hover:bg-red-50 transition-colors text-red-600"
                         >
                             <LogOut className="w-4 h-4" />
@@ -219,6 +224,13 @@ const Sidebar = () => {
                     </aside>
                 </>
             )}
+
+            <ConfirmModal 
+                isOpen={showLogoutConfirm}
+                onClose={() => setShowLogoutConfirm(false)}
+                onConfirm={executeLogout}
+                message="Êtes-vous sûr de vouloir vous déconnecter ?"
+            />
         </>
     );
 };

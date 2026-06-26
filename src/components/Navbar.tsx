@@ -3,6 +3,7 @@ import { Menu, X, ChevronDown, ShoppingCart, User, LogOut } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
+import CampaignDisplay from './marketing/CampaignDisplay';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -19,8 +20,10 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      <CampaignDisplay placement="top_banner" />
+      <nav className="bg-white shadow-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex-shrink-0 -ml-4">
             <a href="/" className="flex items-center">
@@ -208,6 +211,7 @@ const Navbar = () => {
         </div>
       )}
     </nav>
+    </>
   );
 };
 

@@ -23,6 +23,8 @@ import {
 import { getClientStatus } from '../../utils/logisticsHelper';
 import { uploadFile } from '../../utils/api';
 
+import toast from 'react-hot-toast';
+
 const LOGISTICS_INTERNAL_STATUSES = [
     'DOSSIER_OUVERT', 'RAMASSAGE', 'FORMALITES_EXPORT', 'EMBARQUEMENT',
     'EN_MER', 'EN_VOL', 'ARRIVEE_PORT',
@@ -119,7 +121,7 @@ const ActiveShipments = () => {
             }));
         } catch (err) {
             console.error(err);
-            alert('Erreur lors de l\'upload');
+            toast.error('Erreur lors de l\'upload');
         } finally {
             setSubmitting(false);
         }
@@ -131,7 +133,7 @@ const ActiveShipments = () => {
             const res = await updateOrderStatus(selectedShipment.id, updateForm);
 
             if (res.alert) {
-                alert(res.alert);
+                toast(res.alert);
             }
 
             setIsUpdateModalOpen(false);
@@ -139,7 +141,7 @@ const ActiveShipments = () => {
             setSelectedShipment(null);
         } catch (err) {
             console.error(err);
-            alert(err.response?.data?.message || 'Erreur lors de la mise à jour');
+            toast.error(err.response?.data?.message || 'Erreur lors de la mise à jour');
         } finally {
             setSubmitting(false);
         }

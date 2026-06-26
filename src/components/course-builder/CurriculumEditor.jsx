@@ -20,6 +20,7 @@ import QuizEditor from './QuizEditor';
 import SessionEditor from './SessionEditor';
 import AudioEditor from './AudioEditor';
 import InteractiveLessonEditor from './InteractiveLessonEditor';
+import ConfirmModal from '../ConfirmModal';
 
 const CurriculumEditor = ({ modules, setModules, onNext, onBack }) => {
     const [expandedModules, setExpandedModules] = useState({});
@@ -27,6 +28,10 @@ const CurriculumEditor = ({ modules, setModules, onNext, onBack }) => {
     const [activeModuleId, setActiveModuleId] = useState(null);
     const [editingLesson, setEditingLesson] = useState(null);
     const [editorType, setEditorType] = useState(null); // 'video', 'quiz', 'session', 'audio', 'interactive'
+    
+    // Modals de confirmation
+    const [deleteModuleConfirm, setDeleteModuleConfirm] = useState({ show: false, id: null });
+    const [deleteLessonConfirm, setDeleteLessonConfirm] = useState({ show: false, moduleId: null, lessonId: null });
 
     // Toggle module expansion
     const toggleModule = (moduleId) => {
@@ -49,9 +54,12 @@ const CurriculumEditor = ({ modules, setModules, onNext, onBack }) => {
 
     // Delete module
     const deleteModule = (moduleId) => {
-        if (window.confirm('Êtes-vous sûr de vouloir supprimer ce module ?')) {
-            setModules(modules.filter(m => m.id !== moduleId));
-        }
+        setDeleteModuleConfirm({ show: true, id: moduleId });
+    };
+
+    const executeDeleteModule = () => {
+        setModules(modules.filter(m => m.id !== deleteModuleConfirm.id));
+        setDeleteModuleConfirm({ show: false, id: null });
     };
 
     // Update module title
@@ -106,13 +114,16 @@ const CurriculumEditor = ({ modules, setModules, onNext, onBack }) => {
 
     // Delete lesson
     const deleteLesson = (moduleId, lessonId) => {
-        if (confirm('Supprimer cette leçon ?')) {
-            setModules(modules.map(m =>
-                m.id === moduleId
-                    ? { ...m, lessons: m.lessons.filter(l => l.id !== lessonId) }
-                    : m
-            ));
-        }
+        setDeleteLessonConfirm({ show: true, moduleId, lessonId });
+    };
+
+    const executeDeleteLesson = () => {
+        setModules(modules.map(m =>
+            m.id === deleteLessonConfirm.moduleId
+                ? { ...m, lessons: m.lessons.filter(l => l.id !== deleteLessonConfirm.lessonId) }
+                : m
+        ));
+        setDeleteLessonConfirm({ show: false, moduleId: null, lessonId: null });
     };
 
     // Handle Drag & Drop
@@ -401,6 +412,20 @@ const CurriculumEditor = ({ modules, setModules, onNext, onBack }) => {
 
             {/* Render Editor */}
             {renderEditor()}
+
+            <ConfirmModal 
+                isOpen={deleteModuleConfirm.show}
+                onClose={() => setDeleteModuleConfirm({ show: false, id: null })}
+                onConfirm={executeDeleteModule}
+                message="Êtes-vous sûr de vouloir supprimer ce module et tout son contenu ?"
+            />
+
+            <ConfirmModal 
+                isOpen={deleteLessonConfirm.show}
+                onClose={() => setDeleteLessonConfirm({ show: false, moduleId: null, lessonId: null })}
+                onConfirm={executeDeleteLesson}
+                message="Êtes-vous sûr de vouloir supprimer cette leçon ?"
+            />
         </div>
     );
 };

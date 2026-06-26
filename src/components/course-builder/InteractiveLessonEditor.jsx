@@ -13,6 +13,8 @@ import {
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import PhonePreview from './PhonePreview';
 
+import toast from 'react-hot-toast';
+
 const InteractiveLessonEditor = ({ initialContent, onSave, onCancel }) => {
     const [slides, setSlides] = useState(initialContent?.slides || []);
     const [activeSlideIndex, setActiveSlideIndex] = useState(0);
@@ -48,7 +50,7 @@ const InteractiveLessonEditor = ({ initialContent, onSave, onCancel }) => {
     };
 
     const deleteSlide = (index) => {
-        if (slides.length <= 1) return alert('La leçon doit contenir au moins une carte.');
+        if (slides.length <= 1) return toast('La leçon doit contenir au moins une carte.');
         const newSlides = slides.filter((_, i) => i !== index);
         setSlides(newSlides);
         if (activeSlideIndex >= newSlides.length) {

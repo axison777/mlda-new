@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { X, Music, Save } from 'lucide-react';
 import FileUploader from './FileUploader';
 
+import toast from 'react-hot-toast';
+
 const AudioEditor = ({ lesson, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
         title: lesson?.title || '',
@@ -12,11 +14,11 @@ const AudioEditor = ({ lesson, onSave, onCancel }) => {
 
     const handleSave = () => {
         if (!formData.title.trim()) {
-            alert('Please enter a title');
+            toast('Please enter a title');
             return;
         }
         if (!formData.audioUrl) {
-            alert('Please upload an audio file');
+            toast('Please upload an audio file');
             return;
         }
 

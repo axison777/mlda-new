@@ -16,6 +16,8 @@ import {
 import CurriculumEditor from '../../components/course-builder/CurriculumEditor';
 import api from '../../utils/api';
 
+import toast from 'react-hot-toast';
+
 const CourseBuilder = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
@@ -141,10 +143,10 @@ const CourseBuilder = () => {
             }
 
             await loadCourse(targetCourseId); // Refresh to get real IDs back
-            alert('Programme sauvegardé avec succès !');
+            toast.success('Programme sauvegardé avec succès !');
         } catch (error) {
             console.error('Error saving curriculum:', error);
-            alert('Erreur lors de la sauvegarde du programme');
+            toast.error('Erreur lors de la sauvegarde du programme');
         } finally {
             setLoading(false);
         }
@@ -160,7 +162,7 @@ const CourseBuilder = () => {
                     status: 'draft'
                 });
                 if (result.success) {
-                    alert('Cours créé et sauvegardé comme brouillon !');
+                    toast.success('Cours créé et sauvegardé comme brouillon !');
                     navigate(`/dashboard/editer-cours/${result.course.id}`);
                     return;
                 }
@@ -178,11 +180,11 @@ const CourseBuilder = () => {
                         status: 'draft' // Keep as draft
                     });
                 }
-                alert('Brouillon sauvegardé !');
+                toast('Brouillon sauvegardé !');
             }
         } catch (error) {
             console.error('Error saving draft:', error);
-            alert(error.response?.data?.message || 'Erreur lors de la sauvegarde');
+            toast.error(error.response?.data?.message || 'Erreur lors de la sauvegarde');
         } finally {
             setLoading(false);
         }
@@ -190,7 +192,7 @@ const CourseBuilder = () => {
 
     const handlePublish = async () => {
         if (!courseData.title || !courseData.description || !courseData.level) {
-            alert('Veuillez remplir tous les champs requis (titre, description, niveau)');
+            toast.error('Veuillez remplir tous les champs requis (titre, description, niveau)');
             return;
         }
 
@@ -224,11 +226,11 @@ const CourseBuilder = () => {
 
             // Submit for review
             await api.post(`/courses/${currentCourseId}/submit`);
-            alert('Cours envoyé pour validation !');
+            toast('Cours envoyé pour validation !');
             navigate(redirectPath);
         } catch (error) {
             console.error('Error submitting course:', error);
-            alert(error.response?.data?.message || 'Erreur lors de la soumission');
+            toast.error(error.response?.data?.message || 'Erreur lors de la soumission');
         } finally {
             setLoading(false);
         }
@@ -363,7 +365,7 @@ const CourseBuilder = () => {
                                                                 setCourseData({ ...courseData, thumbnail: data.url });
                                                                 setImagePreview(data.url);
                                                             } catch (error) {
-                                                                alert('Erreur lors du téléchargement de l\'image');
+                                                                toast.error('Erreur lors du téléchargement de l\'image');
                                                             } finally {
                                                                 setUploadingImage(false);
                                                             }

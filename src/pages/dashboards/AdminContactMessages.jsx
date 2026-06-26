@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Mail, Search, Eye, Trash2, CheckCircle, MessageSquare, Filter, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const AdminContactMessages = () => {
     const { user } = useAuth();
@@ -13,6 +14,9 @@ const AdminContactMessages = () => {
     const [statusFilter, setStatusFilter] = useState('all');
     const [counts, setCounts] = useState({ new: 0, read: 0, replied: 0, total: 0 });
     const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, pages: 0 });
+
+    // Modal de confirmation
+    const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
     useEffect(() => {
         fetchMessages();
@@ -66,18 +70,22 @@ const AdminContactMessages = () => {
         }
     };
 
-    const handleDeleteMessage = async (id) => {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) return;
+    const handleDeleteMessage = (id) => {
+        setDeleteConfirm({ show: true, id });
+    };
 
+    const executeDelete = async () => {
         try {
-            await api.delete(`/contact/${id}`);
+            await api.delete(`/contact/${deleteConfirm.id}`);
 
-            if (selectedMessage && selectedMessage.id === id) {
+            if (selectedMessage && selectedMessage.id === deleteConfirm.id) {
                 setSelectedMessage(null);
             }
             fetchMessages();
         } catch (error) {
             console.error('Error deleting message:', error);
+        } finally {
+            setDeleteConfirm({ show: false, id: null });
         }
     };
 
@@ -402,6 +410,13 @@ const AdminContactMessages = () => {
                     </div>
                 )
             }
+
+            <ConfirmModal 
+                isOpen={deleteConfirm.show}
+                onClose={() => setDeleteConfirm({ show: false, id: null })}
+                onConfirm={executeDelete}
+                message="Êtes-vous sûr de vouloir supprimer ce message ? Cette action est irréversible."
+            />
         </div >
     );
 };

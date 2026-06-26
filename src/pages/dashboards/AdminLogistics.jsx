@@ -32,6 +32,8 @@ import KPICard from '../../components/KPICard';
 import { Link, useNavigate } from 'react-router-dom';
 import { getClientStatus } from '../../utils/logisticsHelper';
 
+import toast from 'react-hot-toast';
+
 const LOGISTICS_INTERNAL_STATUSES = [
     'DOSSIER_OUVERT', 'RAMASSAGE', 'FORMALITES_EXPORT', 'EMBARQUEMENT',
     'EN_MER', 'EN_VOL', 'ARRIVEE_PORT',
@@ -113,7 +115,7 @@ const AdminLogistics = () => {
             }));
         } catch (err) {
             console.error(err);
-            alert('Erreur lors de l\'upload');
+            toast.error('Erreur lors de l\'upload');
         } finally {
             setSubmitting(false);
         }
@@ -151,14 +153,14 @@ const AdminLogistics = () => {
 
             const res = await updateOrderStatus(orderId, updatePayload);
             if (res.alert) {
-                alert(res.alert);
+                toast(res.alert);
             }
             setIsDetailModalOpen(false);
             setSelectedOrder(null);
             fetchOrders(); // Refresh list
         } catch (err) {
             console.error(err);
-            alert('Erreur lors de la mise à jour');
+            toast.error('Erreur lors de la mise à jour');
         } finally {
             setSubmitting(false);
         }

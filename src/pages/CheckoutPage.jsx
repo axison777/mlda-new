@@ -6,6 +6,8 @@ import { usePayment } from '../context/PaymentContext';
 import { useOrders } from '../context/OrdersContext';
 import { CreditCard, Loader, ArrowRight } from 'lucide-react';
 
+import toast from 'react-hot-toast';
+
 const CheckoutPage = () => {
     const navigate = useNavigate();
     const { cartItems, getCartTotal, clearCart } = useCart();
@@ -42,11 +44,11 @@ const CheckoutPage = () => {
                 // Redirect user to Yengapay Checkout
                 window.location.href = result.checkoutUrl;
             } else {
-                alert('Erreur: URL de paiement introuvable ou paiement refusé');
+                toast.error('Erreur: URL de paiement introuvable ou paiement refusé');
             }
         } catch (error) {
             console.error('Checkout error:', error);
-            alert('Une erreur est survenue lors de la création de la commande');
+            toast.error('Une erreur est survenue lors de la création de la commande');
         }
     };
 

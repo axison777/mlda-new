@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { X, CreditCard, Smartphone, DollarSign, ArrowRight, ArrowLeft, Monitor, Users } from 'lucide-react';
 import api from '../utils/api';
 
+import toast from 'react-hot-toast';
+
 const PaymentModal = ({ isOpen, onClose, course, onSuccess }) => {
     const [learningMode, setLearningMode] = useState('online');
     const [loading, setLoading] = useState(false);
@@ -28,12 +30,12 @@ const PaymentModal = ({ isOpen, onClose, course, onSuccess }) => {
                 // Redirect user to Yengapay Checkout
                 window.location.href = data.checkoutUrl;
             } else {
-                alert('Erreur: URL de paiement introuvable');
+                toast.error('Erreur: URL de paiement introuvable');
             }
 
         } catch (error) {
             console.error('Erreur lors du paiement:', error);
-            alert(error.response?.data?.message || 'Erreur lors de l\'initialisation du paiement');
+            toast.error(error.response?.data?.message || 'Erreur lors de l\'initialisation du paiement');
         } finally {
             setLoading(false);
         }

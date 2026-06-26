@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin-creation-dossier/
+Disallow: /finances/
+Disallow: /marketing/
+Disallow: /transit-dossiers/
+Disallow: /transit-sourcing/
+Disallow: /transit-nouveau/
+Disallow: /utilisateurs/
+Disallow: /creer-cours/
+
+Sitemap: https://mlda-backend.onrender.com/api/sitemap.xml

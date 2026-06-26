@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { X, Calendar, Clock, Users, MapPin, Link as LinkIcon, Save } from 'lucide-react';
 
+import toast from 'react-hot-toast';
+
 const SessionEditor = ({ lesson, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
         title: lesson?.title || '',
@@ -25,19 +27,19 @@ const SessionEditor = ({ lesson, onSave, onCancel }) => {
 
     const handleSave = () => {
         if (!formData.title.trim()) {
-            alert('Please enter a title');
+            toast('Please enter a title');
             return;
         }
         if (!formData.startTime || !formData.endTime) {
-            alert('Please set start and end times');
+            toast('Please set start and end times');
             return;
         }
         if (formData.mode === 'online' && !formData.meetingLink.trim()) {
-            alert('Please provide a meeting link for online sessions');
+            toast('Please provide a meeting link for online sessions');
             return;
         }
         if (formData.mode === 'in_person' && !formData.address.trim()) {
-            alert('Please provide an address for in-person sessions');
+            toast('Please provide an address for in-person sessions');
             return;
         }
 
