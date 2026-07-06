@@ -19,7 +19,7 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {
         if (!user || !token) return;
 
-        const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:55761';
+        const socketUrl = import.meta.env.VITE_SOCKET_URL || `${window.location.protocol}//${window.location.hostname}:55761`;
         const newSocket = io(socketUrl, {
             auth: { token },
             reconnection: true,

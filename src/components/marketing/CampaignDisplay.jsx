@@ -106,7 +106,7 @@ const CampaignDisplay = ({ placement }) => {
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center p-6 text-white">
                     {campaign.eventDate && (
                         <span className="bg-mdla-red/90 text-white px-4 py-1.5 rounded-full text-sm font-bold tracking-widest mb-4 uppercase backdrop-blur-sm">
-                            Événement • {new Date(campaign.eventDate).toLocaleDateString()}
+                            Événement • {new Date(campaign.eventDate.replace(' ', 'T')).toLocaleDateString()}
                         </span>
                     )}
                     
@@ -191,7 +191,7 @@ const CampaignDisplay = ({ placement }) => {
                             {campaign.eventDate && (
                                 <div className={`flex items-center gap-2 ${!campaign.imageUrl ? 'text-gray-300' : 'text-gray-500'}`}>
                                     <Calendar className="w-5 h-5 text-mdla-yellow" />
-                                    <span>{new Date(campaign.eventDate).toLocaleDateString()}</span>
+                                    <span>{new Date(campaign.eventDate.replace(' ', 'T')).toLocaleDateString()}</span>
                                 </div>
                             )}
                             {campaign.location && (
