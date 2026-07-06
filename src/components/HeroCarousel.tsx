@@ -120,7 +120,7 @@ const HeroCarousel = () => {
   }
 
   return (
-    <div className="relative w-full h-[600px] md:h-[700px] overflow-hidden">
+    <div className="relative w-full h-[450px] sm:h-[500px] md:h-[700px] overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={index}
@@ -135,17 +135,17 @@ const HeroCarousel = () => {
           </div>
 
           <div className="relative h-full flex items-center">
-            <div className="max-w-[90rem] mx-auto px-6 md:px-12 lg:px-20 w-full">
-              <div className="text-left">
-                <h1 className="max-w-5xl text-4xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+            <div className="max-w-[90rem] mx-auto px-5 sm:px-12 md:px-20 lg:px-24 w-full">
+              <div className="text-left mt-4 md:mt-0">
+                <h1 className="max-w-5xl text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2 md:mb-6 leading-tight drop-shadow-lg">
                   {slide.title}
                 </h1>
-                <p className="max-w-2xl text-lg md:text-xl text-gray-200 mb-8 leading-relaxed">
+                <p className="max-w-2xl text-sm sm:text-base md:text-xl text-gray-200 mb-4 md:mb-8 leading-relaxed line-clamp-3 md:line-clamp-none drop-shadow-md">
                   {slide.subtitle}
                 </p>
                 <button
                   onClick={() => handleCTA(slide)}
-                  className="inline-block bg-mdla-red text-white px-8 py-4 rounded-md font-semibold text-lg hover:bg-opacity-90 transition-all transform hover:scale-105"
+                  className="inline-block bg-mdla-red text-white px-5 py-2 md:px-8 md:py-4 rounded-md font-bold text-sm md:text-lg hover:bg-mdla-red/90 transition-all transform hover:-translate-y-1 hover:shadow-lg hover:shadow-mdla-red/30"
                 >
                   {slide.buttonText}
                 </button>
@@ -157,7 +157,7 @@ const HeroCarousel = () => {
 
       <button
         onClick={goToPrevious}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-mdla-yellow/90 hover:bg-mdla-yellow text-mdla-black p-3 rounded-full transition-all z-10"
+        className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-mdla-yellow text-white hover:text-mdla-black p-3 rounded-full transition-all z-10 backdrop-blur-sm"
         aria-label="Slide précédent"
       >
         <ChevronLeft className="w-6 h-6" />
@@ -165,18 +165,18 @@ const HeroCarousel = () => {
 
       <button
         onClick={goToNext}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-mdla-yellow/90 hover:bg-mdla-yellow text-mdla-black p-3 rounded-full transition-all z-10"
+        className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-mdla-yellow text-white hover:text-mdla-black p-3 rounded-full transition-all z-10 backdrop-blur-sm"
         aria-label="Slide suivant"
       >
         <ChevronRight className="w-6 h-6" />
       </button>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-3 z-10">
+      <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 md:space-x-3 z-10">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all ${index === currentSlide ? 'bg-mdla-yellow w-8' : 'bg-white/50 hover:bg-white/75'
+            className={`h-2 md:h-3 rounded-full transition-all duration-300 ${index === currentSlide ? 'bg-mdla-yellow w-6 md:w-8' : 'bg-white/50 hover:bg-white/90 w-2 md:w-3'
               }`}
             aria-label={`Aller au slide ${index + 1}`}
           />

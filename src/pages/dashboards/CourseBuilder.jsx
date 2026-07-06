@@ -391,14 +391,15 @@ const CourseBuilder = () => {
                                         <select
                                             value={courseData.level}
                                             onChange={(e) => setCourseData({ ...courseData, level: e.target.value })}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mdla-yellow/50"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mdla-yellow focus:border-transparent outline-none transition-all"
                                         >
                                             <option value="A1">A1 - Débutant</option>
                                             <option value="A2">A2 - Élémentaire</option>
                                             <option value="B1">B1 - Intermédiaire</option>
-                                            <option value="B2">B2 - Intermédiaire Supérieur</option>
+                                            <option value="B2">B2 - Intermédiaire avancé</option>
                                             <option value="C1">C1 - Avancé</option>
-                                            <option value="Business">Allemand des Affaires</option>
+                                            <option value="C2">C2 - Maîtrise</option>
+                                            <option value="Autres">Autres (Recyclage, Vacances, etc.)</option>
                                         </select>
                                     </div>
 

@@ -10,7 +10,7 @@ const Footer = () => {
               MDLA Service
             </div>
             <p className="text-gray-300 mt-4 leading-relaxed">
-              Votre partenaire de confiance pour réussir vos projets professionnels en Allemagne.
+              Mdla Services, votre passerelle entre vous et le monde Germanophone
             </p>
           </div>
 

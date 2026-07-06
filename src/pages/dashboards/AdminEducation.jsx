@@ -1068,7 +1068,7 @@ const AdminEducation = () => {
                                         onChange={(e) => setCreateForm(p => ({ ...p, level: e.target.value }))}
                                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-mdla-yellow/50 focus:border-mdla-yellow"
                                     >
-                                        {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map(l => (
+                                        {['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'Autres'].map(l => (
                                             <option key={l} value={l}>{l}</option>
                                         ))}
                                     </select>

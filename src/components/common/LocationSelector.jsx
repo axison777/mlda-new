@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Country, City } from 'country-state-city';
 import { MapPin } from 'lucide-react';
 
 const LocationSelector = ({ onLocationSelect, defaultCountry, defaultCity, label = "Lieu", error }) => {
@@ -7,21 +6,26 @@ const LocationSelector = ({ onLocationSelect, defaultCountry, defaultCity, label
     const [cities, setCities] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState(defaultCountry || '');
     const [selectedCity, setSelectedCity] = useState(defaultCity || '');
+    
+    const [cityLib, setCityLib] = useState(null);
 
     useEffect(() => {
-        setCountries(Country.getAllCountries());
+        import('country-state-city').then((module) => {
+            setCityLib(module.City);
+            setCountries(module.Country.getAllCountries());
+        });
     }, []);
 
     useEffect(() => {
-        if (selectedCountry) {
+        if (selectedCountry && countries.length > 0 && cityLib) {
             const countryData = countries.find(c => c.name === selectedCountry || c.isoCode === selectedCountry);
             if (countryData) {
-                setCities(City.getCitiesOfCountry(countryData.isoCode));
+                setCities(cityLib.getCitiesOfCountry(countryData.isoCode));
             } else {
                 setCities([]);
             }
         }
-    }, [selectedCountry, countries]);
+    }, [selectedCountry, countries, cityLib]);
 
     const handleCountryChange = (e) => {
         const countryName = e.target.value;
