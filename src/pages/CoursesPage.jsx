@@ -78,6 +78,23 @@ const CoursesPage = () => {
         ? courses
         : courses.filter(course => course.level === activeFilter);
 
+    // Sort courses so A1 is first, C2 is last, and Autres is at the very end
+    const levelOrder = {
+        'A1': 1,
+        'A2': 2,
+        'B1': 3,
+        'B2': 4,
+        'C1': 5,
+        'C2': 6,
+        'Autres': 7
+    };
+
+    const sortedAndFilteredCourses = [...filteredCourses].sort((a, b) => {
+        const orderA = levelOrder[a.level] || 99;
+        const orderB = levelOrder[b.level] || 99;
+        return orderA - orderB;
+    });
+
     const handleCourseAction = (courseId) => {
         navigate(`/formations/${courseId}`);
     };
@@ -121,7 +138,7 @@ const CoursesPage = () => {
                     {/* Results Count */}
                     <div className="text-center mt-2">
                         <p className="text-sm text-gray-600">
-                            <span className="font-bold text-mdla-black">{filteredCourses.length}</span> cours disponible{filteredCourses.length > 1 ? 's' : ''}
+                            <span className="font-bold text-mdla-black">{sortedAndFilteredCourses.length}</span> cours disponible{sortedAndFilteredCourses.length > 1 ? 's' : ''}
                         </p>
                     </div>
                 </div>
@@ -134,9 +151,9 @@ const CoursesPage = () => {
                         <div className="text-center py-16">
                             <p className="text-gray-500 text-lg">Chargement des cours...</p>
                         </div>
-                    ) : filteredCourses.length > 0 ? (
+                    ) : sortedAndFilteredCourses.length > 0 ? (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {filteredCourses.map((course) => (
+                            {sortedAndFilteredCourses.map((course) => (
                                 <div key={course.id} className="h-full">
                                     <CourseCard
                                         course={course}
