@@ -3,16 +3,21 @@ import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import api from '../utils/api';
 
+let cachedProducts = null;
+
 const ShopPage = () => {
     const [activeFilter, setActiveFilter] = useState('Tous');
     const { addToCart } = useCart();
-    const [products, setProducts] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [products, setProducts] = useState(cachedProducts || []);
+    const [isLoading, setIsLoading] = useState(!cachedProducts);
 
     useEffect(() => {
+        if (cachedProducts) return;
+
         const fetchProducts = async () => {
             try {
                 const { data } = await api.get('/products');
+                cachedProducts = data;
                 setProducts(data);
             } catch (error) {
                 console.error('Error fetching products:', error);

@@ -6,11 +6,14 @@ import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { Helmet } from 'react-helmet-async';
 
+let cachedCourses = null;
+let cachedEnrollments = null;
+
 const CoursesPage = () => {
     const [activeFilter, setActiveFilter] = useState('Tous');
-    const [courses, setCourses] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [enrollments, setEnrollments] = useState([]);
+    const [courses, setCourses] = useState(cachedCourses || []);
+    const [loading, setLoading] = useState(!cachedCourses);
+    const [enrollments, setEnrollments] = useState(cachedEnrollments || []);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState(null);
 
@@ -18,8 +21,10 @@ const CoursesPage = () => {
     const { user } = useAuth();
 
     useEffect(() => {
-        fetchPublishedCourses();
-        if (user) {
+        if (!cachedCourses) {
+            fetchPublishedCourses();
+        }
+        if (user && !cachedEnrollments) {
             fetchMyEnrollments();
         }
     }, [user]);
@@ -28,6 +33,7 @@ const CoursesPage = () => {
         try {
             setLoading(true);
             const { data } = await api.get('/courses?status=published');
+            cachedCourses = data;
             setCourses(data);
         } catch (error) {
             console.error('Error fetching courses:', error);
@@ -39,6 +45,7 @@ const CoursesPage = () => {
     const fetchMyEnrollments = async () => {
         try {
             const { data } = await api.get('/enrollments');
+            cachedEnrollments = data;
             setEnrollments(data);
         } catch (error) {
             console.error('Error fetching enrollments:', error);

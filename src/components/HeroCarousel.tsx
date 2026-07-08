@@ -15,10 +15,12 @@ interface Slide {
   imageAlt: string;
 }
 
+let cachedSlides = null;
+
 const HeroCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [slides, setSlides] = useState<Slide[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [slides, setSlides] = useState<Slide[]>(cachedSlides || []);
+  const [loading, setLoading] = useState(!cachedSlides);
   const navigate = useNavigate();
 
   const defaultSlides: Slide[] = [
@@ -49,13 +51,16 @@ const HeroCarousel = () => {
   ];
 
   useEffect(() => {
+    if (cachedSlides) return;
+
     const fetchHeroCampaigns = async () => {
       try {
         const { data } = await api.get('/campaigns/active');
         const heroCampaigns = data.filter((c: any) => c.placement === 'hero');
         
+        let finalSlides = defaultSlides;
         if (heroCampaigns.length > 0) {
-          const dynamicSlides = heroCampaigns.map((c: any) => ({
+          finalSlides = heroCampaigns.map((c: any) => ({
             title: c.title,
             subtitle: c.description || '',
             buttonText: c.buttonText || 'Découvrir',
@@ -64,12 +69,13 @@ const HeroCarousel = () => {
             imageAlt: c.title,
             campaignId: c.id // Store campaign id to track clicks
           }));
-          setSlides(dynamicSlides);
-        } else {
-          setSlides(defaultSlides);
         }
+        
+        cachedSlides = finalSlides;
+        setSlides(finalSlides);
       } catch (error) {
         console.error('Erreur lors du chargement des bannières hero:', error);
+        cachedSlides = defaultSlides;
         setSlides(defaultSlides);
       } finally {
         setLoading(false);

@@ -1,4 +1,4 @@
-import { MapPin, Phone, Clock } from 'lucide-react';
+import { MapPin, Phone, Clock, Facebook, Instagram, MessageCircle } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -12,6 +12,35 @@ const Footer = () => {
             <p className="text-gray-300 mt-4 leading-relaxed">
               Mdla Services, votre passerelle entre vous et le monde Germanophone
             </p>
+            <div className="flex gap-4 mt-6">
+              <a
+                href="https://web.facebook.com/profile.php?id=61577211632899&locale=en_GB"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-mdla-yellow hover:text-mdla-black flex items-center justify-center transition-all text-white"
+                title="Facebook"
+              >
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a
+                href="https://www.instagram.com/mdlaservices/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-mdla-yellow hover:text-mdla-black flex items-center justify-center transition-all text-white"
+                title="Instagram"
+              >
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a
+                href="https://wa.me/22650194949"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-mdla-yellow hover:text-mdla-black flex items-center justify-center transition-all text-white"
+                title="WhatsApp"
+              >
+                <MessageCircle className="w-5 h-5" />
+              </a>
+            </div>
           </div>
 
           <div>

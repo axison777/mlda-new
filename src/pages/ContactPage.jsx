@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MapPin, Phone, Clock, Mail, Facebook, Instagram, Send } from 'lucide-react';
+import { MapPin, Phone, Clock, Mail, Facebook, Instagram, Send, MessageCircle } from 'lucide-react';
 import api from '../utils/api';
 
 const ContactPage = () => {
@@ -133,6 +133,21 @@ const ContactPage = () => {
                                         </p>
                                     </div>
                                 </div>
+
+                                {/* WhatsApp */}
+                                <div className="flex gap-4">
+                                    <div className="w-12 h-12 bg-mdla-yellow rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <MessageCircle className="w-6 h-6 text-mdla-black" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-mdla-black mb-2">WhatsApp</h3>
+                                        <p className="text-gray-600">
+                                            <a href="https://wa.me/22650194949" target="_blank" rel="noopener noreferrer" className="hover:text-mdla-yellow transition-colors font-semibold">
+                                                +226 50 19 49 49
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Social Media */}
@@ -140,20 +155,31 @@ const ContactPage = () => {
                                 <h3 className="font-bold text-mdla-black mb-4">Suivez-nous</h3>
                                 <div className="flex gap-4">
                                     <a
-                                        href="https://facebook.com/mdla"
+                                        href="https://web.facebook.com/profile.php?id=61577211632899&locale=en_GB"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-12 h-12 bg-mdla-black hover:bg-mdla-yellow rounded-lg flex items-center justify-center transition-all group"
+                                        title="Facebook"
                                     >
                                         <Facebook className="w-6 h-6 text-white group-hover:text-mdla-black transition-colors" />
                                     </a>
                                     <a
-                                        href="https://instagram.com/mdla"
+                                        href="https://www.instagram.com/mdlaservices/"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-12 h-12 bg-mdla-black hover:bg-mdla-yellow rounded-lg flex items-center justify-center transition-all group"
+                                        title="Instagram"
                                     >
                                         <Instagram className="w-6 h-6 text-white group-hover:text-mdla-black transition-colors" />
+                                    </a>
+                                    <a
+                                        href="https://wa.me/22650194949"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-12 h-12 bg-mdla-black hover:bg-mdla-yellow rounded-lg flex items-center justify-center transition-all group"
+                                        title="WhatsApp"
+                                    >
+                                        <MessageCircle className="w-6 h-6 text-white group-hover:text-mdla-black transition-colors" />
                                     </a>
                                 </div>
                             </div>
